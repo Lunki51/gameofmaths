@@ -1,0 +1,19 @@
+{
+  "name": "gameofmath-webapp",
+  "version": "0.1.0",
+  "description": "Web server of the WebApp GameOfMath.",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node app.js",
+    "dev": "node app.js dev"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "cookie-parser": "^1.4.5",
+    "express": "^4.17.1",
+    "express-session": "^1.17.1",
+    "pug": "^3.0.0"
+  }
+}

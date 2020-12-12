@@ -1,0 +1,11 @@
+{
+  "name": "gameofmath-3dgraphics",
+  "version": "1.0.0",
+  "description": "The npm module used to render 3D stuff on the \"game of math\" webapp",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC"
+}

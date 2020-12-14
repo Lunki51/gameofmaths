@@ -103,3 +103,5 @@ CREATE TABLE QuizQuestion(
     FOREIGN KEY(theQuiz) REFERENCES Quiz(quizID),
     PRIMARY KEY (theQuestion, theQuiz)
 );
+
+-- TODO Trigger

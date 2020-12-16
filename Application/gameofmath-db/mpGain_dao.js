@@ -1,38 +1,39 @@
 const dbD = require('./sqlite_connection');
 const object_helper = require('./object_helper');
 
-const UserDAO = function () {
+const MPGainDAO = function () {
     /**
-     * Format a user if the input user is valid.
+     * Format a mpGain if the input mpGain is valid.
      *
-     * @param object user to format
-     * @returns the formatted user, null if the input user can't be formatted
+     * @param object mpGain to format
+     * @returns the formatted mpGain, null if the input mpGain can't be formatted
      */
     this.format = function (object) {
-        const user = object_helper.formatPropertiesWithType([{
+        const mpGain = object_helper.formatPropertiesWithType([{
             t: 'string',
-            ps: ['login', 'password', 'lastname', 'firstname']
-        }, {t: 'number', ps: ['userID']}], object);
-        if (!user) return null;
+            ps: ['type']
+        }, {t: 'number', ps: ['mpGainID', 'amount', 'theStudent']},
+            {t: 'date', ps: ['date']}], object);
+        if (!mpGain) return null;
 
-        if (user.password.length >= 7) return user;
+        if (['QUIZ'].indexOf(mpGain.type) >= 0) return mpGain;
         return null;
     };
 
     /**
-     * Insert a user if the jsonObject is valid.
+     * Insert a mpGain if the jsonObject is valid.
      *
-     * @param obj user to insert
+     * @param obj mpGain to insert
      * @param db db instance to use
      * @returns {Promise<number>} A promise that resolve the insertID
      */
     this.insert = function (obj, db = dbD) {
         return new Promise((resolve, reject) => {
-            const user = this.format(obj);
-            if (!user) reject(new Error('Invalid input user!'));
+            const mpGain = this.format(obj);
+            if (!mpGain) reject(new Error('Invalid input mpGain!'));
             else {
-                let request = 'INSERT INTO User (login, password, lastname, firstname) VALUES (?, ?, ?, ?)';
-                db.run(request, [user.login, user.password, user.lastname, user.firstname], function (err) {
+                let request = 'INSERT INTO MPGain (amount, type, date, theStudent) VALUES (?, ?, ?, ?)';
+                db.run(request, [mpGain.amout, mpGain.type, mpGain.date, mpGain.theStudent], function (err) {
                     if (err) reject(err);
                     else resolve(this.lastID);
                 });
@@ -42,19 +43,19 @@ const UserDAO = function () {
     };
 
     /**
-     * Update a user if the jsonObject is valid.
+     * Update a mpGain if the jsonObject is valid.
      *
-     * @param obj user with new property (must have a correct id)
+     * @param obj mpGain with new property (must have a correct id)
      * @param db db instance to use
      * @returns {Promise} a promise that resolve if the update is a success
      */
     this.update = function (obj, db = dbD) {
         return new Promise((resolve, reject) => {
-            const user = this.format(obj);
-            if (!user) reject(new Error('Invalid input user!'));
+            const mpGain = this.format(obj);
+            if (!mpGain) reject(new Error('Invalid input mpGain!'));
             else {
-                let request = 'UPDATE User SET login = ?, password = ?, lastname = ?, firstname = ? WHERE userID = ?';
-                db.run(request, [user.login, user.password, user.lastname, user.firstname, user.userID], function (err) {
+                let request = 'UPDATE MPGain SET amount = ?, type = ?, date = ?, theStudent = ? WHERE mpGainID = ?';
+                db.run(request, [mpGain.amount, mpGain.type, mpGain.date, mpGain.theStudent, mpGain.mpGainID], function (err) {
                     if (err) reject(err);
                     else resolve();
                 });
@@ -64,15 +65,15 @@ const UserDAO = function () {
     };
 
     /**
-     * Delete the user with his id.
+     * Delete the mpGain with his id.
      *
-     * @param key user id
+     * @param key mpGain id
      * @param db db instance to use
      * @returns {Promise} a promise that resolve if the delete is a success
      */
     this.delete = function (key, db = dbD) {
         return new Promise((resolve, reject) => {
-            let request = 'DELETE FROM User WHERE userID = ?';
+            let request = 'DELETE FROM MPGain WHERE mpGainID = ?';
             db.run(request, [key], function (err) {
                 if (err) reject(err);
                 else resolve();
@@ -81,14 +82,14 @@ const UserDAO = function () {
     };
 
     /**
-     * Get all the user in the db.
+     * Get all the mpGain in the db.
      *
      * @param db db instance to use
      * @returns {Promise<Array>} A promise that resolve all the rows
      */
     this.findAll = function (db = dbD) {
         return new Promise((resolve, reject) => {
-            let request = 'SELECT * FROM User';
+            let request = 'SELECT * FROM MPGain';
             db.all(request, [], function (err, rows) {
                 if (err) reject(err);
                 else resolve(rows);
@@ -97,15 +98,15 @@ const UserDAO = function () {
     };
 
     /**
-     * Get the user with a specific id.
+     * Get the mpGain with a specific id.
      *
-     * @param key user id
+     * @param key mpGain id
      * @param db db instance to use
-     * @returns {Promise} A promise that resolve the user with this id if it's found
+     * @returns {Promise} A promise that resolve the mpGain with this id if it's found
      */
     this.findByID = function (key, db = dbD) {
         return new Promise((resolve, reject) => {
-            let request = 'SELECT * FROM User WHERE userID = ?';
+            let request = 'SELECT * FROM MPGain WHERE mpGainID = ?';
             db.all(request, [key], function (err, rows) {
                 if (err) reject(err);
                 else resolve(rows[0]);
@@ -114,22 +115,22 @@ const UserDAO = function () {
     };
 
     /**
-     * Get the user with a specific login.
+     * Get the mpGain with a specific student.
      *
-     * @param login user login
+     * @param login mpGain login
      * @param db db instance to use
-     * @returns {Promise} A promise that resolve the user with this login if it's found
+     * @returns {Promise} A promise that resolve the mpGain with this login if it's found
      */
-    this.findByLogin = function (login, db = dbD) {
+    this.findAllByStudent = function (studentID, db = dbD) {
         return new Promise((resolve, reject) => {
-            let request = 'SELECT * FROM User WHERE LOWER(username) = LOWER(?)';
-            db.all(request, [login], function (err, rows) {
+            let request = 'SELECT * FROM MPGain WHERE theStudent = ?';
+            db.all(request, [studentID], function (err, rows) {
                 if (err) reject(err);
-                else resolve(rows[0]);
+                else resolve(rows);
             });
         });
     };
 }
 
-var dao = new UserDAO();
+var dao = new MPGainDAO();
 module.exports = dao;

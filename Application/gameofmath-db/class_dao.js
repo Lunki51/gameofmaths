@@ -1,38 +1,38 @@
 const dbD = require('./sqlite_connection');
 const object_helper = require('./object_helper');
 
-const UserDAO = function () {
+const ClassDAO = function () {
     /**
-     * Format a user if the input user is valid.
+     * Format a class if the input class is valid.
      *
-     * @param object user to format
-     * @returns the formatted user, null if the input user can't be formatted
+     * @param object class to format
+     * @returns the formatted class, null if the input class can't be formatted
      */
     this.format = function (object) {
-        const user = object_helper.formatPropertiesWithType([{
+        const classO = object_helper.formatPropertiesWithType([{
             t: 'string',
-            ps: ['login', 'password', 'lastname', 'firstname']
-        }, {t: 'number', ps: ['userID']}], object);
-        if (!user) return null;
+            ps: ['grade', 'name']
+        }, {t: 'number', ps: ['classID']}], object);
+        if (!classO) return null;
 
-        if (user.password.length >= 7) return user;
+        if (classO.password.length >= 7) return classO;
         return null;
     };
 
     /**
-     * Insert a user if the jsonObject is valid.
+     * Insert a class if the jsonObject is valid.
      *
-     * @param obj user to insert
+     * @param obj class to insert
      * @param db db instance to use
      * @returns {Promise<number>} A promise that resolve the insertID
      */
     this.insert = function (obj, db = dbD) {
         return new Promise((resolve, reject) => {
-            const user = this.format(obj);
-            if (!user) reject(new Error('Invalid input user!'));
+            const classO = this.format(obj);
+            if (!classO) reject(new Error('Invalid input class!'));
             else {
-                let request = 'INSERT INTO User (login, password, lastname, firstname) VALUES (?, ?, ?, ?)';
-                db.run(request, [user.login, user.password, user.lastname, user.firstname], function (err) {
+                let request = 'INSERT INTO Class (grade, name) VALUES (?, ?)';
+                db.run(request, [classO.grade, classO.name], function (err) {
                     if (err) reject(err);
                     else resolve(this.lastID);
                 });
@@ -42,19 +42,19 @@ const UserDAO = function () {
     };
 
     /**
-     * Update a user if the jsonObject is valid.
+     * Update a class if the jsonObject is valid.
      *
-     * @param obj user with new property (must have a correct id)
+     * @param obj class with new property (must have a correct id)
      * @param db db instance to use
      * @returns {Promise} a promise that resolve if the update is a success
      */
     this.update = function (obj, db = dbD) {
         return new Promise((resolve, reject) => {
-            const user = this.format(obj);
-            if (!user) reject(new Error('Invalid input user!'));
+            const classO = this.format(obj);
+            if (!classO) reject(new Error('Invalid input class!'));
             else {
-                let request = 'UPDATE User SET login = ?, password = ?, lastname = ?, firstname = ? WHERE userID = ?';
-                db.run(request, [user.login, user.password, user.lastname, user.firstname, user.userID], function (err) {
+                let request = 'UPDATE Class SET grade = ?, name = ? WHERE classID = ?';
+                db.run(request, [classO.grade, classO.name, classO.classID], function (err) {
                     if (err) reject(err);
                     else resolve();
                 });
@@ -64,15 +64,15 @@ const UserDAO = function () {
     };
 
     /**
-     * Delete the user with his id.
+     * Delete the class with his id.
      *
-     * @param key user id
+     * @param key class id
      * @param db db instance to use
      * @returns {Promise} a promise that resolve if the delete is a success
      */
     this.delete = function (key, db = dbD) {
         return new Promise((resolve, reject) => {
-            let request = 'DELETE FROM User WHERE userID = ?';
+            let request = 'DELETE FROM Class WHERE classID = ?';
             db.run(request, [key], function (err) {
                 if (err) reject(err);
                 else resolve();
@@ -81,14 +81,14 @@ const UserDAO = function () {
     };
 
     /**
-     * Get all the user in the db.
+     * Get all the class in the db.
      *
      * @param db db instance to use
      * @returns {Promise<Array>} A promise that resolve all the rows
      */
     this.findAll = function (db = dbD) {
         return new Promise((resolve, reject) => {
-            let request = 'SELECT * FROM User';
+            let request = 'SELECT * FROM Class';
             db.all(request, [], function (err, rows) {
                 if (err) reject(err);
                 else resolve(rows);
@@ -97,15 +97,15 @@ const UserDAO = function () {
     };
 
     /**
-     * Get the user with a specific id.
+     * Get the class with a specific id.
      *
-     * @param key user id
+     * @param key class id
      * @param db db instance to use
-     * @returns {Promise} A promise that resolve the user with this id if it's found
+     * @returns {Promise} A promise that resolve the class with this id if it's found
      */
     this.findByID = function (key, db = dbD) {
         return new Promise((resolve, reject) => {
-            let request = 'SELECT * FROM User WHERE userID = ?';
+            let request = 'SELECT * FROM Class WHERE classID = ?';
             db.all(request, [key], function (err, rows) {
                 if (err) reject(err);
                 else resolve(rows[0]);
@@ -114,16 +114,17 @@ const UserDAO = function () {
     };
 
     /**
-     * Get the user with a specific login.
+     * Get the class with a specific grade and name.
      *
-     * @param login user login
+     * @param grade class's grade
+     * @param name class's name
      * @param db db instance to use
-     * @returns {Promise} A promise that resolve the user with this login if it's found
+     * @returns {Promise} A promise that resolve the class with this grade and name if it's found
      */
-    this.findByLogin = function (login, db = dbD) {
+    this.findByGradeName = function (grade, name, db = dbD) {
         return new Promise((resolve, reject) => {
-            let request = 'SELECT * FROM User WHERE LOWER(username) = LOWER(?)';
-            db.all(request, [login], function (err, rows) {
+            let request = 'SELECT * FROM Class WHERE LOWER(name) = LOWER(?) AND LOWER(grade) = LOWER(?)';
+            db.all(request, [name, grade], function (err, rows) {
                 if (err) reject(err);
                 else resolve(rows[0]);
             });
@@ -131,5 +132,5 @@ const UserDAO = function () {
     };
 }
 
-var dao = new UserDAO();
+var dao = new ClassDAO();
 module.exports = dao;

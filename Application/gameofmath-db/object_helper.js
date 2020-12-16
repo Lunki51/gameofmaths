@@ -6,7 +6,7 @@
  * @returns the object formatted, null if the input object is invalid
  */
 exports.formatPropertiesWithType = function (pts, value) {
-    const nv = value.clone();
+    const nv = { ...value};
     for (pt of pts) {
         if (!pt.hasOwnProperty('ps') || !pt.hasOwnProperty('t')) return null;
         for (p of pt.ps) {

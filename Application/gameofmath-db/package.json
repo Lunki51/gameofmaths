@@ -4,12 +4,15 @@
   "description": "DataBase interface for the WebApp GameOfMath.",
   "main": "gameofmath-db.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "jest"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
     "sqlite3": "^5.0.0",
     "sqlite3-transactions": "0.0.5"
+  },
+  "devDependencies": {
+    "jest": "^26.6.3"
   }
 }

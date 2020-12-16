@@ -1,5 +1,8 @@
 PRAGMA foreign_keys = ON;
 
+DROP TRIGGER  IF EXISTS changeMP;
+DROP TRIGGER  IF EXISTS addMP;
+
 DROP TABLE IF EXISTS QuizQuestion;
 DROP TABLE IF EXISTS Answer;
 DROP TABLE IF EXISTS Question;
@@ -36,7 +39,7 @@ CREATE TABLE Class(
 CREATE TABLE Student(
     theUser INTEGER PRIMARY KEY,
     theClass INTEGER NOT NULL,
-    pm INTEGER NOT NULL DEFAULT 0 CHECK (pm >= 0),
+    mp INTEGER NOT NULL DEFAULT 0 CHECK (mp >= 0),
 
     FOREIGN KEY(theUser) REFERENCES User(userID),
     FOREIGN KEY(theClass) REFERENCES Class(classID)
@@ -45,7 +48,7 @@ CREATE TABLE Student(
 CREATE TABLE MPGain(
     mpGainID INTEGER PRIMARY KEY AUTOINCREMENT,
     amount INTEGER NOT NULL,
-    type TEXT, -- TODO restrain to a list
+    type TEXT CHECK (type IN ('QUIZ')),
     date NUMERIC,
     theStudent INTEGER NOT NULL,
 
@@ -54,7 +57,7 @@ CREATE TABLE MPGain(
 
 CREATE TABLE Chapter(
     chapterID INTEGER PRIMARY KEY AUTOINCREMENT,
-    name TEXT
+    name TEXT UNIQUE
 );
 
 CREATE TABLE Quiz(
@@ -89,7 +92,7 @@ CREATE TABLE Question(
 CREATE TABLE Answer(
     answerID  INTEGER PRIMARY KEY AUTOINCREMENT,
     text TEXT,
-    isValid INTEGER CHECK ( isValid IN (0, 1)),
+    isValid TEXT CHECK ( isValid IN ('true', 'false', '0', '1')),
     theQuestion INTEGER,
 
     FOREIGN KEY(theQuestion) REFERENCES Question(questionID)
@@ -104,4 +107,17 @@ CREATE TABLE QuizQuestion(
     PRIMARY KEY (theQuestion, theQuiz)
 );
 
--- TODO Trigger
+-- TRIGGER
+CREATE TRIGGER addMP
+    AFTER INSERT
+    ON MPGain
+BEGIN
+    UPDATE Student SET mp = mp + NEW.amount;
+END;
+
+CREATE TRIGGER changeMP
+    AFTER UPDATE
+    ON MPGain
+BEGIN
+    UPDATE Student SET mp = mp - OLD.amount + NEW.amount;
+END;

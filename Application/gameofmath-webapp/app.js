@@ -29,9 +29,13 @@ app.use(express.static(path.join(__dirname, 'public')));
 const indexRouter = require('./routes/index');
 app.use('/', indexRouter);
 
+
+
+
+
 //Open the server
-app.listen(3000, () => {
-    console.log('Webapp open on port 3000' + (script_dev ? ' in development mod.' : '.'));
+app.listen(5000, () => {
+    console.log('Webapp open on port 5000' + (script_dev ? ' in development mod.' : '.'));
 });
 
 //ERROR handler

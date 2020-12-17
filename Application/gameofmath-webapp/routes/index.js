@@ -1,8 +1,13 @@
+
 const express = require('express')
 const router = express.Router()
 
-router.get('/', async function (req, res, next) { //TODO manage error
-    res.render('index.pug')
-});
+
+router.get('/api/graphics/renderer/', (res,req) => {
+    req.send("alert('render'); console.log('hello word');")
+})
+
 
 module.exports = router;
+
+

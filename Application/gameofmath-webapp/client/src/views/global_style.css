@@ -1,0 +1,165 @@
+@import url(//db.onlinewebfonts.com/c/97c4b25dc74e0ab045154e75a8fdd69d?family=Game+of+Thrones);
+
+
+    
+.title{
+    font-family: "Game of Throne";
+    font-size: large;
+}
+
+/*container component*/
+.container{
+
+    /*set position*/
+    position: absolute;
+    transform: translate(-50%,-50%); 
+    left: 50%;
+    top: 50%;
+
+    /*set size*/
+    width: 400px;
+    height: 450px;
+
+    /*set appearence*/
+    background-color: var(--primary_color);
+    border-radius: 20px;
+
+    /*set children*/
+    text-align:center;
+
+}
+
+
+.container-title{
+
+    position: relative;
+    top: 8%;
+    transform: translateY(-50%);
+    -webkit-transform: translateY(-50%);
+    -ms-transform: translateY(-50%);
+    font-family: "Game of Thrones";
+    margin-bottom: 50px;
+    color: var(--text_color);
+    
+}
+
+
+/*text field component*/
+
+.textField{
+
+    /*set position*/
+    position: relative;
+    margin-top: 30px;
+    width: 300px;
+    height: 50px;
+    font-size: 20px;
+    font-family: "Game of Thrones";
+    background-color: var(--input_color);
+    color: var(--text_color);
+    border-radius: 10px;
+    border-color: var(--border_color);
+    padding-left: 10px;
+
+}
+
+
+/*button component*/
+.button{
+     /*set position*/
+     position: relative;
+     margin-top: 30px;
+     width: 300px;
+     height: 50px;
+     font-size: 20px;
+     font-family: "Game of Thrones";
+     background-color: var(--input_color);
+     color: var(--text_color);
+     border-radius: 10px;
+}
+
+.navbar_container{
+
+    margin-top: 20px;
+    position: absolute;
+    width: 97%;
+    height: 70px;
+    left: 50%;
+    transform: translateX(-50%);
+    border-radius: 10px;
+
+    border:1px solid var(--border_color);
+
+    background:var(--wood_style_color);
+
+    text-decoration: none;
+
+
+}
+
+
+.homeTitle{
+    position: absolute;
+    font-family: "Game of Thrones";
+    color: var(--text_color);
+    font-size: 60px;
+
+    top: 50%;
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+
+.navElem_right{
+
+    position: relative;
+    display: flex;
+    flex-flow: row;
+    flow-from: initial;
+    float: right;
+    flex-flow: row;
+    top: 50%;
+    transform: translate(-50%,-50%);
+    font-size: 15px;
+    font-family: "Game of Throne";
+
+}
+
+
+
+
+.navElem_left{
+
+    position: relative;
+    display: flex;
+    flex-flow: row;
+    flow-from: initial;
+    float: left;
+    flex-flow: row;
+    top: 50%;
+    margin-right: 40px;
+    transform: translate(-50%,-50%);
+    font-size: 15px;
+
+
+
+
+}
+
+
+
+
+
+.navbar_link{
+    font-family: "Game of Thrones";
+    text-decoration: none;
+    color: var(--text_color);
+    transition-duration: 500ms;
+
+}
+
+
+.navbar_link:hover{
+
+    color: var(--text_color_hover);
+}

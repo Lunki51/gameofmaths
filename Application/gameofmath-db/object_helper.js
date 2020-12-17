@@ -12,7 +12,7 @@ exports.formatPropertiesWithType = function (pts, value) {
         for (p of pt.ps) {
             if (!nv.hasOwnProperty(p)) return null;
             const t = module.exports.castToType(pt.t, nv[p]);
-            if (!t) return null;
+            if (t == null) return null;
             nv[p] = t;
         }
     }
@@ -33,10 +33,12 @@ exports.castToType = function (type, value) {
         case 'number':
             return Number(value);
         case 'boolean':
-            if (value === 'true' || value === '1') return true;
-            else if (value === 'false' || value === '0') return false;
+            if (value === true || value === 'true' || value === '1') return true;
+            else if (value === false || value === 'false' || value === '0') return false;
             else return null;
         case 'date':
             return new Date(value);
+        default:
+            return null;
     }
 }

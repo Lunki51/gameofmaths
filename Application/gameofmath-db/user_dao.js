@@ -15,6 +15,9 @@ const UserDAO = function () {
         }, {t: 'number', ps: ['userID']}], object);
         if (!user) return null;
 
+        user.lastname = user.lastname.toLowerCase();
+        user.firstname = user.firstname.toLowerCase();
+
         if (user.password.length >= 7) return user;
         return null;
     };
@@ -122,7 +125,7 @@ const UserDAO = function () {
      */
     this.findByLogin = function (login, db = dbD) {
         return new Promise((resolve, reject) => {
-            let request = 'SELECT * FROM User WHERE LOWER(username) = LOWER(?)';
+            let request = 'SELECT * FROM User WHERE LOWER(login) = LOWER(?)';
             db.all(request, [login], function (err, rows) {
                 if (err) reject(err);
                 else resolve(rows[0]);

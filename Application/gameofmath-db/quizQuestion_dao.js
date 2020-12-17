@@ -32,7 +32,7 @@ const QuizQuestionDAO = function () {
                 let request = 'INSERT INTO QuizQuestion (theQuestion, theQuiz) VALUES (?, ?)';
                 db.run(request, [quizQuestion.theQuestion, quizQuestion.theQuiz], function (err) {
                     if (err) reject(err);
-                    else resolve(this.lastID);
+                    else resolve();
                 });
             }
 
@@ -43,14 +43,14 @@ const QuizQuestionDAO = function () {
      * Delete the quizQuestion with his id.
      *
      * @param quiz quiz id
-     * @param gain gain id
+     * @param question gain id
      * @param db db instance to use
      * @returns {Promise} a promise that resolve if the delete is a success
      */
-    this.delete = function (quiz, gain, db = dbD) {
+    this.delete = function (question, quiz, db = dbD) {
         return new Promise((resolve, reject) => {
             let request = 'DELETE FROM QuizQuestion WHERE theQuestion = ? AND theQuiz = ?';
-            db.run(request, [quiz, gain], function (err) {
+            db.run(request, [question, quiz], function (err) {
                 if (err) reject(err);
                 else resolve();
             });
@@ -82,7 +82,7 @@ const QuizQuestionDAO = function () {
      */
     this.findAllByQuestion = function (questionID, db = dbD) {
         return new Promise((resolve, reject) => {
-            let request = 'SELECT * FROM QuizQuestion WHERE theQuesiton = ?';
+            let request = 'SELECT * FROM QuizQuestion WHERE theQuestion = ?';
             db.all(request, [questionID], function (err, rows) {
                 if (err) reject(err);
                 else resolve(rows);
@@ -112,7 +112,7 @@ const QuizQuestionDAO = function () {
      *
      * @param question question id
      * @param quiz quiz id
-     * @param db db instance to use
+     * @param db db instance to u
      * @returns {Promise} A promise that resolve the quizQuestion with this id if it's found
      */
     this.findByID = function (question, quiz, db = dbD) {

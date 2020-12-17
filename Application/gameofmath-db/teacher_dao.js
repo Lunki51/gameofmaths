@@ -53,7 +53,7 @@ const TeacherDAO = function () {
     this.update = function (obj, db = dbD) {
         return new Promise((resolve, reject) => {
             const teacher = this.format(obj);
-            if (!Teacher) reject(new Error('Invalid input teacher!'));
+            if (!teacher) reject(new Error('Invalid input teacher!'));
             else {
                 let request = 'UPDATE Teacher SET email = ? WHERE theUser = ?';
                 db.run(request, [teacher.email, teacher.theUser], function (err) {
@@ -124,14 +124,17 @@ const TeacherDAO = function () {
      */
     this.insertUser = function (obj, db = dbD) {
         return new Promise((resolve, reject) => {
-            const clone = obj.clone();
+            const clone = { ...obj};
             db.beginTransaction(function (err, transaction) {
                 if (err) reject(err);
                 else {
                     user_dao.insert(clone, transaction).then(id => {
                         clone.theUser = id;
-                        this.insert(clone, transaction).then(_ => {
-                            resolve(id);
+                        dao.insert(clone, transaction).then(_ => {
+                            transaction.commit(err => {
+                                if (err) reject(err);
+                                else resolve(id);
+                            });
                         }).catch(err => {
                             transaction.rollback();
                             reject(err);

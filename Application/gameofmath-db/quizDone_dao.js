@@ -1,5 +1,6 @@
 const dbD = require('./sqlite_connection');
 const object_helper = require('./object_helper');
+const mpGain_dao = require('./mpGain_dao');
 
 const QuizDoneDAO = function () {
     /**
@@ -32,10 +33,43 @@ const QuizDoneDAO = function () {
                 let request = 'INSERT INTO QuizDone (theQuiz, theGain, score) VALUES (?, ?, ?)';
                 db.run(request, [quizDone.theQuiz, quizDone.theGain, quizDone.score], function (err) {
                     if (err) reject(err);
-                    else resolve(this.lastID);
+                    else resolve();
                 });
             }
 
+        })
+    };
+
+    /**
+     * Insert a quizDone and the MPGain with it if the jsonObject is valid.
+     *
+     * @param obj MPGain and quizDone to insert
+     * @param db db instance to use
+     * @returns {Promise<number>} A promise that resolve the insertID
+     */
+    this.insertMPGain = function (obj, db = dbD) {
+        return new Promise((resolve, reject) => {
+            const clone = { ...obj};
+            db.beginTransaction(function (err, transaction) {
+                if (err) reject(err);
+                else {
+                    mpGain_dao.insert(clone, transaction).then(id => {
+                        clone.theGain = id;
+                        dao.insert(clone, transaction).then(_ => {
+                            transaction.commit(err => {
+                                if (err) reject(err);
+                                else resolve(id);
+                            });
+                        }).catch(err => {
+                            transaction.rollback();
+                            reject(err);
+                        });
+                    }).catch(err => {
+                        transaction.rollback();
+                        reject(err);
+                    });
+                }
+            });
         })
     };
 
@@ -51,8 +85,8 @@ const QuizDoneDAO = function () {
             const quizDone = this.format(obj);
             if (!quizDone) reject(new Error('Invalid input quizDone!'));
             else {
-                let request = 'UPDATE QuizDone SET score = ? WHERE theQuiz = ? AND theGain = ?';
-                db.run(request, [quizDone.score, quizDone.theQuiz, quizDone.theGain], function (err) {
+                let request = 'UPDATE QuizDone SET theQuiz = ?, score = ? WHERE theGain = ?';
+                db.run(request, [quizDone.theQuiz, quizDone.score, quizDone.theGain], function (err) {
                     if (err) reject(err);
                     else resolve();
                 });
@@ -69,10 +103,10 @@ const QuizDoneDAO = function () {
      * @param db db instance to use
      * @returns {Promise} a promise that resolve if the delete is a success
      */
-    this.delete = function (quiz, gain, db = dbD) {
+    this.delete = function (gain, db = dbD) {
         return new Promise((resolve, reject) => {
-            let request = 'DELETE FROM QuizDone WHERE theQuiz = ? AND theGain = ?';
-            db.run(request, [quiz, gain], function (err) {
+            let request = 'DELETE FROM QuizDone WHERE theGain = ?';
+            db.run(request, [gain], function (err) {
                 if (err) reject(err);
                 else resolve();
             });
@@ -132,15 +166,14 @@ const QuizDoneDAO = function () {
     /**
      * Get the quizDone with a specific id.
      *
-     * @param quiz quiz id
      * @param gain gain id
      * @param db db instance to use
      * @returns {Promise} A promise that resolve the quizDone with this id if it's found
      */
-    this.findByID = function (quiz, gain, db = dbD) {
+    this.findByID = function (gain, db = dbD) {
         return new Promise((resolve, reject) => {
-            let request = 'SELECT * FROM QuizDone WHERE theQuiz = ? AND theGain = ?';
-            db.all(request, [quiz, gain], function (err, rows) {
+            let request = 'SELECT * FROM QuizDone WHERE theGain = ?';
+            db.all(request, [gain], function (err, rows) {
                 if (err) reject(err);
                 else resolve(rows[0]);
             });

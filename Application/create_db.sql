@@ -68,13 +68,13 @@ CREATE TABLE Quiz(
 );
 
 CREATE TABLE QuizDone(
-    theQuiz INTEGER,
     theGain INTEGER,
+    theQuiz INTEGER,
     score INTEGER,
 
     FOREIGN KEY(theQuiz) REFERENCES Quiz(quizID),
     FOREIGN KEY(theGain) REFERENCES MPGain(mpGainID),
-    PRIMARY KEY (theQuiz, theGain)
+    PRIMARY KEY (theGain)
 );
 
 CREATE TABLE Question(
@@ -106,18 +106,3 @@ CREATE TABLE QuizQuestion(
     FOREIGN KEY(theQuiz) REFERENCES Quiz(quizID),
     PRIMARY KEY (theQuestion, theQuiz)
 );
-
--- TRIGGER
-CREATE TRIGGER addMP
-    AFTER INSERT
-    ON MPGain
-BEGIN
-    UPDATE Student SET mp = mp + NEW.amount;
-END;
-
-CREATE TRIGGER changeMP
-    AFTER UPDATE
-    ON MPGain
-BEGIN
-    UPDATE Student SET mp = mp - OLD.amount + NEW.amount;
-END;

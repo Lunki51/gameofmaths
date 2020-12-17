@@ -33,7 +33,7 @@ const MPGainDAO = function () {
             if (!mpGain) reject(new Error('Invalid input mpGain!'));
             else {
                 let request = 'INSERT INTO MPGain (amount, type, date, theStudent) VALUES (?, ?, ?, ?)';
-                db.run(request, [mpGain.amout, mpGain.type, mpGain.date, mpGain.theStudent], function (err) {
+                db.run(request, [mpGain.amount, mpGain.type, mpGain.date, mpGain.theStudent], function (err) {
                     if (err) reject(err);
                     else resolve(this.lastID);
                 });

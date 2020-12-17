@@ -12,7 +12,7 @@ const StudentDAO = function () {
     this.format = function (object) {
         const student = object_helper.formatPropertiesWithType([{
             t: 'number',
-            ps: ['theUser', 'mp']
+            ps: ['theUser', 'theClass', 'mp']
         }], object);
         if (!student) return null;
 
@@ -32,8 +32,8 @@ const StudentDAO = function () {
             const student = this.format(obj);
             if (!student) reject(new Error('Invalid input student!'));
             else {
-                let request = 'INSERT INTO Student (theUser, mp) VALUES (?, ?)';
-                db.run(request, [student.theUser, student.mp], function (err) {
+                let request = 'INSERT INTO Student (theUser, theClass, mp) VALUES (?, ?, ?)';
+                db.run(request, [student.theUser, student.theClass, student.mp], function (err) {
                     if (err) reject(err);
                     else resolve(this.lastID);
                 });
@@ -52,10 +52,10 @@ const StudentDAO = function () {
     this.update = function (obj, db = dbD) {
         return new Promise((resolve, reject) => {
             const student = this.format(obj);
-            if (!Student) reject(new Error('Invalid input student!'));
+            if (!student) reject(new Error('Invalid input student!'));
             else {
-                let request = 'UPDATE Student SET mp = ? WHERE theUser = ?';
-                db.run(request, [student.mp, student.theUser], function (err) {
+                let request = 'UPDATE Student SET theClass = ?, mp = ? WHERE theUser = ?';
+                db.run(request, [student.theClass, student.mp, student.theUser], function (err) {
                     if (err) reject(err);
                     else resolve();
                 });
@@ -149,7 +149,7 @@ const StudentDAO = function () {
     };
 
     /**
-     * Insert a student and the userwith it if the jsonObject is valid.
+     * Insert a student and the user with it if the jsonObject is valid.
      *
      * @param obj user to insert
      * @param db db instance to use
@@ -157,14 +157,17 @@ const StudentDAO = function () {
      */
     this.insertUser = function (obj, db = dbD) {
         return new Promise((resolve, reject) => {
-            const clone = obj.clone();
+            const clone = { ...obj};
             db.beginTransaction(function (err, transaction) {
                 if (err) reject(err);
                 else {
                     user_dao.insert(clone, transaction).then(id => {
                         clone.theUser = id;
-                        this.insert(clone, transaction).then(_ => {
-                            resolve(id);
+                        dao.insert(clone, transaction).then(_ => {
+                            transaction.commit(err => {
+                                if (err) reject(err);
+                                else resolve(id);
+                            });
                         }).catch(err => {
                             transaction.rollback();
                             reject(err);

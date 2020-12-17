@@ -15,8 +15,7 @@ const ClassDAO = function () {
         }, {t: 'number', ps: ['classID']}], object);
         if (!classO) return null;
 
-        if (classO.password.length >= 7) return classO;
-        return null;
+        return classO;
     };
 
     /**

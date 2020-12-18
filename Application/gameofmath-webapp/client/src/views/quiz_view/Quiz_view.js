@@ -4,6 +4,19 @@ import {NavigationBar} from '../global_components.js';
 import './styles/quiz_style.css';
 import '../global_style.css'
 import '../global_variables.css';
+import {QuizBlock} from "./quiz_components/quiz_components";
+
+
+function getAnswers(question, index){
+
+}
+
+
+function nextQuestion(questions, index){
+    return questions[index];
+}
+
+
 
 /**
  * @author Antoine LE BORGNE
@@ -17,24 +30,10 @@ class QuizView extends Component {
     constructor(props) {
         super(props);
 
-        this.state = {
-            session: "username"
-        }
     }
 
     componentDidMount(){
         document.title = "Quiz | Game Of Math"
-
-
-        if(this.state.session == "username"){
-
-            //TODO enable quiz
-
-
-        }else{
-            //TODO unable quiz
-        }
-
     }
 
     render() {
@@ -43,8 +42,7 @@ class QuizView extends Component {
         
             <div className="background">
                 <NavigationBar/>
-
-                //TODO
+                <QuizBlock />
             </div>
         </>
 

@@ -65,7 +65,7 @@ class LoginView extends Component {
         
             <div className="background">
                 <NavigationBar/>
-                <ContainerTitle title="LOGIN">
+                <ContainerTitle className="container-login" title="LOGIN">
                     <form onSubmit={this.handleSubmit}>
                         <TextField id="username" value={this.state.username} onChange={this.handleUsernameChange} hint="USERNAME" type="text"/>
                         <TextField id="password" value={this.state.password} onChange={this.handlePasswordChange} hint="PASSWORD" type="password"/>

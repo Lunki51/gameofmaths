@@ -19,7 +19,7 @@ class ContainerTitle extends Component{
 
         return<>
         
-            <div className="container">
+            <div className={this.props.className}>
                 <h1 className="container-title">{this.props.title}</h1>
                 {this.props.children}
             </div>

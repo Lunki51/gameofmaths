@@ -14,7 +14,9 @@
   "license": "ISC",
   "dependencies": {
     "cookie-parser": "^1.4.5",
+    "cookie-session": "^1.4.0",
     "express": "^4.17.1",
+    "express-basic-auth": "^1.2.0",
     "express-session": "^1.17.1",
     "pug": "^3.0.0"
   },

@@ -8,11 +8,35 @@
 }
 
 /*container component*/
-.container{
+.container-quiz{
 
     /*set position*/
     position: absolute;
     transform: translate(-50%,-50%); 
+    left: 50%;
+    top: 50%;
+
+    /*set size*/
+    width: 75%;
+    height: 500px;
+
+    /*set appearence*/
+    background-color: var(--wood_style_color);
+    border-radius: 20px;
+    border: 2px solid var(--border_color);
+
+    /*set children*/
+    text-align:center;
+
+}
+
+
+/*container component*/
+.container-login{
+
+    /*set position*/
+    position: absolute;
+    transform: translate(-50%,-50%);
     left: 50%;
     top: 50%;
 
@@ -42,6 +66,8 @@
     color: var(--text_color);
     
 }
+
+
 
 
 /*text field component*/

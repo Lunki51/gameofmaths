@@ -42,6 +42,7 @@ let Perlin = function (xSize, ySize) {
 
         return value;
     }
+
 };
 
 module.exports = Perlin;

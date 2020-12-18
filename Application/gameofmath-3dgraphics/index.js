@@ -2,6 +2,11 @@ const gameMap = require('./maps/gameMap');
 
 function GraphicsManager(){
     this.maps = [];
+    this.router = require('./router')
+
+    this.setRendererMethod = function(method){
+        this.router.get('/map',method)
+    }
 
     this.createMap = function(sizeX,sizeY,nbPoints){
         this.maps.push(new gameMap(sizeX,sizeY,nbPoints))

@@ -4,40 +4,22 @@ const THREE = require('three')
 
 let GameMap = function(sizeX,sizeY,nbPoints){
     this.perlin = new Perlin(sizeX,sizeY);
-
-    let startPos = this.computePointsStartingPosition(nbPoints,sizeX,sizeY);
-    this.delaunay = ddelaunay.Delaunay.from(startPos)
-    this.voronoy =  this.delaunay.voronoi([0,0,sizeX,sizeY])
-
-    this.colors = new Map();
-
-    let polygons = this.computePolygons(this.voronoy)
-    for(let polygon of polygons){
-        let centerX = polygon.value[0][0]
-        let centerY = polygon.value[0][1]
-        for(let i=1;i<polygon.length;i++){
-            centerX = (centerX+polygon.value[i][0])/2
-            centerY = (centerY+polygon.value[i][1])/2
-        }
-        let perlinAtPos = this.perlin.perlin(centerX/sizeX*3.5,centerY/sizeY*3.5)
-        perlinAtPos++;
-        let canvasCenter = new THREE.Vector2(sizeX/2,sizeY/2)
-        let pos = new THREE.Vector2(centerX,centerY);
-        let ratio = 1-((pos.x-canvasCenter.x)*(pos.x-canvasCenter.x) + (pos.y-canvasCenter.y)*(pos.y-canvasCenter.y))/(sizeX*sizeY);
-        perlinAtPos = Math.min(perlinAtPos,perlinAtPos*ratio)
-        if(perlinAtPos>1){
-            if(perlinAtPos>1.2){
-                if(perlinAtPos>1.3){
-                    this.colors.set(polygon.value,'#ffffff' )
-                }else{
-                    this.colors.set(polygon.value,'#A8A59C' )
+    this.colorForHeight = function (height) {
+        if (height > 0.9) {
+            if (height > 1) {
+                if (height > 1.1) {
+                    return ['#ffffff', 30]
+                } else {
+                    return ['#A8A59C', 25]
                 }
-            }else{
-                this.colors.set(polygon.value,'#608038' )
+            } else {
+                return ['#608038',22]
             }
 
+        } else if(height > 0.89) {
+            return ['#c2b280', 18]
         }else{
-            this.colors.set(polygon.value,'#006994' )
+            return ['#006994', 0]
         }
     }
 
@@ -66,21 +48,52 @@ let GameMap = function(sizeX,sizeY,nbPoints){
         }
     }
 
-    this.computePolygons = function(){
-        polygons =[]
-        let polygonIt = voronoy.cellPolygons();
-        let polygon;
-        do{
-            polygon=polygonIt.next()
-            polygons.push(polygon)
-        }while(polygon.value!=null)
-        polygons.pop()
-        return polygons
+    this.perlinAtPos = function (posX, posY, sizeX, sizeY) {
+        let perlinAtPos = (this.perlin.perlin(posX  / 25, posY  / 25)+this.perlin.perlin(posX  / 70, posY  / 70)+this.perlin.perlin(posX  / 200, posY  / 200))/3 + 1
+        let ratio = 1 - ((posX - sizeX / 2) * (posX - sizeX / 2) + (posY - sizeY / 2) * (posY - sizeY / 2)) / (sizeX * sizeY);
+        perlinAtPos = Math.min(perlinAtPos, perlinAtPos * ratio)
+        return perlinAtPos
+    }
+
+    this.moyColor = function (colour1, colour2) {
+        let colourOne = new THREE.Color(colour1)
+        let colourTwo = new THREE.Color(colour2)
+        return new THREE.Color((colourOne.r + colourTwo.r) / 2, (colourOne.g + colourTwo.g) / 2, (colourOne.b + colourTwo.b) / 2)
+    }
+
+    this.heightAndColorAtPos = function (posX, posY, sizeX, sizeY) {
+        let perlinAt = this.perlinAtPos(posX, posY, sizeX, sizeY)
+        let out = this.colorForHeight(perlinAt)
+        let colour = out[0]
+        return [out[1]>0?Math.min(perlinAt*20, out[1]):15, colour]
     }
 
     this.getMapData = function(){
         return this.colors;
     }
+
+
+    let startpos = this.computePointsStartingPosition(nbPoints, sizeX,sizeY);
+    this.delaunay = ddelaunay.Delaunay.from(startpos)
+    this.colors = new Map();
+    let {points, triangles} = this.delaunay;
+
+    for (let i = 0; i < triangles.length; i += 3) {
+        let colort1 = this.heightAndColorAtPos(points[triangles[i] * 2],points[triangles[i] * 2 + 1],sizeX,sizeY)
+        let t1 = new THREE.Vector3(points[triangles[i] * 2], points[triangles[i] * 2 + 1],colort1[0])
+
+        let colort2 = this.heightAndColorAtPos(points[triangles[i + 1] * 2],points[triangles[i + 1] * 2 + 1],sizeX,sizeY)
+        let t2 = new THREE.Vector3(points[triangles[i + 1] * 2], points[triangles[i + 1] * 2 + 1],colort2[0])
+
+        let colort3 = this.heightAndColorAtPos(points[triangles[i + 2] * 2],points[triangles[i + 2] * 2 + 1],sizeX,sizeY)
+        let t3 = new THREE.Vector3(points[triangles[i + 2] * 2], points[triangles[i + 2] * 2 + 1],colort3[0])
+
+        let key
+        key = this.moyColor(this.moyColor(colort1[1], colort2[1]), colort3[1])
+        if (this.colors.get(key.getHex())==null) this.colors.set(key.getHex(), new Array())
+        this.colors.get(key.getHex()).push(t1,t2 , t3)
+    }
+
 }
 
 module.exports = GameMap;

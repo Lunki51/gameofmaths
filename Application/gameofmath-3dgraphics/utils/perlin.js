@@ -1,3 +1,8 @@
+/**
+ * A class that represent a perlin map with a random and unique gradient defined at the creation of the object
+ * @param xSize the x size of the perlin map
+ * @param ySize the y size of the perlin map
+ */
 let Perlin = function (xSize, ySize) {
 
     this.gradient = [];

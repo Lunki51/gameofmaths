@@ -1,3 +1,7 @@
+/**
+ * The script to send to the user of the application for rendering the asked data
+ */
+
 //VARS
 const renderer = new THREE.WebGLRenderer();
 renderer.setSize(window.innerWidth, window.innerHeight);

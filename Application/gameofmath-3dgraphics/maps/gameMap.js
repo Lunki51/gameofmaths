@@ -2,6 +2,12 @@ const Perlin = require('../utils/perlin');
 const ddelaunay = require('d3-delaunay');
 const THREE = require('three')
 
+/**
+ * Represent a map in the application
+ * @param sizeX the x size of the map
+ * @param sizeY the y size of the map
+ * @param nbPoints the number of points in the map
+ */
 let GameMap = function(sizeX,sizeY,nbPoints){
     this.perlin = new Perlin(sizeX,sizeY);
     this.colorForHeight = function (height) {
@@ -23,6 +29,13 @@ let GameMap = function(sizeX,sizeY,nbPoints){
         }
     }
 
+    /**
+     * Local method used to compute the starting points of the map graph randomly
+     * @param nbPoints the number of points to place
+     * @param sizeX the x size of the map
+     * @param sizeY the y size of the map
+     * @returns {[]} an array that represent the position of all the marked points
+     */
     this.computePointsStartingPosition = function(nbPoints,sizeX,sizeY){
         let markedPoints = [];
 
@@ -38,6 +51,10 @@ let GameMap = function(sizeX,sizeY,nbPoints){
         return markedPoints;
     }
 
+    /**
+     * Move the specified points with lloyd relaxation
+     * @param points the points to edit
+     */
     this.LloydRelax = function(points){
         for(let i=0;i<100;i++){
             for(let j=0;j<100;j++){
@@ -48,6 +65,15 @@ let GameMap = function(sizeX,sizeY,nbPoints){
         }
     }
 
+    /**
+     * Compute the perlin value at the specified position with reduction on the edges to avoid moutains on the side
+     * of the map
+     * @param posX the X position where to compute the perlin noise
+     * @param posY the Y position where to compute the parlin noise
+     * @param sizeX the x size of the map
+     * @param sizeY the y size of the map
+     * @returns {*|number} the perlin value at the position
+     */
     this.perlinAtPos = function (posX, posY, sizeX, sizeY) {
         let perlinAtPos = (this.perlin.perlin(posX  / 25, posY  / 25)+this.perlin.perlin(posX  / 70, posY  / 70)+this.perlin.perlin(posX  / 200, posY  / 200))/3 + 1
         let ratio = 1 - ((posX - sizeX / 2) * (posX - sizeX / 2) + (posY - sizeY / 2) * (posY - sizeY / 2)) / (sizeX * sizeY);
@@ -55,12 +81,26 @@ let GameMap = function(sizeX,sizeY,nbPoints){
         return perlinAtPos
     }
 
+    /**
+     * Blend two colors to make a new one
+     * @param colour1 the first color to blend
+     * @param colour2 the second color to blend
+     * @returns {Color} the new color
+     */
     this.moyColor = function (colour1, colour2) {
         let colourOne = new THREE.Color(colour1)
         let colourTwo = new THREE.Color(colour2)
         return new THREE.Color((colourOne.r + colourTwo.r) / 2, (colourOne.g + colourTwo.g) / 2, (colourOne.b + colourTwo.b) / 2)
     }
 
+    /**
+     * Return the height and the color of a point at a specified position
+     * @param posX the x position
+     * @param posY the y position
+     * @param sizeX the x size of the map
+     * @param sizeY the y size of the map
+     * @returns {[number, *]} an array that contains the height at position 0 and the color at position 1
+     */
     this.heightAndColorAtPos = function (posX, posY, sizeX, sizeY) {
         let perlinAt = this.perlinAtPos(posX, posY, sizeX, sizeY)
         let out = this.colorForHeight(perlinAt)

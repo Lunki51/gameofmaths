@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import "./global_style.css";
+import Axios from "axios";
 
 
 /**
@@ -77,6 +78,7 @@ class Button extends Component{
 
 }
 
+
 /**
  * @author Antoine LE BORGNE
  *
@@ -84,23 +86,101 @@ class Button extends Component{
  */
 class NavigationBar extends Component{
 
+
+    _isMounted = false;
+
     constructor(props) {
         super(props);
         this.props = props
+
+        this.state = {
+            login : false,
+            username : ""
+        }
+
+    }
+
+
+    componentDidMount() {
+        this._isMounted = true;
+
+
+        Axios.get("/api/isAuth")
+            .then((response) => {
+
+
+                if(this._isMounted)
+                    this.setState({
+                        login: response.data,
+                    })
+
+            })
+
+
+        Axios.get('/api/sessionUsername')
+            .then((response) => {
+                if(this._isMounted)
+                    this.setState({
+                        username: response.data,
+                    })
+
+            })
+
+    }
+
+    componentWillUnmount() {
+        this._isMounted = false;
     }
 
 
     render() {
         return <>
+
             <NavBar>
 
-                <NavElement className="navElem_right" goTo ="/login"  value="Login"/>
-                <NavElement className="navElem_left" goTo ="/"  value="home"/>
-                <NavElement className="navElem_left" goTo ="/quiz"  value="quiz"/>
-                <NavElement className="navElem_left"  goTo ="/castle" value="castle"/>
+                {this.state.login ? <Login username={this.state.username} /> : <NotLogin/>}
 
             </NavBar>
             </>
+    }
+
+}
+
+class NotLogin extends Component{
+
+    render() {
+        return <>
+            <NavElement id="" className="navElem_right" goTo ="/login"  value="Login"/>
+            <NavElement id="" className="navElem_left" goTo ="/"  value="home"/>
+        </>
+    }
+
+}
+
+
+class Login extends Component{
+
+
+
+    render() {
+        return <>
+            <NavElement id="" className="navElem_right"  goTo ={"/profile/" + this.props.username}  value={this.props.username}/>
+            <NavElement id="" className="navElem_right"  goTo="/" onClick={() => {
+                Axios.get("/api/logout")
+                    .then((response)=>{
+
+
+                        this.setState({
+                            login : false,
+                        })
+
+                    })
+            }
+            } value="logout"/>
+            <NavElement id="" className="navElem_left"   goTo ="/"  value="home"/>
+            <NavElement id="" className="navElem_left"   goTo ="/quiz"  value="quiz"/>
+            <NavElement id="" className="navElem_left"   goTo ="/castle" value="castle"/>
+        </>
     }
 
 }
@@ -137,14 +217,11 @@ export class NavBar extends Component{
  */
 export class NavElement extends Component{
 
-    constructor(props) {
-        super(props);
-    }
 
 
     render() {
         return <>
-            <li className={this.props.className}><a className="navbar_link" href={this.props.goTo}>{this.props.value}</a></li>
+            <li className={this.props.className}><a className="navbar_link" onClick={this.props.onClick} href={this.props.goTo}>{this.props.value}</a></li>
         </>
     }
 

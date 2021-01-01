@@ -18,7 +18,7 @@ class CastleView extends Component {
         fetch('/api/graphics/renderer')
             .then(res => res.text())
             .then(text => {
-               eval(text)
+               this.eval(text)
             });
 
     }

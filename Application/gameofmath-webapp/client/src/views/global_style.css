@@ -12,7 +12,7 @@
 
     /*set position*/
     position: absolute;
-    transform: translate(-50%,-50%); 
+    transform: translate(-50%,-50%);
     left: 50%;
     top: 50%;
 
@@ -30,6 +30,32 @@
 
 }
 
+
+.container-chapter-selection{
+
+    /*set position*/
+    position: absolute;
+    transform: translate(-50%,-50%);
+    left: 50%;
+    top: 50%;
+
+    /*set size*/
+    width: 75%;
+    height: 500px;
+
+    /*set appearence*/
+    background-color: var(--wood_style_color);
+    border-radius: 20px;
+    border: 2px solid var(--border_color);
+
+    /*set children*/
+    display: grid;
+    grid-template-columns: repeat(4, 2fr);
+    padding-top: 80px;
+
+    overflow: auto;
+
+}
 
 /*container component*/
 .container-login{
@@ -89,6 +115,12 @@
 
 }
 
+.textField:focus{
+
+    border-color: var(--border_color);
+
+}
+
 
 /*button component*/
 .button{
@@ -141,7 +173,6 @@
     position: relative;
     display: flex;
     flex-flow: row;
-    flow-from: initial;
     float: right;
     flex-flow: row;
     top: 50%;
@@ -159,7 +190,6 @@
     position: relative;
     display: flex;
     flex-flow: row;
-    flow-from: initial;
     float: left;
     flex-flow: row;
     top: 50%;

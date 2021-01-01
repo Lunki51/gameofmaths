@@ -1,9 +1,10 @@
 import React, { Component } from 'react';
-import {Button, ContainerTitle, NavigationBar, TextField} from '../global_components.js';
+import {Button, ContainerTitle, TextField} from '../global_components.js';
 import auth from '../../model/authentification';
 import './styles/login_style.css';
 import '../global_style.css'
 import '../global_variables.css';
+
 
 /**
  * @author Antoine LE BORGNE
@@ -14,12 +15,15 @@ import '../global_variables.css';
  */
 class LoginView extends Component {
 
+
+
     constructor(props) {
         super(props);
         this.state = {username: '', password: ''};
         this.handleUsernameChange = this.handleUsernameChange.bind(this);
         this.handlePasswordChange = this.handlePasswordChange.bind(this);
         this.handleSubmit = this.handleSubmit.bind(this);
+
     }
 
 
@@ -51,6 +55,7 @@ class LoginView extends Component {
      */
     handleSubmit(event) {
         auth(this.state.username,this.state.password);
+        window.location.reload(false);
         event.preventDefault();
     }
 
@@ -64,7 +69,6 @@ class LoginView extends Component {
         return <>
         
             <div className="background">
-                <NavigationBar/>
                 <ContainerTitle className="container-login" title="LOGIN">
                     <form onSubmit={this.handleSubmit}>
                         <TextField id="username" value={this.state.username} onChange={this.handleUsernameChange} hint="USERNAME" type="text"/>
@@ -79,5 +83,8 @@ class LoginView extends Component {
 
     }
 }
+
+
+
 
 export default LoginView;

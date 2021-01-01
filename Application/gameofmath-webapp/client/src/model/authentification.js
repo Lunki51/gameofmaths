@@ -1,3 +1,4 @@
+import Axios from "axios";
 
 
 /**
@@ -7,7 +8,31 @@
  * @param {*} password the password
  */
 function auth(username, password){
-    //TODO handle users authentications
+
+    Axios.post("/api/auth",{username,password})
+        .then((response) => {
+
+            if(response.data){
+
+
+
+            }else{
+
+                document.getElementById('username').style.borderColor = '#c44242'
+                document.getElementById('password').style.borderColor = '#c44242'
+
+            }
+
+        })
+
+}
+
+export function logout(){
+
+}
+
+export function isAuth(){
+
 }
 
 export default auth;

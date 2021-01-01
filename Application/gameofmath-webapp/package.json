@@ -6,19 +6,24 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start-backend": "nodemon App.js",
-    "start-frontend": " npm start --prefix client",
+    "start-frontend": "npm start --prefix ./client",
     "start": "concurrently \" npm run start-backend\" \"npm run start-frontend\"",
     "dev": "node app.js dev"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "connect-redis": "^5.0.0",
+    "connect-sqlite3": "^0.9.11",
     "cookie-parser": "^1.4.5",
     "cookie-session": "^1.4.0",
     "express": "^4.17.1",
     "express-basic-auth": "^1.2.0",
     "express-session": "^1.17.1",
-    "pug": "^3.0.0"
+    "express-session-sqlite": "^2.0.8",
+    "pug": "^3.0.0",
+    "redis": "^3.0.2",
+    "sqlite3": "^5.0.0"
   },
   "devDependencies": {
     "@babel/plugin-proposal-class-properties": "^7.12.1"

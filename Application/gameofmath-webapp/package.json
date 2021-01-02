@@ -4,8 +4,10 @@
   "description": "Web server of the WebApp GameOfMath.",
   "main": "app.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "start-backend": "nodemon App.js",
+    "test": "concurrently \" npm run test-backend\" \"npm run test-frontend\"",
+    "test-backend": "nodemon app.js dev",
+    "test-frontend": "npm start --prefix ./client",
+    "start-backend": "node app.js",
     "start-frontend": "npm start --prefix ./client",
     "start": "concurrently \" npm run start-backend\" \"npm run start-frontend\"",
     "dev": "node app.js dev"
@@ -21,6 +23,8 @@
     "express-basic-auth": "^1.2.0",
     "express-session": "^1.17.1",
     "express-session-sqlite": "^2.0.8",
+    "gameofmath-db": "file:../gameofmath-db",
+    "nodemon": "^2.0.6",
     "pug": "^3.0.0",
     "redis": "^3.0.2",
     "sqlite3": "^5.0.0"

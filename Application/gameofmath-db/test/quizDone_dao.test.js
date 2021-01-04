@@ -15,11 +15,13 @@ beforeAll(async (done) => {
     });
     await quiz_dao.insert({
         quizID: -1,
-        theChapter: 1
+        theChapter: 1,
+        asAnOrder: 'true'
     });
     await quiz_dao.insert({
         quizID: -1,
-        theChapter: 1
+        theChapter: 1,
+        asAnOrder: 'true'
     });
 
     await class_dao.insert({

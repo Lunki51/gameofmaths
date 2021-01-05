@@ -44,7 +44,7 @@ export function setQuizState(questionNb) {
             .then((res) => {
 
                // const image = res.data.question.image //? require.context('../../public/images', true)('./geo/carre1.png') : null
-                import('../views/images/geo/carre1.png').then((image) => {
+                import('../views/images'+res.data.question.image).then((image) => {
 
                     console.log(image)
 

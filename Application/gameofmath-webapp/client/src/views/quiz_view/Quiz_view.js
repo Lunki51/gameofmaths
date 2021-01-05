@@ -69,7 +69,7 @@ class QuizView extends Component {
         isOnQuiz()
             .then((response) =>{
 
-                if(!response.data.isLogged){
+                if(!response.data.isInQuiz){
                     //start new quiz quiz
                     getNumQuestion(chapter)
                         .then((response) =>{

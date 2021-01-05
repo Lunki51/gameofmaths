@@ -47,7 +47,7 @@ INSERT INTO ANSWER VALUES(12,'2*8-4','false',6);
 INSERT INTO ANSWER VALUES(13,'b = 5','true',7);
 INSERT INTO ANSWER VALUES(14,'Tout les angles sont gaux','true',7);
 INSERT INTO ANSWER VALUES(15,'Un carr est un rectangle spcial','true',7);
-INSERT INTO ANSWER VALUES(16,'L\'angle c est gal  65','false',7);
+INSERT INTO ANSWER VALUES(16,'L''angle c est gal  65','false',7);
 
 
 INSERT INTO QUIZQUESTION VALUES(1,1);

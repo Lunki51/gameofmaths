@@ -185,7 +185,6 @@ class Login extends Component{
             } value="deconnexion"/>
             <NavElement id="" className="navElem_left"   goTo ="/"  value="Accueil"/>
             <NavElement id="" className="navElem_left"   goTo ="/chapter"  value="quizz"/>
-            <NavElement id="" className="navElem_left"   goTo ="/castle" value="carte"/>
         </>
     }
 

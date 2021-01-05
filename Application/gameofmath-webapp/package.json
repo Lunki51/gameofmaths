@@ -23,6 +23,7 @@
     "express-basic-auth": "^1.2.0",
     "express-session": "^1.17.1",
     "express-session-sqlite": "^2.0.8",
+    "gameofmath-3dgraphics": "file:../gameofmath-3dgraphics",
     "gameofmath-db": "file:../gameofmath-db",
     "nodemon": "^2.0.6",
     "pug": "^3.0.0",

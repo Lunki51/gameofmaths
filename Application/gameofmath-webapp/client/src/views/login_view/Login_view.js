@@ -1,9 +1,10 @@
 import React, { Component } from 'react';
 import {Button, ContainerTitle, TextField} from '../global_components.js';
-import auth from '../../model/authentification';
+import auth,{isAuth} from '../../model/authentification';
 import './styles/login_style.css';
 import '../global_style.css'
 import '../global_variables.css';
+import {Redirect} from "react-router";
 
 
 /**
@@ -15,11 +16,11 @@ import '../global_variables.css';
  */
 class LoginView extends Component {
 
-
+    _isMounted = false;
 
     constructor(props) {
         super(props);
-        this.state = {username: '', password: ''};
+        this.state = {username: '', password: '',isLogged:false};
         this.handleUsernameChange = this.handleUsernameChange.bind(this);
         this.handlePasswordChange = this.handlePasswordChange.bind(this);
         this.handleSubmit = this.handleSubmit.bind(this);
@@ -55,32 +56,59 @@ class LoginView extends Component {
      */
     handleSubmit(event) {
         auth(this.state.username,this.state.password);
-        window.location.reload(false);
         event.preventDefault();
     }
 
 
     componentDidMount(){
+        this._isMounted = true;
+
         document.title = "Login | Game Of Math"
+
+
+
+            isAuth()
+                .then((res) => {
+
+
+                    if(this._isMounted) {
+                        this.setState({
+                            isLogged: res.data.isLogged
+                        })
+                    }
+                })
+
+
+
+    }
+
+    componentWillUnmount() {
+        this._isMounted = false;
     }
 
     render() {
 
-        return <>
-        
-            <div className="background">
-                <ContainerTitle className="container-login" title="LOGIN">
-                    <form onSubmit={this.handleSubmit}>
-                        <TextField id="username" value={this.state.username} onChange={this.handleUsernameChange} hint="USERNAME" type="text"/>
-                        <TextField id="password" value={this.state.password} onChange={this.handlePasswordChange} hint="PASSWORD" type="password"/>
-                        <Button value="login"/>
+        if(this.state.isLogged){
+            return <Redirect to="/"></Redirect>
+        }else {
+
+            return <>
+
+                <div className="background">
+                    <ContainerTitle className="container-login" title="LOGIN">
+                        <form onSubmit={this.handleSubmit}>
+                            <TextField id="username" value={this.state.username} onChange={this.handleUsernameChange}
+                                       hint="USERNAME" type="text"/>
+                            <TextField id="password" value={this.state.password} onChange={this.handlePasswordChange}
+                                       hint="PASSWORD" type="password"/>
+                            <Button value="login"/>
                         </form>
-                </ContainerTitle>
+                    </ContainerTitle>
 
-            </div>
-        </>
+                </div>
+            </>
 
-
+        }
     }
 }
 

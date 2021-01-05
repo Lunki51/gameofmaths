@@ -72,9 +72,17 @@
 
     margin: 20px;
 
+    font-size: 30px;
+
+    color: var(--text_color);
+
     text-align: center;
 
 
+}
+
+.container-chapter:hover{
+    background-color: var(--wood_style_color-hover);
 }
 
 .quiz-select-container{

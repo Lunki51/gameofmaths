@@ -4,7 +4,9 @@ import React, { Component } from 'react';
 import './styles/chapters_style.css';
 import '../global_style.css'
 import '../global_variables.css';
-import {ChapterSelection, QuizSelection} from "./chapters_components/chapters_components";
+import {ChapterSelection} from "./chapters_components/chapters_components";
+import {isAuth} from '../../model/authentification'
+import {Redirect} from "react-router";
 
 /**
  * @author Antoine LE BORGNE
@@ -13,20 +15,51 @@ import {ChapterSelection, QuizSelection} from "./chapters_components/chapters_co
  */
 class ChapterView extends Component {
 
+    _isMounted = false;
+
+
     constructor(props) {
         super(props);
 
 
+        this.state = {
+            hasClick : false,
+            dataClick : null,
+            isLogged : () => {
+                isAuth().then((response) => {
+
+                      return response.data.isLogged
+
+                })
+            }
+        }
+
+
+
+
+
     }
 
-    componentDidMount(){
-        document.title = "Quiz | Game Of Math"
+    componentDidMount() {
+        document.title = "Chapter | Game Of Math"
+
+        this._isMounted = true;
+
+
     }
 
-    handleSelection(event){
+    componentWillUnmount() {
+        this._isMounted = false;
+    }
 
+    handleSelection = (event) =>{
+
+        if(this._isMounted)
         this.setState({
-            currentView : <QuizSelection chapter={this.state.chapter}/>
+
+            dataClick : event.target.value,
+            hasClick : true,
+
         })
 
     }
@@ -34,15 +67,35 @@ class ChapterView extends Component {
 
     render() {
 
-        return <>
-        
-            <div className="background">
-                <ChapterSelection />
-            </div>
-        </>
+
+        if(this.state.isLogged){
+
+            if(this.state.hasClick){
+                return <Redirect to={{pathname:"/quiz",state:{ chapter : this.state.dataClick}}}/>
+            }else{
+
+                return <div className="background">
+                    <ChapterSelection onSelection={this.handleSelection}/>
+                </div>
+            }
+
+        }else{
+            return <Redirect to="/">
+
+
+            </Redirect>
+        }
+
+
+
+
+
 
 
     }
 }
 
-export default QuizView;
+
+
+
+export default ChapterView;

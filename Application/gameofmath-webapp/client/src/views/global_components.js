@@ -105,26 +105,34 @@ class NavigationBar extends Component{
         this._isMounted = true;
 
 
-        Axios.get("/api/isAuth")
+        Axios.post("/api/user/isLogged",)
             .then((response) => {
+
 
 
                 if(this._isMounted)
                     this.setState({
-                        login: response.data,
+                        login: response.data.isLogged,
                     })
+
+
+
+                    if(this.state.login)
+                    Axios.post('/api/user/username')
+                        .then((response) => {
+                            if(this._isMounted)
+                                this.setState({
+                                    username: response.data.username,
+                                })
+
+                        })
+
+
 
             })
 
 
-        Axios.get('/api/sessionUsername')
-            .then((response) => {
-                if(this._isMounted)
-                    this.setState({
-                        username: response.data,
-                    })
 
-            })
 
     }
 
@@ -150,8 +158,8 @@ class NotLogin extends Component{
 
     render() {
         return <>
-            <NavElement id="" className="navElem_right" goTo ="/login"  value="Login"/>
-            <NavElement id="" className="navElem_left" goTo ="/"  value="home"/>
+            <NavElement id="" className="navElem_right" goTo ="/login"  value="connexion"/>
+            <NavElement id="" className="navElem_left" goTo ="/"  value="Accueil"/>
         </>
     }
 
@@ -166,24 +174,23 @@ class Login extends Component{
         return <>
             <NavElement id="" className="navElem_right"  goTo ={"/profile/" + this.props.username}  value={this.props.username}/>
             <NavElement id="" className="navElem_right"  goTo="/" onClick={() => {
-                Axios.get("/api/logout")
+                Axios.post("/api/user/logout")
                     .then((response)=>{
-
-
                         this.setState({
                             login : false,
                         })
 
                     })
             }
-            } value="logout"/>
-            <NavElement id="" className="navElem_left"   goTo ="/"  value="home"/>
-            <NavElement id="" className="navElem_left"   goTo ="/quiz"  value="quiz"/>
-            <NavElement id="" className="navElem_left"   goTo ="/castle" value="castle"/>
+            } value="deconnexion"/>
+            <NavElement id="" className="navElem_left"   goTo ="/"  value="Accueil"/>
+            <NavElement id="" className="navElem_left"   goTo ="/chapter"  value="quizz"/>
+            <NavElement id="" className="navElem_left"   goTo ="/castle" value="carte"/>
         </>
     }
 
 }
+
 
 
 
@@ -227,6 +234,30 @@ export class NavElement extends Component{
 
 
 }
+
+
+export class AlertComp extends Component{
+
+
+    render() {
+
+        return <div className="alert_container">
+
+
+
+            <text >{this.props.msg}</text>
+
+            <button value="OK" onClick={() => {
+
+            }}/>
+
+        </div>
+
+
+    }
+
+}
+
 
 
 //exportation

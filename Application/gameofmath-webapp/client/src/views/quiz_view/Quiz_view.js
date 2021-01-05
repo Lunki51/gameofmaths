@@ -4,21 +4,9 @@ import React, { Component } from 'react';
 import './styles/quiz_style.css';
 import '../global_style.css'
 import '../global_variables.css';
-import {ChapterSelection, QuizSelection} from "./quiz_components/quiz_components";
-
-
-function getAnswers(question, index){
-
-
-
-
-}
-
-
-function nextQuestion(questions, index){
-    return questions[index];
-}
-
+import {Answer} from "./quiz_components/quiz_components";
+import {getNumQuestion,getState, isOnQuiz, setQuizState, submitAnswer} from "../../model/quizModel";
+import {Redirect} from "react-router";
 
 
 /**
@@ -30,41 +18,351 @@ function nextQuestion(questions, index){
  */
 class QuizView extends Component {
 
+    _isMounted = false;
+
     constructor(props) {
         super(props);
 
         this.state = {
-            currentView : <></>,
-            chapter : ""
+
+            logged:true,
+            hasQuestion:true,
+            errorMsg:"",
+            chapter : "",
+            numQuestion : 0,
+            currentQuestion : 0,
+            type : "",
+            upperText : "",
+            img : "",
+            lowerText : "",
+            answers : [],
+            selectedAnswer:[],
+            questionID : 0,
+            openAnswer : "",
+            quizDone : false,
+            score : 0,
+            mpGain:0,
+            alreadyDone : false,
+            backToChapter : false,
+
         }
 
+
+
     }
 
-    componentDidMount(){
+    componentDidMount(props) {
         document.title = "Quiz | Game Of Math"
 
-        this.setState({
-            currentView : <ChapterSelection onSelection={this.handleSelection}/>
-        })
-    }
+        this._isMounted = true;
 
-    handleSelection(event){
+        const chapter = (this.props.location.state)? this.props.location.state.chapter : this.state.chapter
+
 
         this.setState({
-            currentView : <QuizSelection chapter={this.state.chapter}/>
+            chapter : chapter
         })
 
+
+
+
+        isOnQuiz()
+            .then((response) =>{
+
+                if(!response.data.isLogged){
+                    //start new quiz quiz
+                    getNumQuestion(chapter)
+                        .then((response) =>{
+
+                            if(response.data.returnState === 0){
+
+
+                                if(this._isMounted) {
+
+                                    this.setState({
+                                        chapter: chapter,
+                                        numQuestion: response.data.nbQuestion
+                                    })
+
+
+                                    setQuizState(this.state.currentQuestion)
+                                        .then((res) => {
+
+                                            this.setState(res)
+
+                                        })
+                                }
+
+                            }else{
+
+                                if(this._isMounted) {
+
+                                    this.setState({
+                                        hasQuestion: false,
+                                        errorMsg: response.data.msg
+
+                                    })
+                                }
+                            }
+                    })
+
+
+                }else{
+                    getState()
+                        .then((response) => {
+
+                            if(this._isMounted) {
+
+                                this.setState({
+                                    chapter: chapter,
+                                    numQuestion: response.data.state.questionNb
+                                })
+
+                                this.setState({
+                                    currentQuestion: response.data.state.lastQuestion
+                                })
+
+
+                                if (response.data.state.questionNb === response.data.state.lastQuestion) {
+
+                                    this.setState({
+                                        alreadyDone: true
+                                    })
+                                } else {
+                                    setQuizState(this.state.currentQuestion)
+                                        .then((res) => {
+
+                                            this.setState(res)
+
+                                        })
+                                }
+
+
+                            }
+
+                        })
+                }
+
+
+            }).catch(
+                error =>{
+                    this.setState(
+                        {
+                            logged : false
+                        }
+                    )
+                }
+            )
+
+
+
+
     }
+
+    componentWillUnmount() {
+        this._isMounted = false;
+    }
+
+    handleChoice = (event, aid) =>{
+
+        const choice = aid
+        const type = event.checked
+
+
+        if(this.state.type === "QCU"){
+
+            let answers = []
+
+            answers.push(choice)
+
+            this.setState({
+                selectedAnswer : answers
+            })
+
+        }else if(type === true){
+
+            let answers = this.state.selectedAnswer
+
+            answers.push(choice)
+
+            this.setState({
+                selectedAnswer : answers
+            })
+
+        }else{
+
+            const index = this.state.selectedAnswer.indexOf(choice)
+
+            let answer = this.state.selectedAnswer
+
+            if (index > -1) {
+                answer.splice(index, 1);
+            }
+
+            this.setState({
+                selectedAnswer : answer
+            })
+        }
+
+
+
+
+
+    }
+
+    handleSubmit = (event) =>{
+
+
+
+
+            submitAnswer(this.state.type, this.state.questionID, this.state.currentQuestion,this.state.selectedAnswer,this.state.openAnswer)
+                .then((response) => {
+
+                    if(response.data.redirect != null){
+                        this.setState({
+                            quizDone : true,
+                            score: response.data.score,
+                            mpGain :response.data.mpGain
+                        })
+                    }else {
+
+                        let current = this.state.currentQuestion+1
+
+                        this.setState({
+                            currentQuestion : current
+                        })
+
+                        setQuizState(current)
+                            .then((res) => {
+
+                                this.setState(res)
+
+                            })
+
+                    }
+
+                })
+
+        this.setState({
+            selectedAnswer : []
+        })
+
+
+
+
+        event.preventDefault();
+
+    }
+
+
+    handleOnChangeOpen = (event) =>{
+
+        this.setState({openAnswer: event.target.value});
+
+    }
+
+    handleBack = (event) =>{
+
+        //TODO reset question
+
+        this.setState({
+            backToChapter : true
+        })
+
+
+        event.preventDefault();
+
+    }
+
 
 
     render() {
 
-        return <>
-        
-            <div className="background">
-                {this.state.currentView}
-            </div>
-        </>
+        if(this.state.logged){
+
+
+            if(this.state.hasQuestion){
+
+
+
+                if(!this.state.quizDone) {
+                    return <>
+
+                        <div className="background">
+                            <div className="container-quiz">
+
+
+                                <div className="question-container">
+                                    <h1 className="upperText">{this.state.upperText}</h1>
+                                    {(this.state.img)?<img className="image" src={this.state.img} alt="error not found"/>:null}
+                                    <h1 className="lowerText">{this.state.lowerText}</h1>
+                                </div>
+
+                                <label className="compt-text"> {this.state.currentQuestion+1} / {this.state.numQuestion}</label>
+
+                                <form onSubmit={this.handleSubmit}>
+
+                                            {(this.state.type === "OPEN")?
+
+                                        <Answer key={1} parent={this} onChange={this.handleOnChangeOpen} type={this.state.type}/>
+
+                                            :(this.state.type === "QCM")?
+
+                                        <div className="answers-container-verif">
+                                            {this.state.answers.map((answer, index) => {
+                                            return (<Answer key={index} onChange={this.handleChoice} type={this.state.type} text={answer}/>)})}
+                                        </div>
+
+                                            :
+
+                                        <div className="answers-container-verif">
+                                            <fieldset className="group-radio" id="group">
+                                                {this.state.answers.map((answer, index) => {
+                                                    return (<Answer key={index} onChange={this.handleChoice} type={this.state.type} text={answer}/>)})}
+                                            </fieldset>
+                                        </div>
+                                    }
+
+
+                                    <input className="validate-btn" type="submit" value="Validé"/>
+                                </form>
+
+
+                            </div>
+                        </div>
+                    </>
+                }else{
+
+                    if(this.state.backToChapter){
+                        return <Redirect to="/chapter"/>
+                    }else{
+                        return  <div className="background">
+                            <div className="container-quiz">
+
+                                <h1 className="finish-title"> FINI </h1>
+                                <label className="score-title">score: {this.state.score}</label>
+                                <label className="mpGain-title">MP gagnés: {this.state.mpGain}</label>
+
+                                <form onSubmit={this.handleBack}>
+                                    <input className="back-btn" type="submit" value="Retour aux chapitres"/>
+                                </form>
+                            </div>
+                        </div>
+                    }
+
+
+                }
+            }else {
+                return <div className="background">
+                    <div className="container-quiz" >
+                        <label className="error-text">{this.state.errorMsg}</label>
+                    </div>
+                </div>
+            }
+
+        }else{
+            return <Redirect to="/login"/>
+        }
 
 
     }

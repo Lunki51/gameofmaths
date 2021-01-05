@@ -17,18 +17,27 @@
 }
 
 
-.answers-container {
+.answers-container-verif {
 
     /*set position*/
     position: absolute;
-    transform: translate(-50%, 0);
-    left: 50%;
+    float: right;
+    right: 60px;
+
+    border: solid var(--border_color) 1px;
+    background-color: var(--wood_style_color);
+    border-radius: 10px;
+    top: 20px;
+    width: 480px;
+    height: 350px;
+
+    place-items: center;
 
 
-    /*set children*/
-    display: grid;
-    grid-template-rows: repeat(2, 2fr);
-    grid-template-columns: repeat(2, 2fr);
+    overflow: auto;
+
+
+
 }
 
 .answer-quiz{
@@ -50,12 +59,91 @@
     font-size: 20px;
     color: var(--text_color);
 
+    align-content: center;
+
+
+}
+
+.answer-quiz-qcu{
+
+
+    /*set position*/
+    margin: 20px;
+
+    /*set size*/
+    width: 400px;
+    height: 60px;
+
+    /*set style*/
+    border: 1px solid var(--border_color);
+    border-radius: 10px;
+    background-color: var(--wood_style_color);
+
+    /*set font*/
+    font-size: 20px;
+    color: var(--text_color);
+
+    align-content: center;
+
+
+}
+
+
+.answer-quiz-open{
+
+
+
+    /*set position*/
+    position: absolute;
+    float: right;
+    transform: translateY(-50%);
+    top: 40%;
+    margin-right: 60px;
+    padding-left: 10px;
+
+    /*set size*/
+    width: 400px;
+    height: 60px;
+
+    /*set style*/
+    border: 1px solid var(--border_color);
+    border-radius: 10px;
+    background-color: var(--wood_style_color);
+
+    /*set font*/
+    font-size: 20px;
+    color: var(--text_color);
+
+    align-content: center;
+
+
+}
+
+.check-box{
+
+    position: relative;
+    margin-left: 20px;
+    transform: translateY(-50%);
+    top: 50%;
+    float: left;
+    pointer-events: none;
+
+}
+
+.check-box-text{
+
+    position: relative;
+    transform: translateY(-50%);
+    top: 50%;
+    float: right;
+    margin-right: 20px;
+    pointer-events: none;
 
 }
 
 .answer-quiz:hover{
 
-    border: 2px solid var(--border_color);
+    width: 430px;
 }
 
 
@@ -116,3 +204,163 @@
 }
 
 
+.upperText{
+
+    font-size: 20px;
+    margin: 20px;
+
+    color: var(--text_color);
+
+}
+
+.lowerText{
+
+    font-size: 16px;
+    margin: 20px;
+    color: var(--text_color);
+
+}
+
+.image{
+
+    width: 300px;
+    border-radius: 10px;
+
+}
+
+
+
+.question-container{
+
+    float: left;
+    margin-left: 100px;
+    margin-top: 70px;
+
+}
+
+.validate-btn{
+
+
+
+    position: absolute;
+
+    bottom: 25px;
+    right: 180px;
+
+    width: 200px;
+    height: 60px;
+
+    border: none;
+    border-radius: 10px;
+    color: var(--text_color);
+    font-size: 30px;
+    background-color: var(--primary_color);
+}
+
+.validate-btn:hover{
+    background-color: var(--input_color);
+}
+
+.error-text{
+
+    position: absolute;
+    color: var(--text_color);
+
+    font-size: 40px;
+
+    transform: translate(-50%,-50%);
+    left: 50%;
+    top:50%;
+
+}
+
+.compt-text{
+
+    position: absolute;
+    color: var(--text_color);
+
+    font-size: 30px;
+
+    transform: translateX(-50%);
+
+    top: 20px;
+    left: 50%;
+
+
+}
+
+.finish-title{
+
+
+    position: absolute;
+
+    transform: translate(50%,-50%);
+    top: 30%;
+    right: 50%;
+
+
+    font-size: 60px;
+    font-family: "Game of Thrones";
+    color: var(--text_color);
+
+}
+
+.score-title{
+
+    position: absolute;
+
+    transform: translate(50%,-50%);
+    top: 60%;
+    right: 50%;
+
+
+    font-size: 30px;
+
+    color: var(--text_color);
+
+}
+
+
+.mpGain-title{
+    position: absolute;
+
+    transform: translate(50%,-50%);
+    top: 70%;
+    right: 50%;
+
+
+    font-size: 30px;
+
+    color: var(--text_color);
+}
+
+.back-btn{
+
+
+
+    position: absolute;
+
+    transform: translate(-50%,50%);
+
+    bottom: 50px;
+
+    width: 300px;
+    height: 60px;
+
+    border: none;
+    border-radius: 10px;
+    color: var(--text_color);
+    font-size: 30px;
+    background-color: var(--primary_color);
+}
+
+.back-btn:hover{
+    background-color: var(--input_color);
+}
+
+.group-radio{
+
+    border: none;
+
+
+}

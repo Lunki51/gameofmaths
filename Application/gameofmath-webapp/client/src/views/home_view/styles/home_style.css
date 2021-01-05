@@ -5,7 +5,7 @@
 }
 body{
     /*setup the background*/
-    background-image: url("../../images/login_wallpaper.jpg");
+    background-image: url("../../images/castle2.png");
     background-repeat: no-repeat;
     background-position: center;
     background-attachment: fixed;
@@ -40,6 +40,8 @@ body{
         font-family: "Game of Thrones";
         color: var(--text_color);
         font-size: 60px;
+
+        filter: drop-shadow(0px 0px 10px black);
 
         top: 50%;
         left: 50%;

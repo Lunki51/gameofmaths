@@ -19,15 +19,18 @@ beforeAll(async (done) => {
 test('insert a quiz', async (done) => {
     expect( await quiz_dao.insert({
         quizID: -1,
-        theChapter: 1
+        theChapter: 1,
+        asAnOrder: 'true'
     }).catch(err => {done(err)})).toBe(1);
     expect(await quiz_dao.insert({
         quizID: -1,
-        theChapter: 1
+        theChapter: 1,
+        asAnOrder: 'true'
     }).catch(err => {done(err)})).toBe(2);
     expect(await quiz_dao.insert({
         quizID: -1,
-        theChapter: 2
+        theChapter: 2,
+        asAnOrder: 'false'
     }).catch(err => {done(err)})).toBe(3);
     done();
 });
@@ -38,15 +41,18 @@ test('get all quiz', async (done) => {
     });
     expect(data).toContainEqual({
         quizID: 1,
-        theChapter: 1
+        theChapter: 1,
+        asAnOrder: '1'
     });
     expect(data).toContainEqual({
         quizID: 2,
-        theChapter: 1
+        theChapter: 1,
+        asAnOrder: '1'
     });
     expect(data).toContainEqual({
         quizID: 3,
-        theChapter: 2
+        theChapter: 2,
+        asAnOrder: '0'
     });
     done();
 });
@@ -57,7 +63,8 @@ test('get a quiz by ID', async (done) => {
     });
     expect(data).toEqual({
         quizID: 2,
-        theChapter: 1
+        theChapter: 1,
+        asAnOrder: '1'
     });
     done();
 });
@@ -68,11 +75,13 @@ test('get all quiz in a chapter', async (done) => {
     });
     expect(data).toContainEqual({
         quizID: 1,
-        theChapter: 1
+        theChapter: 1,
+        asAnOrder: '1'
     });
     expect(data).toContainEqual({
         quizID: 2,
-        theChapter: 1
+        theChapter: 1,
+        asAnOrder: '1'
     });
     done();
 });
@@ -80,14 +89,16 @@ test('get all quiz in a chapter', async (done) => {
 test('update a quiz', async (done) => {
     await quiz_dao.update({
         quizID: 1,
-        theChapter: 2
+        theChapter: 2,
+        asAnOrder: '1'
     }).catch(err => {
         done(err);
     })
     const data = await quiz_dao.findByID(1);
     expect(data).toEqual({
         quizID: 1,
-        theChapter: 2
+        theChapter: 2,
+        asAnOrder: '1'
     });
     done();
 });
@@ -99,15 +110,18 @@ test('delete a quiz', async (done) => {
     const data = await quiz_dao.findAll();
     expect(data).toContainEqual({
         quizID: 1,
-        theChapter: 2
+        theChapter: 2,
+        asAnOrder: '1'
     });
     expect(data).not.toContainEqual({
         quizID: 2,
-        theChapter: 1
+        theChapter: 1,
+        asAnOrder: '1'
     });
     expect(data).toContainEqual({
         quizID: 3,
-        theChapter: 2
+        theChapter: 2,
+        asAnOrder: '0'
     });
     done();
 });

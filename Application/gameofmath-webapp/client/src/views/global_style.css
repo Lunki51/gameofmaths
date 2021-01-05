@@ -211,6 +211,7 @@
     text-decoration: none;
     color: var(--text_color);
     transition-duration: 500ms;
+    cursor: pointer;
 
 }
 

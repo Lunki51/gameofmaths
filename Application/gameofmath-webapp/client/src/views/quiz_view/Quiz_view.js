@@ -69,7 +69,7 @@ class QuizView extends Component {
         isOnQuiz()
             .then((response) =>{
 
-                if(!response.data.isLogged){
+                if(!response.data.isInQuiz){
                     //start new quiz quiz
                     getNumQuestion(chapter)
                         .then((response) =>{
@@ -213,8 +213,6 @@ class QuizView extends Component {
     handleSubmit = (event) =>{
 
 
-
-
             submitAnswer(this.state.type, this.state.questionID, this.state.currentQuestion,this.state.selectedAnswer,this.state.openAnswer)
                 .then((response) => {
 
@@ -243,8 +241,10 @@ class QuizView extends Component {
 
                 })
 
+        //clear previous answers
         this.setState({
-            selectedAnswer : []
+            selectedAnswer : [],
+            openAnswer : ""
         })
 
 

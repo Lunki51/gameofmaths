@@ -1,0 +1,125 @@
+
+
+*{
+    margin: 0px;
+}
+body{
+    /*setup the background*/
+    background-image: url("../../images/castle2.png");
+    background-repeat: no-repeat;
+    background-position: center;
+    background-attachment: fixed;
+    background-size: cover;
+
+}
+
+/*----------------| computer windows |--------------*/
+@media (min-width: 1250px){
+    .navbar_container{
+
+        margin-top: 20px;
+        position: absolute;
+        width: 97%;
+        height: 70px;
+        left: 50%;
+        transform: translateX(-50%);
+        border-radius: 10px;
+
+        border:1px solid var(--border_color);
+
+        background:var(--wood_style_color);
+
+        text-decoration: none;
+
+
+    }
+
+
+    .homeTitle{
+        position: absolute;
+        font-family: "Game of Thrones";
+        color: var(--text_color);
+        font-size: 60px;
+
+        filter: drop-shadow(0px 0px 10px black);
+
+        top: 50%;
+        left: 50%;
+        transform: translateX(-50%);
+    }
+
+
+    .navElem_right{
+
+        position: relative;
+        display: flex;
+        flex-flow: row;
+        flow-from: initial;
+        float: right;
+        flex-flow: row;
+        margin-right: 20px;
+        top: 50%;
+        transform: translate(-50%,-50%);
+        font-size: 15px;
+        font-family: "Game of Throne";
+
+    }
+
+
+
+
+    .navElem_left{
+
+        position: relative;
+        display: flex;
+        flex-flow: row;
+        flow-from: initial;
+        float: left;
+        flex-flow: row;
+        top: 50%;
+        margin-left: 20px;
+        transform: translate(-50%,-50%);
+        font-size: 15px;
+
+
+
+
+    }
+
+
+
+
+
+    .navbar_link{
+        font-family: "Game of Thrones";
+        text-decoration: none;
+        color: var(--text_color);
+
+    }
+
+
+    .navbar_link:hover{
+
+        color: var(--text_color_hover);
+    }
+}
+
+
+/*----------------| mobile / tablet windows*/
+
+@media (max-width: 1250px){
+    .navbar_container{
+
+        
+        position: absolute;
+        width: 100%;
+        height: 70px;
+        margin-bottom: 0px;
+        background-color:var(--wood_style_color);
+
+
+        border-bottom:1px solid var(--border_color);
+
+    }
+}
+

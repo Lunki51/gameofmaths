@@ -1,7 +1,12 @@
-var express = require('express');
-var path = require('path');
-var cookieParser = require('cookie-parser');
+//server variable
+const port_front = 3000;
+const port_back = 5000;
+
+const express = require('express');
+const path = require('path');
+const cookieParser = require('cookie-parser');
 const session = require('express-session');
+const SQLiteStore = require('connect-sqlite3')(session);
 
 //Script's args
 const script_args = process.argv.slice(2);
@@ -17,27 +22,39 @@ app.set('view engine', 'pug');
 //Init the middleware
 app.use(session({
     secret: 'Etalone{58}',
-    resave: true,
-    saveUninitialized: true
+    saveUninitialized: false,
+    resave: false,
+    cookie: {
+        secure: false,
+        httpOnly: true,
+        maxAge: 1000 * 60 * 30
+    },
+    store: new SQLiteStore,
 }));
+
+
 app.use(express.json());
-app.use(express.urlencoded({ extended: false }));
-app.use(cookieParser());
+app.use(express.urlencoded({extended: false}));
+app.use(cookieParser('67e45d7987d3566f0890j76567'));
 app.use(express.static(path.join(__dirname, 'public')));
 
+
 //ROUTE
-const indexRouter = require('./routes/index');
-app.use('/', indexRouter);
+const apiRouter = require('./routes/api');
+app.use('/api/', apiRouter);
 
 //Open the server
-app.listen(3000, () => {
-    console.log('Webapp open on port 3000' + (script_dev ? ' in development mod.' : '.'));
+app.listen(port_back, () => {
+    console.log('Webapp open on port 5000' + (script_dev ? ' in development mod.' : '.'));
 });
 
 //ERROR handler
-app.use(function(err, req, res, next) {
+app.use(function (err, req, res, next) {
     console.error(err.stack);
-    res.status(500).send(script_dev ? '<pre>'+err.stack+'</pre>' : 'Something broke!');
+    if (script_dev) res.status(500).send({returnState: -1, stack: '<pre>' + err.stack + '</pre>'})
+    else res.send({returnState: -1})
+
 });
+
 
 module.exports = app;

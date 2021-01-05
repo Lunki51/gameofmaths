@@ -1,7 +1,6 @@
 
 import React, { Component } from 'react';
 import { Route, Switch } from 'react-router-dom';
-import Axios from "axios";
 
 import {NavigationBar} from "./views/global_components";
 

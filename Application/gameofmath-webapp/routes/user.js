@@ -12,7 +12,7 @@ router.post('/auth', (req, res, next) => {
     const username = req.body.username;
     const password = req.body.password;
 
-    if (username == "" || password == "") return res.send({returnState: 1, msg: 'Mot de passe ou nom d\'utilisateur incorrect.'})
+    if (username == null && password == null) return res.send({returnState: 1, msg: 'Mot de passe ou nom d\'utilisateur incorrect.'})
 
 
     student_dao.findUserByLogin(username).then(user => {

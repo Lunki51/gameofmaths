@@ -26,12 +26,6 @@ class GlobalView extends Component {
 
         this._isMounted = true
 
-        getMap()
-            .then((res) => {
-
-                console.log(res)
-            })
-
         document.title = "Castle | Game Of Math"
 
         this.setState({

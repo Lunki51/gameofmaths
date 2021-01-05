@@ -108,14 +108,12 @@ let GameMap = function(sizeX,sizeY,nbPoints){
         return [out[1]>0?Math.min(perlinAt*20, out[1]):15, colour]
     }
 
-    this.getMapData = function(){
-        return this.colors;
-    }
 
-
+    this.sizeX=sizeX
+    this.sizeY=sizeY
     let startpos = this.computePointsStartingPosition(nbPoints, sizeX,sizeY);
     this.delaunay = ddelaunay.Delaunay.from(startpos)
-    this.colors = new Map();
+    let colors = new Map();
     let {points, triangles} = this.delaunay;
 
     for (let i = 0; i < triangles.length; i += 3) {
@@ -130,9 +128,10 @@ let GameMap = function(sizeX,sizeY,nbPoints){
 
         let key
         key = this.moyColor(this.moyColor(colort1[1], colort2[1]), colort3[1])
-        if (this.colors.get(key.getHex())==null) this.colors.set(key.getHex(), new Array())
-        this.colors.get(key.getHex()).push(t1,t2 , t3)
+        if (colors.get(key.getHex())==null) colors.set(key.getHex(), new Array())
+        colors.get(key.getHex()).push(t1,t2 , t3)
     }
+    this.vertices = Array.from(colors)
 
 }
 

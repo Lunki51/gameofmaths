@@ -21,7 +21,6 @@ class ChapterView extends Component {
     constructor(props) {
         super(props);
 
-
         this.state = {
             hasClick : false,
             dataClick : null,

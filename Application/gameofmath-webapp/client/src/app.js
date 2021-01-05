@@ -11,7 +11,6 @@ import QuizView from "./views/quiz_view/Quiz_view";
 import GlobalView from "./views/global_view/Global_view";
 import {isAuth} from "./model/authentification";
 
-
 // add pages in the Switch component
 class App extends Component {
 
@@ -45,7 +44,10 @@ class App extends Component {
                })
 
            })
+
    }
+
+
 
 
     render() {
@@ -72,6 +74,7 @@ class App extends Component {
     )
 
 
+
     return (
         <Switch>
           <App/>
@@ -79,7 +82,6 @@ class App extends Component {
     );
   }
 }
-
 
 
 export default App;

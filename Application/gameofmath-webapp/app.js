@@ -43,7 +43,10 @@ app.use(express.static(path.join(__dirname, 'public')));
 //ROUTE
 const apiRouter = require('./routes/api');
 app.use('/api/', apiRouter);
-app.use('/graphics', renderApi.router)
+app.use('/graphics', renderApi.setupRouter(function(){
+    return renderApi.getMap(0)
+}))
+renderApi.createMap(100,100,10000)
 
 
 //Open the server

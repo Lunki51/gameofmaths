@@ -5,14 +5,9 @@ const gameMap = require('./maps/gameMap');
  */
 function GraphicsManager(){
     this.maps = [];
-    this.router = require('./router')
 
-    /**
-     * Define the method to run when the application ask for a specific map
-     * @param method a method to execute
-     */
-    this.setRendererMethod = function(method){
-        this.router.get('/map',method)
+    this.setupRouter = function(method){
+        return require('./router')(method)
     }
 
     /**

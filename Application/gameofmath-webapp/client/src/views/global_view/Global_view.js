@@ -1,5 +1,6 @@
-import React, { Component } from 'react';
+import React, { Component, useRef, useEffect } from 'react';
 import {getMap} from "../../model/mapModel";
+import Axios from "axios";
 /* eslint no-eval: 0 */
 
 /**
@@ -16,7 +17,7 @@ class GlobalView extends Component {
         super();
 
         this.state = {
-            map : ""
+            instance: React.createRef()
         }
 
     }
@@ -28,9 +29,10 @@ class GlobalView extends Component {
 
         document.title = "Castle | Game Of Math"
 
-        this.setState({
-            map:""
-        })
+        const scriptRenderer = document.createElement("script");
+        const scriptThree = document.createElement("script");
+        scriptRenderer.src = "http://localhost:5000/graphics/renderer"
+        this.state.instance.current.appendChild(scriptRenderer);
 
         //TODO implement map render
 
@@ -47,16 +49,10 @@ class GlobalView extends Component {
             return <>
 
                 <div className="background">
-                    <div id="render">
-                        {eval(this.state.map)}
-                    </div>
+                    <div ref={this.state.instance}/>
                 </div>
 
             </>
-
-
-
-
 
     }
 }

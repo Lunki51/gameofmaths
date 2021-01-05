@@ -27,7 +27,7 @@ export class ChapterSelection extends Component{
             .then((response) =>{
                 if(this._isMounted)
                 this.setState({
-                    chapters : response.data
+                    chapters : response.data.chapters
                 })
             })
 

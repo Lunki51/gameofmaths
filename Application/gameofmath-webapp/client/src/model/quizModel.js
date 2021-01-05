@@ -43,11 +43,7 @@ export function setQuizState(questionNb) {
         getQuestion(questionNb)
             .then((res) => {
 
-               // const image = res.data.question.image //? require.context('../../public/images', true)('./geo/carre1.png') : null
-                import('../views/images/geo/carre1.png').then((image) => {
-
-                    console.log(image)
-
+                const f = function (image) {
                     if (res.data.question.type === "OPEN") {
                         resolve({
 
@@ -70,10 +66,12 @@ export function setQuizState(questionNb) {
 
                         })
                     }
-                })
-
-
-
+                }
+                if (res.data.question.image != null && res.data.question.image !== '') {
+                    import('../views/images' + res.data.question.image).then((image) => {
+                        f(image)
+                    })
+                } else f({})
 
 
             })

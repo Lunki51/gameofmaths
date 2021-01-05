@@ -102,8 +102,8 @@ class NavigationBar extends Component{
 
 
     componentDidMount() {
-        this._isMounted = true;
 
+        this._isMounted = true;
 
         Axios.post("/api/user/isLogged",)
             .then((response) => {
@@ -136,6 +136,16 @@ class NavigationBar extends Component{
 
     }
 
+    handleLogout = (event) =>{
+        Axios.post("/api/user/logout").then((res) => {
+
+            if(res.data.returnState === 0)
+                this.setState({
+                    login : false
+                })
+        })
+    }
+
     componentWillUnmount() {
         this._isMounted = false;
     }
@@ -146,7 +156,7 @@ class NavigationBar extends Component{
 
             <NavBar>
 
-                {this.state.login ? <Login username={this.state.username} /> : <NotLogin/>}
+                {this.state.login ? <Login logout={this.handleLogout} username={this.state.username} /> : <NotLogin/>}
 
             </NavBar>
             </>
@@ -168,21 +178,10 @@ class NotLogin extends Component{
 
 class Login extends Component{
 
-
-
     render() {
         return <>
             <NavElement id="" className="navElem_right"  goTo ={"/profile/" + this.props.username}  value={this.props.username}/>
-            <NavElement id="" className="navElem_right"  goTo="/" onClick={() => {
-                Axios.post("/api/user/logout")
-                    .then((response)=>{
-                        this.setState({
-                            login : false,
-                        })
-
-                    })
-            }
-            } value="deconnexion"/>
+            <NavElement id="" className="navElem_right"  onClick={this.props.logout} value="deconnexion"/>
             <NavElement id="" className="navElem_left"   goTo ="/"  value="Accueil"/>
             <NavElement id="" className="navElem_left"   goTo ="/chapter"  value="quizz"/>
         </>

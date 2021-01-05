@@ -10,7 +10,7 @@ const QuizQuestionDAO = function () {
      */
     this.format = function (object) {
         const quizQuestion = object_helper.formatPropertiesWithType([
-            {t: 'number', ps: ['theQuestion', 'theQuiz']}
+            {t: 'number', ps: ['theQuestion', 'theQuiz', 'qNumber']}
             ], object);
         if (!quizQuestion) return null;
 
@@ -29,14 +29,36 @@ const QuizQuestionDAO = function () {
             const quizQuestion = this.format(obj);
             if (!quizQuestion) reject(new Error('Invalid input quizQuestion!'));
             else {
-                let request = 'INSERT INTO QuizQuestion (theQuestion, theQuiz) VALUES (?, ?)';
-                db.run(request, [quizQuestion.theQuestion, quizQuestion.theQuiz], function (err) {
+                let request = 'INSERT INTO QuizQuestion (theQuestion, theQuiz, qNumber) VALUES (?, ?, ?)';
+                db.run(request, [quizQuestion.theQuestion, quizQuestion.theQuiz, quizQuestion.qNumber], function (err) {
                     if (err) reject(err);
                     else resolve();
                 });
             }
 
         })
+    };
+
+    /**
+     * Update a quizQuestion if the jsonObject is valid.
+     *
+     * @param obj quizQuestion with new property (must have a correct id)
+     * @param db db instance to use
+     * @returns {Promise} a promise that resolve if the update is a success
+     */
+    this.update = function (obj, db = dbD) {
+        return new Promise((resolve, reject) => {
+            const quizQuestion = this.format(obj);
+            if (!quizQuestion) reject(new Error('Invalid input quizQuestion!'));
+            else {
+                let request = 'UPDATE QuizQuestion SET qNumber = ? WHERE theQuestion = ? AND theQuiz = ?';
+                db.run(request, [quizQuestion.qNumber, quizQuestion.theQuestion, quizQuestion.theQuiz], function (err) {
+                    if (err) reject(err);
+                    else resolve();
+                });
+            }
+        })
+
     };
 
     /**

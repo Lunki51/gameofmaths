@@ -11,8 +11,8 @@ const teacher_dao = require('gameofmath-db').teacher_dao
  *  0:
  *  1: New mail incorrect
  */
-router.post('/changeMail', (req, res) => {
-    if (!req.session.isLogged) return next(new Error('Client must be logged'))
+router.post('/changeMail', (req, res, next) => {
+    if (!req.session.isLogged && !req.session.isTeacher) return next(new Error('Client must be logged on a teacher account'))
 
     const newMail = req.body.newMail;
 

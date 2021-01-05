@@ -58,7 +58,7 @@ router.post('/auth', (req, res, next) => {
  * @return
  *  0: isLogged: true if the client is logged
  */
-router.post('/isLogged', (req, res) => {
+router.post('/isLogged', (req, res, next) => {
     res.send({returnState: 0, isLogged: (req.session.isLogged) ? true : false})
 })
 
@@ -68,7 +68,7 @@ router.post('/isLogged', (req, res) => {
  * @return
  *  0: username: the client's username
  */
-router.post('/username', (req, res) => {
+router.post('/username', (req, res, next) => {
     if (!req.session.isLogged) return next(new Error('Client must be logged'))
     res.send({returnState: 0, username: req.session.user.login})
 })
@@ -79,7 +79,7 @@ router.post('/username', (req, res) => {
  * @return
  *  0: redirect: the page to go after the logout
  */
-router.post('/logout', (req, res) => {
+router.post('/logout', (req, res, next) => {
     req.session.destroy()
     res.send({returnState: 0, redirect: 'login'}) //TODO check redirect
 })
@@ -94,7 +94,7 @@ router.post('/logout', (req, res) => {
  *  1: if the old password is incorrect
  *  2: if the new password is incorrect
  */
-router.post('/changePassword', (req, res) => {
+router.post('/changePassword', (req, res, next) => {
     if (!req.session.isLogged) return next(new Error('Client must be logged'))
 
     const oldPassword = req.body.oldPassword;

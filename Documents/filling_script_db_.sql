@@ -12,20 +12,20 @@ INSERT INTO CLASS VALUES(1,'CE2','Girafe');
 INSERT INTO STUDENT VALUES(1,1,0);
 INSERT INTO STUDENT VALUES(2,1,0);
 
-INSERT INTO CHAPTER VALUES(1,'Geometrie');
+INSERT INTO CHAPTER VALUES(1,'Géometrie');
 INSERT INTO CHAPTER VALUES(2,'Multiplication');
 
 INSERT INTO QUIZ VALUES(1,1);
 INSERT INTO QUIZ VALUES(2,2);
 
-INSERT INTO QUESTION VALUES(1,'Ci dessous un carre','Quelle est la valeur de b ?','/geo/carre1.png','OPEN',1,1);
+INSERT INTO QUESTION VALUES(1,'Ci dessous un carré','Quelle est la valeur de b ?','/geo/carre1.png','OPEN',1,1);
 
-INSERT INTO QUESTION VALUES(7,'Ci dessous un carre','Quelles affirmations sont vrai?','/geo/carre2.png','QCM',2,1);
+INSERT INTO QUESTION VALUES(7,'Ci dessous un carré','Quelles affirmations sont vrai?','/geo/carre2.png','QCM',2,1);
 
 INSERT INTO QUESTION VALUES(3,'Combien fait 3*3 ?','','','OPEN',2,2);
 INSERT INTO QUESTION VALUES(4,'Combien fait 3*(-1*3) ?','','','OPEN',4,2);
 
-INSERT INTO QUESTION VALUES(5,'2^4 est equivalent  ','','','QCU',6,2);
+INSERT INTO QUESTION VALUES(5,'2^4 est équivalent  ','','','QCU',6,2);
 
 INSERT INTO QUESTION VALUES(6,'Quels calculs donne 15','','','QCM',3,2);
 
@@ -45,9 +45,9 @@ INSERT INTO ANSWER VALUES(11,'2*7','false',6);
 INSERT INTO ANSWER VALUES(12,'2*8-4','false',6);
 
 INSERT INTO ANSWER VALUES(13,'b = 5','true',7);
-INSERT INTO ANSWER VALUES(14,'Tout les angles sont egaux','true',7);
-INSERT INTO ANSWER VALUES(15,'Un carre est un rectangle special','true',7);
-INSERT INTO ANSWER VALUES(16,'L''angle c est egal a 65','false',7);
+INSERT INTO ANSWER VALUES(14,'Tout les angles sont égaux','true',7);
+INSERT INTO ANSWER VALUES(15,'Un carré est un rectangle spécial','true',7);
+INSERT INTO ANSWER VALUES(16,'L''angle c est égal à 65','false',7);
 
 
 INSERT INTO QUIZQUESTION VALUES(1,1);

@@ -48,8 +48,8 @@ CREATE TABLE Student(
 CREATE TABLE MPGain(
     mpGainID INTEGER PRIMARY KEY AUTOINCREMENT,
     amount INTEGER NOT NULL,
-    type TEXT CHECK (type IN ('QUIZ')),
-    date NUMERIC,
+    type TEXT CHECK (type IN ('QUIZ')) NOT NULL,
+    date NUMERIC NOT NULL,
     theStudent INTEGER NOT NULL,
 
     FOREIGN KEY(theStudent) REFERENCES Student(theUser)
@@ -57,43 +57,43 @@ CREATE TABLE MPGain(
 
 CREATE TABLE Chapter(
     chapterID INTEGER PRIMARY KEY AUTOINCREMENT,
-    name TEXT UNIQUE
+    name TEXT UNIQUE NOT NULL
 );
 
 CREATE TABLE Quiz(
     quizID INTEGER PRIMARY KEY AUTOINCREMENT,
-    theChapter INTEGER,
+    asAnOrder TEXT CHECK ( asAnOrder IN ('true', 'false', '0', '1')) NOT NULL,
+    theChapter INTEGER NOT NULL,
 
     FOREIGN KEY(theChapter) REFERENCES Chapter(chapterID)
 );
 
 CREATE TABLE QuizDone(
     theGain INTEGER,
-    theQuiz INTEGER,
-    score INTEGER,
+    theQuiz INTEGER NOT NULL,
+    score INTEGER NOT NULL,
 
-    FOREIGN KEY(theQuiz) REFERENCES Quiz(quizID),
-    FOREIGN KEY(theGain) REFERENCES MPGain(mpGainID),
     PRIMARY KEY (theGain)
+    FOREIGN KEY(theGain) REFERENCES MPGain(mpGainID)
 );
 
 CREATE TABLE Question(
     questionID INTEGER PRIMARY KEY AUTOINCREMENT,
-    upperText TEXT,
-    lowerText TEXT,
-    image TEXT,
-    type TEXT CHECK (type IN ('QCM', 'QCU', 'OPEN')),
-    level INTEGER,
-    theChapter INTEGER,
+    upperText TEXT NOT NULL,
+    lowerText TEXT NOT NULL,
+    image TEXT NOT NULL,
+    type TEXT CHECK (type IN ('QCM', 'QCU', 'OPEN')) NOT NULL,
+    level INTEGER NOT NULL,
+    theChapter INTEGER NOT NULL,
 
     FOREIGN KEY(theChapter) REFERENCES Chapter(chapterID)
 );
 
 CREATE TABLE Answer(
     answerID  INTEGER PRIMARY KEY AUTOINCREMENT,
-    text TEXT,
-    isValid TEXT CHECK ( isValid IN ('true', 'false', '0', '1')),
-    theQuestion INTEGER,
+    text TEXT NOT NULL,
+    isValid TEXT CHECK ( isValid IN ('true', 'false', '0', '1')) NOT NULL,
+    theQuestion INTEGER NOT NULL,
 
     FOREIGN KEY(theQuestion) REFERENCES Question(questionID)
 );
@@ -101,8 +101,10 @@ CREATE TABLE Answer(
 CREATE TABLE QuizQuestion(
     theQuestion INTEGER,
     theQuiz INTEGER,
+    qNumber INTEGER NOT NULL,
 
     FOREIGN KEY(theQuestion) REFERENCES Question(questionID),
     FOREIGN KEY(theQuiz) REFERENCES Quiz(quizID),
-    PRIMARY KEY (theQuestion, theQuiz)
+    PRIMARY KEY (theQuestion, theQuiz),
+    UNIQUE (qNumber, theQuiz)
 );

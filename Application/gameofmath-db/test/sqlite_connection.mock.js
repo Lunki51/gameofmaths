@@ -4,7 +4,7 @@ const fs = require('fs');
 
 const db = new TransactionDatabase(new sqlite3.Database(':memory:'));
 db.run("PRAGMA foreign_keys = ON");
-db.reset = async function (done) {
+db.reset = async function () {
     const data = fs.readFileSync('../create_db.sql').toString('utf-8').split(';');
 
     await db.run('BEGIN TRANSACTION;');

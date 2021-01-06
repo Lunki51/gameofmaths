@@ -81,7 +81,7 @@ router.post('/username', (req, res, next) => {
  */
 router.post('/getType', (req, res, next) => {
     if (!req.session.isLogged) return next(new Error('Client must be logged'))
-    res.send({returnState: 0, username: req.session.isTeacher ? 'teacher':'student'})
+    res.send({returnState: 0, type: req.session.isTeacher ? 'teacher':'student'})
 })
 
 /**

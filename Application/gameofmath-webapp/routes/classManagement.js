@@ -5,6 +5,7 @@ const student_dao = require('gameofmath-db').student_dao
 const class_dao = require('gameofmath-db').class_dao
 const user_dao = require('gameofmath-db').user_dao
 const mpGain_dao = require('gameofmath-db').mpGain_dao
+const db = require('gameofmath-db').db
 const crypto = require('crypto')
 
 // ##########################################################################################
@@ -146,9 +147,49 @@ router.post('/delete', (req, res, next) => {
     class_dao.findByID(id).then(c => {
         if (c == null) res.send({returnState: 1, msg: 'The class id is incorrect'})
         else {
-            class_dao.delete(id).then(() => {
-                res.send({returnState: 0})
-            }).catch(err => next(err))
+
+            db.beginTransaction(function (err, t) {
+
+                t.run('DELETE FROM QuizDone WHERE theGain IN (SELECT mpGainID FROM mpGain, Student WHERE theStudent = theUser AND theClass = ?)' [id], function (err) {
+                    if (err) {
+                        t.rollback()
+                        next(err)
+                    } else {
+                        t.run('DELETE FROM MPGain WHERE theStudent IN (SELECT theUser FROM Student WHERE theClass = ?)' [id], function (err) {
+                            if (err) {
+                                t.rollback()
+                                next(err)
+                            } else {
+                                t.run('DELETE FROM User WHERE userID IN (SELECT theUser FROM Student WHERE theClass = ?)' [id], function (err) {
+                                    if (err) {
+                                        t.rollback()
+                                        next(err)
+                                    } else {
+                                        t.run('DELETE FROM Student WHERE theClass = ?)' [id], function (err) {
+                                            if (err) {
+                                                t.rollback()
+                                                next(err)
+                                            } else {
+                                                t.run('DELETE FROM Class WHERE classID = ?)' [id], function (err) {
+                                                    if (err) {
+                                                        t.rollback()
+                                                        next(err)
+                                                    } else {
+                                                        t.commit(err => {
+                                                            if (err) reject(err);
+                                                            else res.send({returnState: 0});
+                                                        });
+                                                    }
+                                                })
+                                            }
+                                        })
+                                    }
+                                })
+                            }
+                        })
+                    }
+                })
+            })
         }
     }).catch(err => next(err))
 })
@@ -414,10 +455,41 @@ router.post('/deleteStudent', (req, res, next) => {
         if (student == null) res.send({returnState: 1, msg: 'The student id is incorrect'})
         else if(student.theClass !== Number(classId)) res.send({returnState: 3, msg: 'The student is not in the class'})
         else {
+            db.beginTransaction(function (err, t) {
 
-            student_dao.delete(studentId).then(() => {
-                res.send({returnState: 0})
-            }).catch(err => next(err))
+                t.run('DELETE FROM QuizDone WHERE theGain IN (SELECT mpGainID FROM mpGain, Student WHERE theStudent = theUser AND theUser = ?)' [studentId], function (err) {
+                    if (err) {
+                        t.rollback()
+                        next(err)
+                    } else {
+                        t.run('DELETE FROM MPGain WHERE theStudent IN (SELECT theUser FROM Student WHERE theUser = ?)' [studentId], function (err) {
+                            if (err) {
+                                t.rollback()
+                                next(err)
+                            } else {
+                                t.run('DELETE FROM User WHERE userID IN (SELECT theUser FROM Student WHERE theUser = ?)' [studentId], function (err) {
+                                    if (err) {
+                                        t.rollback()
+                                        next(err)
+                                    } else {
+                                        t.run('DELETE FROM Student WHERE theUser = ?)' [studentId], function (err) {
+                                            if (err) {
+                                                t.rollback()
+                                                next(err)
+                                            } else {
+                                                t.commit(err => {
+                                                    if (err) reject(err);
+                                                    else res.send({returnState: 0});
+                                                });
+                                            }
+                                        })
+                                    }
+                                })
+                            }
+                        })
+                    }
+                })
+            })
 
         }
     }).catch(err => next(err))

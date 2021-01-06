@@ -74,6 +74,17 @@ router.post('/username', (req, res, next) => {
 })
 
 /**
+ * Get the type of the client.
+ *
+ * @return
+ *  0: type: the client's type (student/teacher)
+ */
+router.post('/getType', (req, res, next) => {
+    if (!req.session.isLogged) return next(new Error('Client must be logged'))
+    res.send({returnState: 0, username: req.session.isTeacher ? 'teacher':'student'})
+})
+
+/**
  * Disconnect the client.
  *
  * @return

@@ -17,7 +17,7 @@ DROP TABLE IF EXISTS User;
 
 CREATE TABLE User(
      userID INTEGER PRIMARY KEY AUTOINCREMENT,
-     login TEXT NOT NULL,
+     login TEXT NOT NULL UNIQUE,
      password TEXT NOT NULL CHECK (LENGTH(password) >= 7),
      lastname TEXT NOT NULL,
      firstname TEXT NOT NULL

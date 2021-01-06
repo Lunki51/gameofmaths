@@ -59,7 +59,7 @@ router.post('/changeLastname', (req, res, next) => {
  *  0:
  *  1: New firstname incorrect
  */
-router.post('/changeLastname', (req, res, next) => {
+router.post('/changeFirstname', (req, res, next) => {
     if (!req.session.isLogged && !req.session.isTeacher) return next(new Error('Client must be logged on a teacher account'))
 
     const newName = req.body.newName;

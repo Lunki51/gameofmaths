@@ -1,16 +1,15 @@
 
 import React, { Component } from 'react';
 import { Route, Switch } from 'react-router-dom';
-import Axios from "axios";
 
 import {NavigationBar} from "./views/global_components";
 
 import LoginView from './views/login_view/Login_view.js';
 import HomeView from './views/home_view/Home_view.js';
-import CastleView from "./views/castle_view/Castle_view";
 import ChapterView from "./views/chapters_view/Chapters_view";
 import QuizView from "./views/quiz_view/Quiz_view";
-
+import GlobalView from "./views/global_view/Global_view";
+import {isAuth} from "./model/authentification";
 
 // add pages in the Switch component
 class App extends Component {
@@ -24,7 +23,20 @@ class App extends Component {
            }
 
 
-       Axios.post("/api/user/isLogged")
+       isAuth()
+           .then((response)=>{
+
+               this.setState({
+                   logged : response.data.isLogged,
+               })
+
+           })
+
+   }
+
+
+   componentDidMount() {
+       isAuth()
            .then((response)=>{
 
                this.setState({
@@ -38,7 +50,6 @@ class App extends Component {
 
 
 
-
     render() {
 
     const App = () => (
@@ -46,10 +57,14 @@ class App extends Component {
 
           <NavigationBar/>
 
+
+          {(this.state.logged)? <GlobalView/> : null}
+
+
+
           <Switch>
 
               <Route path="/login"      component={LoginView} />
-              <Route path='/castle'     component={CastleView}/>
               <Route path="/chapter"    component={ChapterView}  />
               <Route path="/quiz"       component={QuizView}  />
               <Route path='/'           component={HomeView}/>
@@ -59,6 +74,7 @@ class App extends Component {
     )
 
 
+
     return (
         <Switch>
           <App/>
@@ -66,7 +82,6 @@ class App extends Component {
     );
   }
 }
-
 
 
 export default App;

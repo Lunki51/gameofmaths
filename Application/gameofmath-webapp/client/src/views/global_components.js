@@ -184,7 +184,6 @@ class Login extends Component{
             <NavElement id="" className="navElem_right"  onClick={this.props.logout} value="deconnexion"/>
             <NavElement id="" className="navElem_left"   goTo ="/"  value="Accueil"/>
             <NavElement id="" className="navElem_left"   goTo ="/chapter"  value="quizz"/>
-            <NavElement id="" className="navElem_left"   goTo ="/castle" value="carte"/>
         </>
     }
 

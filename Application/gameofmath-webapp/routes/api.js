@@ -10,4 +10,6 @@ router.use('/quiz/', quizRouter)
 router.use('/teacher/', teacherRouter)
 router.use('/student/', studentRouter)
 
+
+
 module.exports = router;

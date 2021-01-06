@@ -47,24 +47,24 @@ request.onreadystatechange = function () {
             }
             rotateX = 0;
             rotateY = 0;
-            camDistance += scrolled;
-            scrolled = 0
             renderer.render(scene, camera);
         }
         //RENDERING METHOD
 
         //DATA COMPUTATION
         scene.clear();
-        let triangles = JSON.parse(request.response);
+        let map = JSON.parse(request.response);
+        console.log(map)
+        let triangles = map.vertices
         for (let color of triangles) {
             let trianglesData = color[1]
             let trianglesColor = color[0]
             let geometry = new THREE.BufferGeometry()
             let pointsArray = new Float32Array(trianglesData.length * 3)
             for (let i = 0; i < trianglesData.length; i++) {
-                pointsArray[i * 3] = trianglesData[i].x - document.getElementById("size").value / 2
+                pointsArray[i * 3] = trianglesData[i].x - map.sizeX/2
                 pointsArray[i * 3 + 1] = trianglesData[i].z
-                pointsArray[i * 3 + 2] = trianglesData[i].y - document.getElementById("size").value / 2
+                pointsArray[i * 3 + 2] = trianglesData[i].y - map.sizeY/2
             }
             geometry.setAttribute('position', new THREE.BufferAttribute(pointsArray, 3));
             let material = new THREE.MeshBasicMaterial({color: trianglesColor, side: THREE.DoubleSide});
@@ -75,17 +75,17 @@ request.onreadystatechange = function () {
 
         //ENVIRONMENT
         const geometry = new THREE.PlaneGeometry(1000, 1000);
-        const material = new THREE.MeshBasicMaterial({color: 0xf2eecb, side: THREE.DoubleSide});
+        const material = new THREE.MeshBasicMaterial({color: 0x006994, side: THREE.DoubleSide});
         geometry.rotateX(Math.PI / 2)
         const plane = new THREE.Mesh(geometry, material);
         plane.position.y = 11
         scene.add(plane);
-        scene.fog = new THREE.FogExp2("#87CEEB", 0.002)
+        scene.fog = new THREE.FogExp2("#87ceeb", 0.002)
         //ENVIRONMENT
 
         //CAMERA
-        camera.position.y = 175
-        camera.position.z = 100
+        camera.position.y = 100
+        camera.position.z = 25
         camera.rotation.x = -Math.PI / 3
         //CAMERA
 
@@ -100,5 +100,5 @@ request.onreadystatechange = function () {
 }
 
 //REQUEST
-
 request.open('GET',"__insert__")
+request.send()

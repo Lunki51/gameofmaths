@@ -27,4 +27,52 @@ router.post('/changeMail', (req, res, next) => {
 
 })
 
+/**
+ * Allow the teacher to change is lastname.
+ *
+ * @param newName new teacher's lastname
+ * @return
+ *  0:
+ *  1: New lastname incorrect
+ */
+router.post('/changeLastname', (req, res, next) => {
+    if (!req.session.isLogged && !req.session.isTeacher) return next(new Error('Client must be logged on a teacher account'))
+
+    const newName = req.body.newName;
+
+    if (newName != null && newName.size > 0) {
+
+        req.session.user.lastname = newName
+        teacher_dao.update(req.session.user).then(() => {
+            res.send({returnState: 0})
+        }).catch(err => next(err))
+
+    } else res.send({returnState: 1, msg: 'Lastname incorrect.'})
+
+})
+
+/**
+ * Allow the teacher to change is firstname.
+ *
+ * @param newName new teacher's firstname
+ * @return
+ *  0:
+ *  1: New firstname incorrect
+ */
+router.post('/changeLastname', (req, res, next) => {
+    if (!req.session.isLogged && !req.session.isTeacher) return next(new Error('Client must be logged on a teacher account'))
+
+    const newName = req.body.newName;
+
+    if (newName != null && newName.size > 0) {
+
+        req.session.user.firstname = newName
+        teacher_dao.update(req.session.user).then(() => {
+            res.send({returnState: 0})
+        }).catch(err => next(err))
+
+    } else res.send({returnState: 1, msg: 'firstname incorrect.'})
+
+})
+
 module.exports = router;

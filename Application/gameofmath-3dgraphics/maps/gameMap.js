@@ -10,22 +10,30 @@ const THREE = require('three')
  */
 let GameMap = function(sizeX,sizeY,nbPoints){
     this.perlin = new Perlin(sizeX,sizeY);
+
+    /**
+     *
+     * @param height
+     * @returns {[string, number]}
+     */
     this.colorForHeight = function (height) {
-        if (height > 0.9) {
-            if (height > 1) {
-                if (height > 1.1) {
-                    return ['#ffffff', 30]
-                } else {
-                    return ['#A8A59C', 25]
+        if (height > 0.8) {
+            if(height>0.81){
+                if(height>0.88){
+                    if(height>0.89){
+                        return ['#ffffff', 80]
+                    }else{
+                        return ['#A8A59C', 80]
+                    }
+                }else{
+                    return ['#608038',80]
                 }
-            } else {
-                return ['#608038',22]
+            }else{
+                return ['#c2b280', 80]
             }
 
-        } else if(height > 0.89) {
-            return ['#c2b280', 18]
         }else{
-            return ['#006994', 0]
+            return ['#006994', 80]
         }
     }
 
@@ -75,7 +83,9 @@ let GameMap = function(sizeX,sizeY,nbPoints){
      * @returns {*|number} the perlin value at the position
      */
     this.perlinAtPos = function (posX, posY, sizeX, sizeY) {
-        let perlinAtPos = (this.perlin.perlin(posX  / 25, posY  / 25)+this.perlin.perlin(posX  / 70, posY  / 70)+this.perlin.perlin(posX  / 200, posY  / 200))/3 + 1
+        let perlinAtPos = ((this.perlin.perlin(posX , posY,32)+this.perlin.perlin(posX,posY,16)*0.5+this.perlin.perlin(posX,posY,8)*0.25))
+        perlinAtPos = (perlinAtPos+1)/2
+        perlinAtPos = Math.pow(perlinAtPos,0.2)
         let ratio = 1 - ((posX - sizeX / 2) * (posX - sizeX / 2) + (posY - sizeY / 2) * (posY - sizeY / 2)) / (sizeX * sizeY);
         perlinAtPos = Math.min(perlinAtPos, perlinAtPos * ratio)
         return perlinAtPos
@@ -104,8 +114,98 @@ let GameMap = function(sizeX,sizeY,nbPoints){
     this.heightAndColorAtPos = function (posX, posY, sizeX, sizeY) {
         let perlinAt = this.perlinAtPos(posX, posY, sizeX, sizeY)
         let out = this.colorForHeight(perlinAt)
-        let colour = out[0]
-        return [out[1]>0?Math.min(perlinAt*20, out[1]):15, colour]
+        return [Math.max(perlinAt*100, out[1]), out[0]]
+    }
+
+    this.innerRecu = function(left, right, top, bottom, sizeX, sizeY, recu, colors) {
+        let perlinAt = this.perlinAtPos(left.x, left.y, sizeX, sizeY)
+        let out = this.colorForHeight(perlinAt)
+        let colourLeft = out[0]
+
+        perlinAt = this.perlinAtPos(right.x, right.y, sizeX, sizeY)
+        out = this.colorForHeight(perlinAt)
+        let colourRight = out[0]
+
+        perlinAt = this.perlinAtPos(top.x, top.y, sizeX, sizeY)
+        out = this.colorForHeight(perlinAt)
+        let colourTop = out[0]
+
+        perlinAt = this.perlinAtPos(bottom.x, bottom.y, sizeX, sizeY)
+        out = this.colorForHeight(perlinAt)
+        let colourBottom = out[0]
+
+
+        if (recu != 0) {
+            let posX = bottom.x + ((top.x - bottom.x)/2)
+            let posY = bottom.y + ((top.y - bottom.y)/2)
+            let heightAndColor1 = this.heightAndColorAtPos(posX, posY, sizeX, sizeY)
+            let centerOpp = new THREE.Vector3(posX, posY, heightAndColor1[0])
+
+            posX = (left.x + top.x) / 2
+            posY = (left.y + top.y) / 2
+            let heightAndColor2 = this.heightAndColorAtPos(posX, posY, sizeX, sizeY)
+            let centerTopLeft = new THREE.Vector3(posX, posY, heightAndColor2[0])
+
+            posX = (top.x + right.x) / 2
+            posY = (top.y + right.y) / 2
+            let heightAndColor3 = this.heightAndColorAtPos(posX, posY, sizeX, sizeY)
+            let centerTopRight = new THREE.Vector3(posX, posY, heightAndColor3[0])
+
+            posX = (bottom.x + left.x) / 2
+            posY = (bottom.y + left.y) / 2
+            let heightAndColor4 = this.heightAndColorAtPos(posX, posY, sizeX, sizeY)
+            let centerBottomLeft = new THREE.Vector3(posX, posY, heightAndColor4[0])
+
+            posX = (bottom.x + right.x) / 2
+            posY = (bottom.y + right.y) / 2
+            let heightAndColor5 = this.heightAndColorAtPos(posX, posY, sizeX, sizeY)
+            let centerBottomRight = new THREE.Vector3(posX, posY, heightAndColor5[0])
+
+            this.innerRecu(left, centerOpp, centerTopLeft, centerBottomLeft, sizeX, sizeY, recu - 1, colors)
+            this.innerRecu(centerOpp, right, centerTopRight, centerBottomRight, sizeX, sizeY, recu - 1, colors)
+            this.recuTriangle(top, centerOpp, centerTopLeft,sizeX,sizeY,recu-1,colors)
+            this.recuTriangle(top, centerTopRight, centerOpp,sizeX,sizeY,recu-1,colors)
+            this.recuTriangle(centerBottomLeft, centerOpp, bottom,sizeX,sizeY,recu-1,colors)
+            this.recuTriangle(bottom, centerOpp, centerBottomRight,sizeX,sizeY,recu-1,colors)
+        } else {
+            let key
+            key = this.moyColor(this.moyColor(colourLeft, colourTop), colourBottom)
+            if (colors.get(key.getHex())==null) colors.set(key.getHex(), new Array())
+            colors.get(key.getHex()).push(left, top, bottom)
+
+            key = this.moyColor(this.moyColor(colourTop, colourRight), colourBottom)
+            if (colors.get(key.getHex())==null) colors.set(key.getHex(), new Array())
+            colors.get(key.getHex()).push(top, right, bottom)
+        }
+
+    }
+
+    this.recuTriangle = function(t1,t2,t3,sizeX,sizeY,recu,colors){
+        if(recu!=0){
+            let centerPosX = t3.x + ((t2.x - t3.x)/2)
+            let centerPosY = t3.y + ((t2.y - t3.y)/2)
+            let centerOpColor = this.heightAndColorAtPos(centerPosX,centerPosY,sizeX,sizeY)
+            let centerOpp = new THREE.Vector3((t2.x + t3.x)/2, (t2.y + t3.y)/2,centerOpColor[0])
+
+            let downPointColor = this.heightAndColorAtPos((t1.x + t3.x) / 2,(t1.y + t3.y) / 2,sizeX,sizeY)
+            let downPoint = new THREE.Vector3((t1.x + t3.x) / 2, (t1.y + t3.y) / 2,downPointColor[0])
+
+            let upPointColor = this.heightAndColorAtPos((t1.x + t2.x) / 2,(t1.y + t2.y) / 2,sizeX,sizeY)
+            let upPoint = new THREE.Vector3((t1.x + t2.x) / 2, (t1.y + t2.y) / 2,upPointColor[0])
+
+            this.recuTriangle(t2,centerOpp,upPoint,sizeX,sizeY,recu-1,colors)
+            this.recuTriangle(downPoint,centerOpp,t3,sizeX,sizeY,recu-1,colors)
+            this.innerRecu(t1, centerOpp, upPoint, downPoint, sizeX, sizeY, recu-1, colors)
+        }else{
+            let colorT1 = this.heightAndColorAtPos(t1.x,t1.y,sizeX,sizeY)
+            let colorT2 = this.heightAndColorAtPos(t2.x,t2.y,sizeX,sizeY)
+            let colorT3 = this.heightAndColorAtPos(t3.x,t3.y,sizeX,sizeY)
+            let key
+            key = this.moyColor(this.moyColor(colorT1[1], colorT2[1]), colorT3[1])
+            if (colors.get(key.getHex())==null) colors.set(key.getHex(), new Array())
+            colors.get(key.getHex()).push(t1, t2, t3)
+        }
+
     }
 
 
@@ -126,10 +226,7 @@ let GameMap = function(sizeX,sizeY,nbPoints){
         let colort3 = this.heightAndColorAtPos(points[triangles[i + 2] * 2],points[triangles[i + 2] * 2 + 1],sizeX,sizeY)
         let t3 = new THREE.Vector3(points[triangles[i + 2] * 2], points[triangles[i + 2] * 2 + 1],colort3[0])
 
-        let key
-        key = this.moyColor(this.moyColor(colort1[1], colort2[1]), colort3[1])
-        if (colors.get(key.getHex())==null) colors.set(key.getHex(), new Array())
-        colors.get(key.getHex()).push(t1,t2 , t3)
+        this.recuTriangle(t1,t2,t3,sizeX,sizeY,2,colors)
     }
     this.vertices = Array.from(colors)
 

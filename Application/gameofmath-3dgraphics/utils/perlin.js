@@ -27,7 +27,9 @@ let Perlin = function (xSize, ySize) {
     }
 
 
-    this.perlin = function (x,y){
+    this.perlin = function (x,y,res){
+        x /= res;
+        y /= res;
         let x0 = Math.floor(x)
         let x1 = x0+1;
         let y0 = Math.floor(y)

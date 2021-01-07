@@ -7,7 +7,7 @@ const user_dao = require('gameofmath-db').user_dao
 const mpGain_dao = require('gameofmath-db').mpGain_dao
 const db = require('gameofmath-db').db
 const crypto = require('crypto')
-const renderApi = require('gameofmath-3dgraphics')
+const renderApi = require('gameofmath-mapGeneration')
 const fs = require('fs')
 
 // ##########################################################################################

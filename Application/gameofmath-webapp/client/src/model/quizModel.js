@@ -36,6 +36,12 @@ export function submitAnswer(type, questionID, questionNb, answers, answer) {
 
 }
 
+export function quitQuiz(){
+
+    return Axios.post('api/quiz/quit')
+
+}
+
 
 export function setQuizState(questionNb) {
 
@@ -43,14 +49,13 @@ export function setQuizState(questionNb) {
         getQuestion(questionNb)
             .then((res) => {
 
-                const f = function (image) {
                     if (res.data.question.type === "OPEN") {
                         resolve({
 
                             questionID: res.data.question.questionID,
                             type: res.data.question.type,
                             upperText: res.data.question.upperText,
-                            img: image.default,
+                            img: window.location.origin+'/images' + res.data.question.image,
                             lowerText: res.data.question.lowerText,
 
                         })
@@ -60,19 +65,12 @@ export function setQuizState(questionNb) {
                             questionID: res.data.question.questionID,
                             type: res.data.question.type,
                             upperText: res.data.question.upperText,
-                            img: image.default,
+                            img: window.location.origin+'/images' + res.data.question.image,
                             lowerText: res.data.question.lowerText,
                             answers: res.data.question.answers
 
                         })
                     }
-                }
-                if (res.data.question.image != null && res.data.question.image !== '') {
-                    import('../views/images' + res.data.question.image).then((image) => {
-                        f(image)
-                    })
-                } else f({})
-
 
             })
 

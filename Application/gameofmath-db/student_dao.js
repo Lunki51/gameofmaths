@@ -106,7 +106,7 @@ const StudentDAO = function () {
      */
     this.findAllInClass = function (classID, db = dbD) {
         return new Promise((resolve, reject) => {
-            let request = 'SELECT * FROM Student, Class WHERE classID = ?';
+            let request = 'SELECT * FROM Student WHERE theClass = ?';
             db.all(request, [classID], function (err, rows) {
                 if (err) reject(err);
                 else resolve(rows);
@@ -123,7 +123,7 @@ const StudentDAO = function () {
      */
     this.findAllUserInClass = function (classID, db = dbD) {
         return new Promise((resolve, reject) => {
-            let request = 'SELECT * FROM Student, Class, User WHERE theUser = userID AND classID = ?';
+            let request = 'SELECT * FROM Student, User WHERE theUser = userID AND theClass = ?';
             db.all(request, [classID], function (err, rows) {
                 if (err) reject(err);
                 else resolve(rows);

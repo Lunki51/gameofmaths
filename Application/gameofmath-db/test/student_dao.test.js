@@ -120,17 +120,11 @@ test('get all student in a class', async (done) => {
         done(err);
     });
     expect(data).toContainEqual({
-        classID: 1,
-        grade: '6',
-        name: 'C',
         theUser: 1,
         theClass: 1,
         mp: 0
     });
     expect(data).toContainEqual({
-        classID: 1,
-        grade: '6',
-        name: 'C',
         theUser: 2,
         theClass: 1,
         mp: 50
@@ -143,9 +137,6 @@ test('get all student with user in class', async (done) => {
         done(err);
     });
     expect(data).toContainEqual({
-        classID: 1,
-        grade: '6',
-        name: 'C',
         userID: 1,
         login: 'e19',
         password: 'password1234',
@@ -156,9 +147,6 @@ test('get all student with user in class', async (done) => {
         mp: 0
     });
     expect(data).toContainEqual({
-        classID: 1,
-        grade: '6',
-        name: 'C',
         userID: 2,
         login: 'e20',
         password: 'password1234',

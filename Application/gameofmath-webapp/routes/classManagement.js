@@ -7,6 +7,8 @@ const user_dao = require('gameofmath-db').user_dao
 const mpGain_dao = require('gameofmath-db').mpGain_dao
 const db = require('gameofmath-db').db
 const crypto = require('crypto')
+const renderApi = require('gameofmath-3dgraphics')
+const fs = require('fs')
 
 // ##########################################################################################
 // #################################### CLASS MANAGEMENT ####################################
@@ -48,8 +50,10 @@ router.post('/create', (req, res, next) => {
         grade: grade,
         name: name
     }).then(id => {
-        res.send({returnState: 0, id: id, grade: grade, name: name})
-        //TODO generate map
+        fs.writeFile('./files/maps/m' + id + '.json', JSON.stringify(renderApi.createMap(200, 200, 10000)), err => {
+            if (err) next(err)
+            else res.send({returnState: 0, id: id, grade: grade, name: name})
+        })
     }).catch(err => next(err))
 })
 
@@ -76,7 +80,7 @@ router.post('/rename', (req, res, next) => {
         if (c == null) res.send({returnState: 1, msg: 'The id is incorrect'})
         else {
             c.name = newName
-            class_dao.update(c).then( () => {
+            class_dao.update(c).then(() => {
                 res.send({returnState: 0, nClass: c})
             }).catch(err => next(err))
         }
@@ -127,7 +131,16 @@ router.post('/regenerateMap', (req, res, next) => {
     const id = req.body.id
     if (id == null) return res.send({returnState: 1, msg: 'The class id is incorrect'})
 
-    res.send({returnState: 0}) //TODO
+    class_dao.findByID(id).then(c => {
+        if (c == null) res.send({returnState: 1, msg: 'The class id is incorrect'})
+        else {
+            const m = JSON.stringify(renderApi.createMap(200, 200, 10000))
+            fs.writeFile('./files/maps/m' + id + '.json', m, err => {
+                if (err) next(err)
+                else res.send({returnState: 0})
+            })
+        }
+    })
 })
 
 /**
@@ -150,40 +163,57 @@ router.post('/delete', (req, res, next) => {
 
             db.beginTransaction(function (err, t) {
 
-                t.run('DELETE FROM QuizDone WHERE theGain IN (SELECT mpGainID FROM mpGain, Student WHERE theStudent = theUser AND theClass = ?)' [id], function (err) {
+                t.run('DELETE FROM QuizDone WHERE theGain IN (SELECT mpGainID FROM mpGain, Student WHERE theStudent = theUser AND theClass = ?)', [id], function (err) {
                     if (err) {
                         t.rollback()
                         next(err)
                     } else {
-                        t.run('DELETE FROM MPGain WHERE theStudent IN (SELECT theUser FROM Student WHERE theClass = ?)' [id], function (err) {
+                        t.run('DELETE FROM MPGain WHERE theStudent IN (SELECT theUser FROM Student WHERE theClass = ?)', [id], function (err) {
                             if (err) {
                                 t.rollback()
                                 next(err)
                             } else {
-                                t.run('DELETE FROM User WHERE userID IN (SELECT theUser FROM Student WHERE theClass = ?)' [id], function (err) {
-                                    if (err) {
-                                        t.rollback()
-                                        next(err)
-                                    } else {
-                                        t.run('DELETE FROM Student WHERE theClass = ?)' [id], function (err) {
-                                            if (err) {
-                                                t.rollback()
-                                                next(err)
-                                            } else {
-                                                t.run('DELETE FROM Class WHERE classID = ?)' [id], function (err) {
-                                                    if (err) {
-                                                        t.rollback()
-                                                        next(err)
-                                                    } else {
-                                                        t.commit(err => {
-                                                            if (err) reject(err);
-                                                            else res.send({returnState: 0});
-                                                        });
-                                                    }
-                                                })
-                                            }
-                                        })
-                                    }
+                                console.log(6)
+                                student_dao.findAllInClass(id, t).then(rows => {
+
+                                    const ids = rows.map(k => k.theUser).join(',')
+                                    t.run('DELETE FROM Student WHERE theUser IN (?)', [ids], function (err) {
+                                        if (err) {
+                                            t.rollback()
+                                            next(err)
+                                        } else {
+                                            t.run('DELETE FROM User WHERE userID IN (?)', [ids], function (err) {
+                                                if (err) {
+                                                    t.rollback()
+                                                    next(err)
+                                                } else {
+                                                    t.run('DELETE FROM Class WHERE classID = ?', [id], function (err) {
+                                                        if (err) {
+                                                            t.rollback()
+                                                            next(err)
+                                                        } else {
+                                                            fs.unlink('./files/maps/m' + id + '.json', err => {
+                                                                if (err) {
+                                                                    t.rollback()
+                                                                    next(err)
+                                                                } else {
+                                                                    t.commit(err => {
+                                                                        if (err) next(err);
+                                                                        else res.send({returnState: 0});
+                                                                    });
+                                                                }
+                                                            })
+                                                        }
+                                                    })
+                                                }
+                                            })
+
+                                        }
+                                    })
+
+                                }).catch(err => {
+                                    t.rollback()
+                                    next(err)
                                 })
                             }
                         })
@@ -249,7 +279,10 @@ router.post('/setLastname', (req, res, next) => {
 
     student_dao.findUserByID(userId).then(student => {
         if (student == null) res.send({returnState: 2, msg: 'The student id is incorrect'})
-        else if(student.theClass !== Number(classId)) res.send({returnState: 3, msg: 'The student is not in the class'})
+        else if (student.theClass !== Number(classId)) res.send({
+            returnState: 3,
+            msg: 'The student is not in the class'
+        })
         else {
 
             student.lastname = newName
@@ -288,7 +321,10 @@ router.post('/setFirstname', (req, res, next) => {
 
     student_dao.findUserByID(userId).then(student => {
         if (student == null) res.send({returnState: 2, msg: 'The student id is incorrect'})
-        else if(student.theClass !== Number(classId)) res.send({returnState: 3, msg: 'The student is not in the class'})
+        else if (student.theClass !== Number(classId)) res.send({
+            returnState: 3,
+            msg: 'The student is not in the class'
+        })
         else {
 
             student.firstname = newName
@@ -327,7 +363,10 @@ router.post('/setLogin', (req, res, next) => {
 
     student_dao.findUserByID(userId).then(student => {
         if (student == null) res.send({returnState: 2, msg: 'The student id is incorrect'})
-        else if(student.theClass !== Number(classId)) res.send({returnState: 3, msg: 'The student is not in the class'})
+        else if (student.theClass !== Number(classId)) res.send({
+            returnState: 3,
+            msg: 'The student is not in the class'
+        })
         else {
 
             student.login = newLogin
@@ -362,13 +401,16 @@ router.post('/regeneratePassword', (req, res, next) => {
 
     student_dao.findUserByID(userId).then(student => {
         if (student == null) res.send({returnState: 2, msg: 'The student id is incorrect'})
-        else if(student.theClass !== Number(classId)) res.send({returnState: 3, msg: 'The student is not in the class'})
+        else if (student.theClass !== Number(classId)) res.send({
+            returnState: 3,
+            msg: 'The student is not in the class'
+        })
         else {
 
             const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789'
             var newPassword = ''
             for (let i = 0; i < 12; i++) {
-                newPassword += characters.charAt(Math.floor(Math.random()*characters.length))
+                newPassword += characters.charAt(Math.floor(Math.random() * characters.length))
             }
             student.password = crypto.createHash('sha512').update(newPassword, 'utf-8').digest('hex')
             user_dao.update(student).then(() => {
@@ -398,7 +440,10 @@ router.post('/createStudent', (req, res, next) => {
     const login = req.body.login
     const lastname = req.body.lastname
     const firstname = req.body.firstname
-    if (classId == null || login == null || lastname == null || firstname == null) return res.send({returnState: 1, msg: 'Some/all of the param is/are incorrect'})
+    if (classId == null || login == null || lastname == null || firstname == null) return res.send({
+        returnState: 1,
+        msg: 'Some/all of the param is/are incorrect'
+    })
 
     class_dao.findByID(classId).then(c => {
         if (c == null) res.send({returnState: 2, msg: 'The class id is incorrect'})
@@ -407,7 +452,7 @@ router.post('/createStudent', (req, res, next) => {
             const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789'
             var newPassword = ''
             for (let i = 0; i < 12; i++) {
-                newPassword += characters.charAt(Math.floor(Math.random()*characters.length))
+                newPassword += characters.charAt(Math.floor(Math.random() * characters.length))
             }
 
             student_dao.insertUser({
@@ -419,14 +464,16 @@ router.post('/createStudent', (req, res, next) => {
                 theClass: classId,
                 mp: 0
             }).then(id => {
-                res.send({returnState: 0, student: {
+                res.send({
+                    returnState: 0, student: {
                         userID: id,
                         login: login,
                         lastname: lastname,
                         firstname: firstname,
                         theClass: classId,
                         mp: 0
-                    }, password: newPassword})
+                    }, password: newPassword
+                })
             }).catch(err => next(err))
         }
     }).catch(err => next(err))
@@ -453,7 +500,10 @@ router.post('/deleteStudent', (req, res, next) => {
 
     student_dao.findByID(studentId).then(student => {
         if (student == null) res.send({returnState: 1, msg: 'The student id is incorrect'})
-        else if(student.theClass !== Number(classId)) res.send({returnState: 3, msg: 'The student is not in the class'})
+        else if (student.theClass !== Number(classId)) res.send({
+            returnState: 3,
+            msg: 'The student is not in the class'
+        })
         else {
             db.beginTransaction(function (err, t) {
 
@@ -516,7 +566,10 @@ router.post('/getMP', (req, res, next) => {
 
     student_dao.findByID(studentId).then(student => {
         if (student == null) res.send({returnState: 1, msg: 'The student id is incorrect'})
-        else if(student.theClass !== Number(classId)) res.send({returnState: 3, msg: 'The student is not in the class'})
+        else if (student.theClass !== Number(classId)) res.send({
+            returnState: 3,
+            msg: 'The student is not in the class'
+        })
         else {
             res.send({returnState: 0, mp: student.mp})
         }
@@ -544,7 +597,10 @@ router.post('/getMPArray', (req, res, next) => {
 
     student_dao.findByID(studentId).then(student => {
         if (student == null) res.send({returnState: 1, msg: 'The student id is incorrect'})
-        else if(student.theClass !== Number(classId)) res.send({returnState: 3, msg: 'The student is not in the class'})
+        else if (student.theClass !== Number(classId)) res.send({
+            returnState: 3,
+            msg: 'The student is not in the class'
+        })
         else {
 
             mpGain_dao.findAllByStudent(studentId).then(gains => {

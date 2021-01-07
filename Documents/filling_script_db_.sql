@@ -18,9 +18,9 @@ INSERT INTO CHAPTER VALUES(2,'Multiplication');
 INSERT INTO QUIZ VALUES(1,'true',1);
 INSERT INTO QUIZ VALUES(2,'false',2);
 
-INSERT INTO QUESTION VALUES(1,'Ci dessous un carré','Quelle est la valeur de b ?','/geo/carre1.png','OPEN',1,1);
+INSERT INTO QUESTION VALUES(1,'Ci dessous un carré','Quelle est la valeur de b ?','/questionImages/i1.png','OPEN',1,1);
 
-INSERT INTO QUESTION VALUES(7,'Ci dessous un carré','Quelles affirmations sont vrai?','/geo/carre2.png','QCM',2,1);
+INSERT INTO QUESTION VALUES(7,'Ci dessous un carré','Quelles affirmations sont vrai?','/questionImages/i2.png','QCM',2,1);
 
 INSERT INTO QUESTION VALUES(3,'Combien fait 3*3 ?','','','OPEN',2,2);
 INSERT INTO QUESTION VALUES(4,'Combien fait 3*(-1*3) ?','','','OPEN',4,2);

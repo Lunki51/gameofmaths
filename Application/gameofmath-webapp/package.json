@@ -26,6 +26,7 @@
     "express-session-sqlite": "^2.0.8",
     "gameofmath-db": "file:../gameofmath-db",
     "gameofmath-mapGeneration": "file:../gameofmath-mapGeneration",
+    "multer": "^1.4.2",
     "nodemon": "^2.0.6",
     "pug": "^3.0.0",
     "redis": "^3.0.2",

@@ -10,15 +10,18 @@ let element = document.getElementById(renderer.domElement.id)
 let camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
 let scene = new THREE.Scene();
 scene.background = new THREE.Color("#000000")
-//VARS
-
-//INPUTS
 let mousePressed = false;
 let rotateX = 0, rotateY = 0;
 let scrolled = 100;
 let camDistance = 0;
+var center = new THREE.Vector3(0,0,0)
+let shift = false
+//VARS
+
+//INPUTS
 renderer.domElement.addEventListener("mousedown", function (event) {
     mousePressed = true;
+    if(event.shiftKey)rayCasting(( event.clientX / window.innerWidth ) * 2 - 1,- ( event.clientY / window.innerHeight ) * 2 + 1)
 }, false)
 renderer.domElement.addEventListener("mouseup", function (event) {
     mousePressed = false;
@@ -34,19 +37,37 @@ document.addEventListener("wheel", function (event) {
 }, false)
 //INPUTS
 
-//REQUEST
+//METHODS
 
+function rayCasting(mouseX,mouseY){
+    console.log("RayCasting"+mouseX+":"+mouseY)
+    var rayCaster = new THREE.Raycaster();
+    rayCaster.setFromCamera(new THREE.Vector2(mouseX,mouseY),camera);
+
+    var intersects = rayCaster.intersectObjects(scene.children);
+    console.log(intersects)
+    if(intersects[0]){
+        center = intersects[0].point
+    }
+}
+
+//METHODS
+
+//REQUEST
 let request = new XMLHttpRequest();
 request.onreadystatechange = function () {
     if (request.readyState == 4) {
         //RENDERING METHOD
         const animate = function () {
             requestAnimationFrame(animate);
-            for (let object of scene.children) {
-                object.rotation.y += rotateX
-            }
-            rotateX = 0;
-            rotateY = 0;
+            camDistance -= scrolled;
+            camDistance = Math.max(20,camDistance)
+            camDistance = Math.min(100,camDistance)
+            camera.position.z = center.z-(camDistance * Math.cos(Math.PI/4)) * Math.cos(rotateX)
+            camera.position.x = center.x-(camDistance * Math.cos(Math.PI/4)) * Math.sin(rotateX)
+            camera.position.y = camDistance *Math.sin(Math.PI/4) +80
+            camera.lookAt(center)
+            scrolled=0
             renderer.render(scene, camera);
         }
         //RENDERING METHOD
@@ -60,11 +81,13 @@ request.onreadystatechange = function () {
             let trianglesData = color[1]
             let trianglesColor = color[0]
             let geometry = new THREE.BufferGeometry()
-            let pointsArray = new Float32Array(trianglesData.length * 3)
+            let pointsArray = new Float32Array(trianglesData.length * 3 * 3)
             for (let i = 0; i < trianglesData.length; i++) {
-                pointsArray[i * 3] = trianglesData[i].x - map.sizeX/2
-                pointsArray[i * 3 + 1] = trianglesData[i].z
-                pointsArray[i * 3 + 2] = trianglesData[i].y - map.sizeY/2
+                for(let j=0;j<trianglesData[i].length;j++){
+                    pointsArray[i*9+j*3] = trianglesData[i][j].x - map.sizeX/2
+                    pointsArray[i*9+j*3 +1] = trianglesData[i][j].z
+                    pointsArray[i*9+j*3 +2] = trianglesData[i][j].y - map.sizeY/2
+                }
             }
             geometry.setAttribute('position', new THREE.BufferAttribute(pointsArray, 3));
             let material = new THREE.MeshBasicMaterial({color: trianglesColor, side: THREE.DoubleSide});
@@ -78,16 +101,11 @@ request.onreadystatechange = function () {
         const material = new THREE.MeshBasicMaterial({color: 0x006994, side: THREE.DoubleSide});
         geometry.rotateX(Math.PI / 2)
         const plane = new THREE.Mesh(geometry, material);
-        plane.position.y = 11
+        plane.position.y = 79
         scene.add(plane);
-        scene.fog = new THREE.FogExp2("#87ceeb", 0.002)
+        scene.fog = new THREE.FogExp2("#87ceeb", 0.005)
+        scene.background = new THREE.Color(0x87ceeb)
         //ENVIRONMENT
-
-        //CAMERA
-        camera.position.y = 100
-        camera.position.z = 25
-        camera.rotation.x = -Math.PI / 3
-        //CAMERA
 
         //PAGE
         if (element) document.body.removeChild(element)
@@ -100,5 +118,5 @@ request.onreadystatechange = function () {
 }
 
 //REQUEST
-request.open('GET',"__insert__")
+request.open('GET',"__insert__/map")
 request.send()

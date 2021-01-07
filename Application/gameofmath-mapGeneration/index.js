@@ -1,13 +1,15 @@
 const gameMap = require('./maps/gameMap');
+const express = require('express')
 
 /**
  * The class returned by the application when asking for a new instance
  */
 function GraphicsManager(){
-    this.maps = [];
+
+    this.router = express.Router();
 
     this.setupRouter = function(method){
-        return require('./router')(method)
+        this.router.get('/map',method)
     }
 
     /**
@@ -18,18 +20,9 @@ function GraphicsManager(){
      * @returns {number} the indices of the map to retrieve it later
      */
     this.createMap = function(sizeX,sizeY,nbPoints){
-        this.maps.push(new gameMap(sizeX,sizeY,nbPoints))
-        return this.maps.length-1;
+        return new gameMap(sizeX,sizeY,nbPoints)
      }
 
-    /**
-     * Return the map with the specified indice
-     * @param indice the indice of the map
-     * @returns {*} the map object
-     */
-     this.getMap = function(indice){
-        return this.maps[indice];
-     }
 }
 
 const instance = new GraphicsManager();

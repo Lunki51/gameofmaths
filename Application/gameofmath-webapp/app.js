@@ -7,7 +7,7 @@ const path = require('path');
 const cookieParser = require('cookie-parser');
 const session = require('express-session');
 const SQLiteStore = require('connect-sqlite3')(session);
-const renderApi = require('gameofmath-3dgraphics')
+const renderApi = require('gameofmath-mapGeneration')
 
 //Script's args
 const script_args = process.argv.slice(2);
@@ -43,11 +43,10 @@ app.use(express.static(path.join(__dirname, 'public')));
 //ROUTE
 const apiRouter = require('./routes/api');
 app.use('/api/', apiRouter);
-app.use('/graphics', renderApi.setupRouter(function(){
-    return renderApi.getMap(0)
-}))
-renderApi.createMap(200,200,10000)
-
+app.use('/graphics', renderApi.router)
+renderApi.setupRouter((req,res,next)=>{
+    res.send(renderApi.createMap(200,200,10000))
+})
 
 //Open the server
 app.listen(port_back, () => {

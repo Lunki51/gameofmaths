@@ -1,6 +1,4 @@
-import {GLTFLoader} from "three";
-
-const Perlin = require('../utils/perlin');
+const Perlin = require('./perlin');
 const ddelaunay = require('d3-delaunay');
 const THREE = require('three')
 

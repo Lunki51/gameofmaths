@@ -1,7 +1,7 @@
 {
-  "name": "gameofmath-3dgraphics",
+  "name": "gameofmath-mapGeneration",
   "version": "1.0.0",
-  "description": "The npm module used to render 3D maps on the \"game of math\" webapp",
+  "description": "The npm module used to generate 3D maps on the \"game of math\" webapp",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"

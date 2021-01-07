@@ -1,6 +1,4 @@
-import {GLTFLoader} from "three";
-
-const Perlin = require('../utils/perlin');
+const Perlin = require('./perlin');
 const ddelaunay = require('d3-delaunay');
 const THREE = require('three')
 
@@ -241,11 +239,7 @@ let GameMap = function(sizeX,sizeY,nbPoints){
         let t3 = new THREE.Vector3(points[triangles[i + 2] * 2], points[triangles[i + 2] * 2 + 1],colort3[0])
 
         this.recuTriangle(t1,t2,t3,sizeX,sizeY,2,colors)
-
     }
-
-    //this.generateCastles(colors,5)
-
     this.vertices = Array.from(colors)
 
 }

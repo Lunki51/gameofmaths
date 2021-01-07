@@ -7,7 +7,6 @@ const path = require('path');
 const cookieParser = require('cookie-parser');
 const session = require('express-session');
 const SQLiteStore = require('connect-sqlite3')(session);
-const renderApi = require('gameofmath-mapGeneration')
 
 //Script's args
 const script_args = process.argv.slice(2);
@@ -28,9 +27,10 @@ app.use(session({
     cookie: {
         secure: false,
         httpOnly: true,
-        maxAge: 1000 * 60 * 30
+        maxAge: 48 * 60 * 60000
     },
     store: new SQLiteStore,
+
 }));
 
 
@@ -43,10 +43,6 @@ app.use(express.static(path.join(__dirname, 'public')));
 //ROUTE
 const apiRouter = require('./routes/api');
 app.use('/api/', apiRouter);
-app.use('/graphics', renderApi.router)
-renderApi.setupRouter((req,res,next)=>{
-    res.send(renderApi.createMap(200,200,10000))
-})
 
 //Open the server
 app.listen(port_back, () => {

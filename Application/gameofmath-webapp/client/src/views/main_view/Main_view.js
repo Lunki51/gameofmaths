@@ -1,7 +1,7 @@
 import React, {Component} from 'react';
 
 //MODEL
-import auth, {isAuth} from "../../model/authentification";
+import auth, {getType, isAuth} from "../../model/authentification";
 
 import LoginView from "./main_components/Login_display";
 import {MobileHeader, NavigationBar} from "./main_components/components/global_components";
@@ -61,9 +61,18 @@ class MainView extends Component {
                             document.title = "Game Of Math"
                         }
 
-                        this.setState({
-                            isLogged: res.data.isLogged
+                        getType().then((response) => {
+
+                            if(response.data.returnState === 0){
+                                this.setState({
+                                    isLogged: res.data.isLogged,
+                                    who:response.data.type
+                                })
+                            }
+
                         })
+
+
                     }
                 }
             })

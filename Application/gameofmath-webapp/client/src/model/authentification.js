@@ -35,5 +35,16 @@ export function getUsername(){
 
 }
 
+/**
+ * get the current user type ('student'/'teacher')
+ *
+ * @returns {Promise<AxiosResponse<any>>}
+ */
+export function getType(){
+
+    return Axios.post('/api/user/getType')
+
+}
+
 export default auth;
 

@@ -292,7 +292,7 @@
         flex-flow: row;
         float: right;
         flex-flow: row;
-        top: 25%;
+        top: 50%;
         left: 50%;
         transform: translate(-50%,-50%);
         font-size: 30px;
@@ -438,10 +438,17 @@
 
 
 
+.élément{
+
+    width: 200px;
+
+}
+
 
 /*scroll bar*/
 
 *{
+    margin: 0px;
     scrollbar-width: thin;
     scrollbar-color: var(--text_color) var(--wood_style_color);
 }

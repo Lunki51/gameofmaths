@@ -18,18 +18,21 @@ router.use('/classManagement/', classManagementRouter)
 const class_dao = require('gameofmath-db').class_dao
 router.use('/graphics', renderApi.router)
 
-renderApi.setupRouter(function(req){
+renderApi.setupRouter(function(req,res){
+
+
     if (req.session.isLogged) {
 
         if (req.session.isStudent) {
             const path = './files/maps/m'+req.session.user.theClass+'.json'
             if (fs.existsSync(path)) {
-                return fs.readFileSync(path)
+
+                res.send(fs.readFileSync(path))
             }
         }
 
     }
-    return renderApi.createMap(200,200,10000)
+    res.send(renderApi.createMap(200,200,10000))
 })
 
 

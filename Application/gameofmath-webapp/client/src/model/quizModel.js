@@ -55,7 +55,7 @@ export function setQuizState(questionNb) {
                             questionID: res.data.question.questionID,
                             type: res.data.question.type,
                             upperText: res.data.question.upperText,
-                            img: window.location.origin + res.data.question.image,
+                            img: (res.data.question.image.length !== 0)? window.location.origin + res.data.question.image : null,
                             lowerText: res.data.question.lowerText,
 
                         })
@@ -65,7 +65,7 @@ export function setQuizState(questionNb) {
                             questionID: res.data.question.questionID,
                             type: res.data.question.type,
                             upperText: res.data.question.upperText,
-                            img: window.location.origin + res.data.question.image,
+                            img: (res.data.question.image.length !== 0)? window.location.origin + res.data.question.image : null,
                             lowerText: res.data.question.lowerText,
                             answers: res.data.question.answers
 

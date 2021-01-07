@@ -134,7 +134,7 @@ class NavigationBar extends Component{
     render() {
         return <NavBar>
                     <NavElement icon={image_icon_quiz} id="quiz-btn"  className="navElem_left"   onClick={this.props.quiz} value="quiz"/>
-                    <h1 className="navElem_center" >GAME OF MATH</h1>
+                    <img src={window.location.origin + '/logo/game_of_math_logo.png'} className="navElem_center"/>
                     <NavElement icon={image_icon_user}  className="navElem_right"  onClick={this.props.profile} value={this.state.username}/>
                     <NavElement icon={image_icon_logout}  className="navElem_right"  onClick={this.props.logout} value="deconnexion"/>
                 </NavBar>
@@ -219,7 +219,7 @@ export class MobileHeader extends Component{
 
         return <div className="mobile-header-container">
 
-            <h1 className="mobile-header-title">GAME OF MATH</h1>
+            <img src={window.location.origin + '/logo/game_of_math_logo.png'} className="mobile-header-title"/>
 
         </div>
     }

@@ -330,6 +330,10 @@ class QuizView extends Component {
 
 
 
+
+            console.log(this.state.img)
+
+
             //if the quiz is not done
             if(!this.state.quizDone) {
 

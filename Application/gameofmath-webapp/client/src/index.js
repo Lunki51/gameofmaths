@@ -1,15 +1,8 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import App from './app';
 
-//ROUTE
-import { BrowserRouter } from 'react-router-dom';
+import MainView from "./views/main_view/Main_view";
 
 //Render the views on the root point
-ReactDOM.render(
-    <BrowserRouter>
-        <App/>
-    </BrowserRouter>,
-    document.getElementById('root')
-);
+ReactDOM.render(<MainView/>, document.getElementById('root'));
 

@@ -9,16 +9,7 @@ import Axios from "axios";
  */
 function auth(username, password){
 
-    Axios.post("/api/user/auth",{username,password})
-        .then((response) =>{
-            if(response.data.returnState === 1){
-                alert(response.data.msg)
-            }else if(response.data.returnState === 0){
-                window.location.reload(false);
-            }
-
-        })
-
+    return Axios.post("/api/user/auth",{username,password})
 
 }
 
@@ -30,6 +21,17 @@ function auth(username, password){
 export function isAuth(){
 
    return Axios.post('/api/user/isLogged')
+
+}
+
+/**
+ * get the current user's username
+ *
+ * @returns {Promise<AxiosResponse<any>>}
+ */
+export function getUsername(){
+
+    return Axios.post('/api/user/username')
 
 }
 

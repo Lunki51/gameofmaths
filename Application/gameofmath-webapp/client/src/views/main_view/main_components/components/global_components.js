@@ -1,7 +1,13 @@
 import React, { Component } from 'react';
-import "./global_style.css";
-import Axios from "axios";
+import "../../styles/global_style.css";
+import {getUsername} from "../../../../model/authentification";
 
+
+//IMAGES
+
+const image_icon_user =  "https://img.icons8.com/material-outlined/35/eff0cf/user--v1.png"
+const image_icon_logout =  "https://img.icons8.com/ios-filled/35/eff0cf/login-rounded-right.png"
+const image_icon_quiz =  "https://img.icons8.com/ios/35/eff0cf/help.png"
 
 /**
  * @author Antoine LE BORGNE
@@ -82,7 +88,7 @@ class Button extends Component{
 /**
  * @author Antoine LE BORGNE
  *
- * create a global navigation bar
+ * create the navigation bar
  */
 class NavigationBar extends Component{
 
@@ -94,7 +100,6 @@ class NavigationBar extends Component{
         this.props = props
 
         this.state = {
-            login : false,
             username : ""
         }
 
@@ -105,46 +110,21 @@ class NavigationBar extends Component{
 
         this._isMounted = true;
 
-        Axios.post("/api/user/isLogged",)
-            .then((response) => {
+            //get the current username
+            getUsername().then((response) => {
 
+                    if(this._isMounted) {
 
-
-                if(this._isMounted)
-                    this.setState({
-                        login: response.data.isLogged,
-                    })
-
-
-
-                    if(this.state.login)
-                    Axios.post('/api/user/username')
-                        .then((response) => {
-                            if(this._isMounted)
-                                this.setState({
-                                    username: response.data.username,
-                                })
-
+                        this.setState({
+                            username: response.data.username,
                         })
 
-
-
-            })
-
-
-
-
-    }
-
-    handleLogout = (event) =>{
-        Axios.post("/api/user/logout").then((res) => {
-
-            if(res.data.returnState === 0)
-                this.setState({
-                    login : false
+                    }
                 })
-        })
+
     }
+
+
 
     componentWillUnmount() {
         this._isMounted = false;
@@ -152,44 +132,15 @@ class NavigationBar extends Component{
 
 
     render() {
-        return <>
-
-            <NavBar>
-
-                {this.state.login ? <Login logout={this.handleLogout} username={this.state.username} /> : <NotLogin/>}
-
-            </NavBar>
-            </>
+        return <NavBar>
+                    <NavElement icon={image_icon_quiz} id="quiz-btn"  className="navElem_left"   onClick={this.props.quiz} value="quiz"/>
+                    <h1 className="navElem_center" >GAME OF MATH</h1>
+                    <NavElement icon={image_icon_user}  className="navElem_right"  onClick={this.props.profile} value={this.state.username}/>
+                    <NavElement icon={image_icon_logout}  className="navElem_right"  onClick={this.props.logout} value="deconnexion"/>
+                </NavBar>
     }
 
 }
-
-class NotLogin extends Component{
-
-    render() {
-        return <>
-            <NavElement id="" className="navElem_right" goTo ="/login"  value="connexion"/>
-            <NavElement id="" className="navElem_left" goTo ="/"  value="Accueil"/>
-        </>
-    }
-
-}
-
-
-class Login extends Component{
-
-    render() {
-        return <>
-            <NavElement id="" className="navElem_right"  goTo ={"/profile/" + this.props.username}  value={this.props.username}/>
-            <NavElement id="" className="navElem_right"  onClick={this.props.logout} value="deconnexion"/>
-            <NavElement id="" className="navElem_left"   goTo ="/"  value="Accueil"/>
-            <NavElement id="" className="navElem_left"   goTo ="/chapter"  value="quizz"/>
-        </>
-    }
-
-}
-
-
 
 
 /**
@@ -226,7 +177,13 @@ export class NavElement extends Component{
 
     render() {
         return <>
-            <li className={this.props.className}><a className="navbar_link" onClick={this.props.onClick} href={this.props.goTo}>{this.props.value}</a></li>
+            <li className={this.props.className}>
+
+                <img id={this.props.id} className="navbar_link_icon" onClick={this.props.onClick} src={this.props.icon}/>
+                <a className="navbar_link" onClick={this.props.onClick}>
+                    {this.props.value}
+                </a>
+            </li>
         </>
     }
 
@@ -245,13 +202,26 @@ export class AlertComp extends Component{
 
             <text >{this.props.msg}</text>
 
-            <button value="OK" onClick={() => {
-
-            }}/>
+            <button value="OK" onClick={this.props.onClick}/>
 
         </div>
 
 
+    }
+
+}
+
+
+
+export class MobileHeader extends Component{
+
+    render() {
+
+        return <div className="mobile-header-container">
+
+            <h1 className="mobile-header-title">GAME OF MATH</h1>
+
+        </div>
     }
 
 }

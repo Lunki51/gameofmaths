@@ -21,7 +21,7 @@ function getMap(path){
  */
 router.get('/renderer', async function (req, res, next) {
     res.type('js')
-    res.send( getMap(req.baseUrl+"/map"))
+    res.send( getMap(req.baseUrl))
     //,three:fs.readFileSync(pathApp.join(__dirname,'./utils/three.js')).toString()}
 });
 

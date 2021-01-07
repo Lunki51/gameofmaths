@@ -46,7 +46,7 @@ app.use('/api/', apiRouter);
 app.use('/graphics', renderApi.setupRouter(function(){
     return renderApi.getMap(0)
 }))
-renderApi.createMap(100,100,10000)
+renderApi.createMap(200,200,10000)
 
 
 //Open the server

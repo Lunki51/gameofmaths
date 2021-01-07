@@ -1,3 +1,5 @@
+import {GLTFLoader} from "three";
+
 const Perlin = require('../utils/perlin');
 const ddelaunay = require('d3-delaunay');
 const THREE = require('three')
@@ -171,16 +173,28 @@ let GameMap = function(sizeX,sizeY,nbPoints){
             let key
             key = this.moyColor(this.moyColor(colourLeft, colourTop), colourBottom)
             if (colors.get(key.getHex())==null) colors.set(key.getHex(), new Array())
-            colors.get(key.getHex()).push(left, top, bottom)
+            colors.get(key.getHex()).push([left, top, bottom])
 
             key = this.moyColor(this.moyColor(colourTop, colourRight), colourBottom)
             if (colors.get(key.getHex())==null) colors.set(key.getHex(), new Array())
-            colors.get(key.getHex()).push(top, right, bottom)
+            colors.get(key.getHex()).push([top, right, bottom])
         }
 
     }
 
-    this.recuTriangle = function(t1,t2,t3,sizeX,sizeY,recu,colors){
+    this.generateCastles = function(colors,nbCastle){
+        colors.set(0x000000,new Array())
+        let possiblePositions = colors.get(0x608038)
+        for(let i=0;i<nbCastle;i++){
+            let randPos = Math.random()*possiblePositions.length;
+            let randTile = possiblePositions[Math.trunc(randPos)]
+            possiblePositions.splice(randPos,1)
+            console.log("One castle at position" + randTile[0].x+":"+randTile[0].y+":"+randTile[0].z)
+            colors.get(0x000000).push(randTile)
+        }
+    }
+
+    this.recuTriangle = function(t1,t2,t3,sizeX,sizeY,recu,colors,castle){
         if(recu!=0){
             let centerPosX = t3.x + ((t2.x - t3.x)/2)
             let centerPosY = t3.y + ((t2.y - t3.y)/2)
@@ -203,7 +217,7 @@ let GameMap = function(sizeX,sizeY,nbPoints){
             let key
             key = this.moyColor(this.moyColor(colorT1[1], colorT2[1]), colorT3[1])
             if (colors.get(key.getHex())==null) colors.set(key.getHex(), new Array())
-            colors.get(key.getHex()).push(t1, t2, t3)
+            colors.get(key.getHex()).push([t1, t2, t3])
         }
 
     }
@@ -227,7 +241,11 @@ let GameMap = function(sizeX,sizeY,nbPoints){
         let t3 = new THREE.Vector3(points[triangles[i + 2] * 2], points[triangles[i + 2] * 2 + 1],colort3[0])
 
         this.recuTriangle(t1,t2,t3,sizeX,sizeY,2,colors)
+
     }
+
+    //this.generateCastles(colors,5)
+
     this.vertices = Array.from(colors)
 
 }

@@ -6,7 +6,7 @@ import {Water} from "three/examples/jsm/objects/Water2";
 
 
 /**
- * @author quentin COSNIER
+ * @author Quentin COSNIER
  * @author Antoine LE BORGNE
  *
  * render map on the screen
@@ -24,7 +24,7 @@ class MapView extends Component {
 
 
     /**
-     * render a class's map
+     * Ask to server which map to render and render it
      *
      * @param displayClass the target class
      */
@@ -34,6 +34,7 @@ class MapView extends Component {
 
             Axios.get("/api/graphics/map").then(r => {
 
+                //VARS
                 const renderer = new THREE.WebGLRenderer();
                 renderer.setSize(window.innerWidth, window.innerHeight);
                 let camera = new THREE.PerspectiveCamera(80, window.innerWidth / window.innerHeight, 0.1, 1000);
@@ -73,20 +74,24 @@ class MapView extends Component {
 
                 //METHODS
 
+                /**
+                 * Raycast method used to move the camera when the ray hit an object
+                 * @param mouseX the X position of the mouse on the screen
+                 * @param mouseY the Y position of the mouse on the screen
+                 */
                 function rayCasting(mouseX, mouseY) {
-                    console.log("RayCasting" + mouseX + ":" + mouseY)
                     let rayCaster = new THREE.Raycaster();
                     rayCaster.setFromCamera(new THREE.Vector2(mouseX, mouseY), camera);
 
                     let intersects = rayCaster.intersectObjects(scene.children);
-                    console.log(intersects)
                     if (intersects[0]) {
                         center = intersects[0].point
                     }
                 }
 
-
-                //RENDERING METHOD
+                /**
+                 * Animation function which is a loop
+                 */
                 const animate = function () {
                     requestAnimationFrame(animate);
                     camDistance -= scrolled;
@@ -101,7 +106,7 @@ class MapView extends Component {
 
 
                 }
-                //RENDERING METHOD
+                //METHODS
 
                 //DATA COMPUTATION
                 scene.clear();
@@ -207,24 +212,15 @@ class MapView extends Component {
                 ] ,function(text){
                     scene.background = text
                 });
-
-                const gui = new GUI()
-                const cubeFolder = gui.addFolder("Light")
-                cubeFolder.add(water.position,"x",0,100,1)
-                cubeFolder.add(water.position,"y",0,100,1)
-                cubeFolder.add(water.position,"z",0,100,1)
-                cubeFolder.add(water.rotation,"x",-Math.PI*2,Math.PI*2,0.01)
-                cubeFolder.add(water.rotation,"y",-Math.PI*2,Math.PI*2,0.01)
-                cubeFolder.add(water.rotation,"z",-Math.PI*2,Math.PI*2,0.01)
-                cubeFolder.add(dirLight.position, "y", 0, 500, 1)
-                cubeFolder.add(dirLight, "intensity", 0, 100, 0.01)
-                cubeFolder.open()
                 //ENVIRONMENT
 
+                //PAGE
                 this.mount.appendChild(renderer.domElement);
+                //PAGE
 
                 //RENDERING
                 animate();
+                //RENDERING
             })
 
 

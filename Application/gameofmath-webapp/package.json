@@ -15,6 +15,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@types/dat.gui": "^0.7.6",
     "concurrently": "^5.3.0",
     "connect-redis": "^5.0.0",
     "connect-sqlite3": "^0.9.11",

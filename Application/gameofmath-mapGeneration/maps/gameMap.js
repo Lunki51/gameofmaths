@@ -33,7 +33,7 @@ let GameMap = function(sizeX,sizeY,nbPoints){
             }
 
         }else{
-            return ['#006994', 80]
+            return ['#c2b280', 0]
         }
     }
 
@@ -225,6 +225,7 @@ let GameMap = function(sizeX,sizeY,nbPoints){
     this.sizeY=sizeY
     let startpos = this.computePointsStartingPosition(nbPoints, sizeX,sizeY);
     this.delaunay = ddelaunay.Delaunay.from(startpos)
+
     let colors = new Map();
     let {points, triangles} = this.delaunay;
 

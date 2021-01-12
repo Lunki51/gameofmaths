@@ -8,6 +8,11 @@ function GraphicsManager(){
 
     this.router = express.Router();
 
+    /**
+     * Setup the router to respond to the /map request
+     * This request is used when the user ask for the map
+     * @param method the method to run when choosing a map for the client
+     */
     this.setupRouter = function(method){
         this.router.get('/map',method)
     }

@@ -11,7 +11,9 @@
     --text_color_hover: #eff0cf;
     --border_color : #c8b959;
     --input_color : #244049;
-    --wood_style_color : #1d1913;
+    --wood_style_color : #2b2521;
     --wood_style_color-hover: #0f0d0b;
+    --input_color-active: #1b3037;
+    --button-waring : #366371;
 
 }

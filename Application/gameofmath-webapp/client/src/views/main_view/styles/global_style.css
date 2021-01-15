@@ -139,7 +139,10 @@
         padding-top: 80px;
         overflow: auto;
 
+
     }
+
+
 
 
     /*container component*/
@@ -225,9 +228,28 @@
         grid-template-columns: repeat(4, 2fr);
         padding-top: 80px;
 
-
+        animation-name: slideInSelection;
+        animation-duration: 0.4s;
         overflow: auto;
 
+    }
+
+    @keyframes slideInSelection {
+        from{
+            width: 0%;
+            height: 0%;
+            left: 2%;
+            top: 2%;
+            overflow: hidden;
+        }
+
+        to{
+            width: 75%;
+            height: 500px;
+            left: 50%;
+            top: 50%;
+            overflow: auto;
+        }
     }
 
     /*container component*/
@@ -289,14 +311,12 @@
 
         position: absolute;
 
-        top: 50%;
+        top: 70%;
         left: 50%;
         transform: translate(-50%,-50%);
-        height: 70px;
+        height: 100px;
 
     }
-
-
 
 
     .navElem_left{
@@ -361,8 +381,9 @@
     transform: translateY(-50%);
     -webkit-transform: translateY(-50%);
     -ms-transform: translateY(-50%);
-    font-family: "Game of Thrones";
-    margin-bottom: 50px;
+    margin-top: 10px;
+    margin-bottom: 10px;
+    width: 90%;
     color: var(--text_color);
 
 }
@@ -385,7 +406,23 @@
 
     /*set children*/
     text-align:center;
+    filter: drop-shadow(0px 0px 20px black);
+    animation-duration: 0.4s;
+    animation-name: loginAppear;
+    overflow: hidden;
 
+}
+
+@keyframes loginAppear {
+    from{
+        width: 0px;
+        height: 0px;
+    }
+
+    to{
+        width: 400px;
+        height: 450px;
+    }
 }
 
 /*text field component*/
@@ -395,14 +432,14 @@
     /*set position*/
     position: relative;
     margin-top: 30px;
-    width: 300px;
-    height: 50px;
-    font-size: 20px;
+    width: 80%;
+    height: 70px;
+    font-size: 30px;
 
     background-color: var(--input_color);
     color: var(--text_color);
     border-radius: 10px;
-    border-color: var(--border_color);
+    border:solid 1px var(--border_color);
     padding-left: 10px;
 
 }
@@ -418,15 +455,21 @@
     /*set position*/
     position: relative;
     margin-top: 30px;
-    width: 300px;
-    height: 50px;
+    width: 70%;
+    height: 65px;
     font-size: 20px;
     font-family: "Game of Thrones";
+    border: none;
     background-color: var(--input_color);
     color: var(--text_color);
     border-radius: 10px;
 }
 
+.button:hover{
+
+    background-color: var(--input_color-active);
+
+}
 
 
 .élément{
@@ -436,10 +479,105 @@
 }
 
 
+
+.alert_container{
+
+    position: absolute;
+    width: 420px;
+    height: 200px;
+    border-radius: 10px;
+    background-color: var(--input_color);
+    border: solid 1px var(--border_color);
+    filter: drop-shadow(0px 0px 20px black);
+    transform: translate(-50%, -50%);
+    left: 50%;
+    top: 50%;
+    animation-name: alertAppear;
+    animation-duration: 1s;
+    text-align: center;
+}
+
+@keyframes alertAppear {
+
+    form{
+        left: 0%;
+        top: 0%;
+        width: 0px;
+        height: 0px;
+    }
+
+    to{
+        left: 50%;
+        top: 50%;
+        width: 420px;
+        height: 200px;
+    }
+
+}
+
+.warning_msg{
+    position: relative;
+    font-size: 20px;
+    width: 100%;
+    top: 50px;
+    color: var(--text_color);
+
+
+
+}
+
+.warning_btn_section{
+
+    position: absolute;
+    width: 100%;
+    display: flex;
+    bottom: 0px;
+    justify-content: space-around;
+
+}
+
+.warning_ok_btn{
+
+
+    background-color: var(--button-waring);
+    width: 40%;
+    height: 45px;
+    left: 50%;
+    bottom: 20px;
+    color: var(--text_color);
+    font-size: 30px;
+    border: none;
+    border-radius:10px;
+    margin: 10px;
+}
+
+.warning_cancel_btn{
+
+    background-color: var(--button-waring);
+    margin: 10px;
+    width: 40%;
+    height: 45px;
+    left: 50%;
+    bottom: 20px;
+    color: var(--text_color);
+    font-size: 30px;
+    border: none;
+    border-radius:10px;
+}
+
+.warning_cancel_btn:hover{
+    background-color: var(--input_color-active);
+}
+
+.warning_ok_btn:hover{
+    background-color: var(--input_color-active);
+}
+
+
 /*scroll bar*/
 
 *{
     margin: 0px;
     scrollbar-width: thin;
-    scrollbar-color: var(--text_color) var(--wood_style_color);
+    scrollbar-color: var(--text_color) transparent;
 }

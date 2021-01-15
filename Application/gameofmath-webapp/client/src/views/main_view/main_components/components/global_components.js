@@ -27,7 +27,7 @@ class ContainerTitle extends Component{
         return<>
         
             <div className={this.props.className}>
-                <h1 className="container-title">{this.props.title}</h1>
+                <img className="container-title" src={window.location.origin + "/logo/game_of_math_logo.png"}/>
                 {this.props.children}
             </div>
         
@@ -134,7 +134,7 @@ class NavigationBar extends Component{
     render() {
         return <NavBar>
                     <NavElement icon={image_icon_quiz} id="quiz-btn"  className="navElem_left"   onClick={this.props.quiz} value="quiz"/>
-                    <img src={window.location.origin + '/logo/game_of_math_logo.png'} className="navElem_center"/>
+                    <img src={window.location.origin + '/logo/banner_gom.png'} className="navElem_center"/>
                     <NavElement icon={image_icon_user}  className="navElem_right"  onClick={this.props.profile} value={this.state.username}/>
                     <NavElement icon={image_icon_logout}  className="navElem_right"  onClick={this.props.logout} value="deconnexion"/>
                 </NavBar>
@@ -175,6 +175,9 @@ export class NavElement extends Component{
 
 
 
+
+
+
     render() {
         return <>
             <li className={this.props.className}>
@@ -191,19 +194,28 @@ export class NavElement extends Component{
 }
 
 
-export class AlertComp extends Component{
+export class Warning extends Component{
+
+
+
+
 
 
     render() {
 
         return <div className="alert_container">
+            <text className="warning_msg">{this.props.msg}</text>
 
-
-
-            <text >{this.props.msg}</text>
-
-            <button value="OK" onClick={this.props.onClick}/>
-
+            <div className="warning_btn_section">
+            {(this.props.cancel) ?
+                <>
+                    <button className="warning_ok_btn"  onClick={this.props.okClick}>Ok</button>
+                    <button className="warning_cancel_btn" onClick={this.props.cancel}>Annuler</button>
+                </>
+                :
+                <button className="warning_ok_btn" onClick={this.props.okClick}>OK</button>
+            }
+            </div>
         </div>
 
 

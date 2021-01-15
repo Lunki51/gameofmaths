@@ -1,0 +1,421 @@
+
+
+body{
+    background-color: var(--primary_color);
+}
+
+
+/*------------| mobile display |-------------*/
+@media (max-width: 800px) {
+
+}
+/*------------| desktop display |------------*/
+@media (min-width: 800px) {
+
+    .classManagement-container{
+
+        position: relative;
+
+        margin: 0px;
+
+        left: 0px;
+        top: 0px;
+
+
+        background-color: var(--primary_color);
+
+
+        bottom: 0px;
+        border-right: solid 1px var(--border_color);
+        border-bottom: solid 1px var(--border_color);
+        width: 300px;
+
+        filter: drop-shadow(0px  0px 5px black);
+
+
+
+    }
+
+    .classManagement-scroll{
+
+        position: relative;
+
+        overflow: auto;
+
+        transform: translateX(-50%);
+        left: 50%;
+        top: 0px;
+        width: 95%;
+        height: 60%;
+        border-top: solid 1px var(--text_color);
+
+
+
+    }
+
+
+    .class-container{
+
+        position: relative;
+
+        transform: translateX(-50%);
+        left: 50%;
+        margin-top: 10px;
+        margin-bottom: 10px;
+
+        width: 90%;
+        height: 80px;
+
+        border-radius: 10px;
+
+        background-color: var(--input_color);
+    }
+
+
+
+    .class-name-low{
+
+        position: absolute;
+
+        top: 0px;
+        display:inline-block;
+        width : 130px;
+        overflow:hidden;
+
+        font-size: 30px;
+        color: var(--text_color);
+
+
+
+
+        padding-left: 5px;
+
+    }
+
+    .class-grade-low{
+
+        position: relative;
+
+
+        display:inline-block;
+        width : 130px;
+        overflow:hidden;
+
+        font-size: 20px;
+        color: var(--text_color);
+
+        margin-top: 10px;
+        padding-left: 5px;
+
+    }
+
+    .class-modify-btn{
+        margin: 5px;
+        float: right;
+    }
+
+    .class-delete-btn{
+        float: right;
+        margin: 5px;
+    }
+
+    .class-goto-btn{
+        margin: 5px;
+        float: right;
+    }
+
+    .class-search-input{
+        position: relative;
+
+        margin-top: 20px;
+        margin-bottom: 20px;
+        transform: translateX(-50%);
+        left: 50%;
+
+        height: 30px;
+        border: none;
+        border-radius: 10px;
+
+        padding-left: 5px;
+        background-color: var(--input_color);
+        color: var(--text_color);
+
+
+    }
+
+    .class-search-input:focus{
+        box-shadow:0px 0px 0px 1px var(--border_color) inset;
+    }
+
+    .add-class-button{
+
+        position: relative;
+        margin-top: 20px;
+        margin-bottom: 20px;
+        height: 60px;
+        width: 200px;
+        border: none;
+        border-radius: 10px;
+        background-color: var(--input_color);
+        transform: translateX(-50%);
+        left: 50%;
+        color: var(--text_color);
+        font-size: 25px;
+
+    }
+
+    .add-class-button:hover{
+        background-color: var(--input_color-active);
+    }
+
+    .navigation-teacher-container{
+
+        width: 100%;
+        height: 60px;
+        border-bottom: solid 1px var(--border_color);
+        background-color: var(--wood_style_color);
+        filter: drop-shadow(0px  0px 5px black);
+    }
+
+    .navigation-teacher-logo{
+
+        position: relative;
+        transform: translate(-50%,10%);
+        left: 50%;
+        height: 90px;
+
+    }
+
+    .navigation-teacher-logout-btn{
+
+        position: relative;
+        float: right;
+        height: 40px;
+        width: 100px;
+        margin: 10px;
+
+        background-color: var(--input_color);
+        border: none;
+        border-radius: 10px;
+        color: var(--text_color);
+
+    }
+
+    .navigation-teacher-logout-btn:hover{
+        background-color: var(--input_color-active);
+
+    }
+
+
+    .class-creation-form-container{
+        position: absolute;
+        width: 400px;
+        height: 300px;
+        background-color: var(--primary_color);
+        border: solid 1px var(--border_color);
+        border-radius: 10px;
+        transform: translate(-50%,-50%);
+        left: 50%;
+        top: 50%;
+        filter: drop-shadow(0px 0px 20px black);
+        animation-duration: 0.4s;
+        animation-name: slideInForm;
+        overflow: hidden;
+
+    }
+
+    @keyframes slideInForm {
+        from {
+            width: 0px;
+            height: 0px;
+            left: 5%;
+            top: 20%;
+        }
+
+        to {
+            width: 400px;
+            height: 300px;
+            left: 50%;
+            top: 50%;
+        }
+    }
+
+    .edit-class-name-input{
+        position: relative;
+
+        margin-top: 20px;
+        transform: translateX(-50%);
+        left: 50%;
+        width: 85%;
+        height: 70px;
+        border: none;
+        border-radius: 10px;
+
+        padding-left: 5px;
+        background-color: var(--input_color);
+        font-size: 40px;
+        color: var(--text_color);
+    }
+
+    .edit-class-name-input:focus{
+        box-shadow:0px 0px 0px 1px var(--border_color) inset;
+    }
+
+
+    .edit-class-grade-input{
+        position: relative;
+
+        margin-top: 20px;
+        transform: translateX(-50%);
+        left: 50%;
+        width: 85%;
+        height: 70px;
+        border: none;
+        border-radius: 10px;
+
+        padding-left: 5px;
+        background-color: var(--input_color);
+        font-size: 40px;
+        color: var(--text_color);
+    }
+
+    .edit-class-grade-input:focus{
+        box-shadow:0px 0px 0px 1px var(--border_color) inset;
+    }
+
+    .class-creation-button-section{
+        width: 100%;
+        height: 60px;
+        justify-content: space-around;
+        display: flex;
+
+    }
+
+    .edit-class-cancel-btn{
+
+
+        border: none;
+        margin-top: 20px;
+        margin-left: 10px;
+        width: 150px;
+        height: 65px;
+        border-radius: 10px;
+        font-size: 30px;
+        background-color: var(--input_color);
+        color: var(--text_color);
+    }
+
+    .edit-class-cancel-btn:hover{
+        background-color: var(--input_color-active);
+    }
+
+    .edit-class-validate-btn{
+
+
+        border: none;
+        margin-top: 20px;
+        margin-right: 10px;
+        width: 150px;
+        height: 65px;
+        border-radius: 10px;
+        font-size: 30px;
+        background-color: var(--input_color);
+        color: var(--text_color);
+    }
+
+    .edit-class-validate-btn:hover{
+        background-color: var(--input_color-active);
+    }
+
+    /* class manager */
+    .class-data-container{
+
+        position: absolute;
+        transform: translate(-40%, -45%);
+        left: 50%;
+        top: 50%;
+        width: 80%;
+        height: 80%;
+        background-color: var(--input_color);
+        border-radius: 20px;
+        border: solid 1px var(--border_color);
+        overflow: auto;
+        animation-name: slideInClassData;
+        animation-duration: 0.3s;
+        filter: drop-shadow(0px 0px 20px black);
+    }
+
+    @keyframes slideInClassData {
+        from {
+            width:0%;
+            height: 0%;
+            left: 5%;
+            top: 20%;
+        }
+
+        to {
+            width: 80%;
+            height: 80%;
+            left: 50%;
+            top: 50%;
+        }
+    }
+
+    .class-title-data{
+
+        position: absolute;
+        color: var(--text_color);
+        font-size: 30px;
+        font-family: "Game of Thrones";
+        transform: translateX(-50%);
+        left: 50%;
+        top: 10px;
+
+    }
+
+    .student-list-container{
+        transform: translateY(-50%);
+        top: 50%;
+        position: absolute;
+        width: 400px;
+        background-color: var(--primary_color);
+        border: solid 1px var(--border_color);
+        border-radius: 10px;
+        height: 90%;
+        right: 20px;
+    }
+
+    .student-list{
+
+        position: relative;
+        transform: translateX(-50%);
+        left: 50%;
+        margin-top: 10px;
+        border-top: solid 1px var(--border_color);
+        border-bottom: solid 1px var(--border_color);
+        width: 90%;
+        height: 70%;
+        margin-bottom: 20px;
+        overflow: auto;
+
+    }
+
+    .student-info-container{
+
+        position: relative;
+        transform: translateX(-50%);
+        left: 50%;
+        margin-top: 10px;
+        width: 90%;
+        height: 60px;
+        border-radius:10px ;
+        background-color: var(--input_color);
+
+    }
+
+    .student-name-lower{
+
+    }
+
+
+}

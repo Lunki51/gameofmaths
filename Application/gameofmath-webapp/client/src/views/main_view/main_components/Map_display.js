@@ -2,7 +2,9 @@ import React, {Component} from 'react';
 import Axios from "axios";
 import * as THREE from 'three'
 import {GUI} from "dat.gui";
-import {Water} from "three/examples/jsm/objects/Water2";
+import {Water} from "three/examples/jsm/objects/Water";
+import {Sky} from "three/examples/jsm/objects/Sky"
+import {Vector3} from "three";
 
 
 /**
@@ -36,11 +38,9 @@ class MapView extends Component {
 
                 const renderer = new THREE.WebGLRenderer();
                 renderer.setSize(window.innerWidth, window.innerHeight);
-                let camera = new THREE.PerspectiveCamera(80, window.innerWidth / window.innerHeight, 0.1, 1000);
-                renderer.outputEncoding = THREE.sRGBEncoding;
-                renderer.shadowMap.enabled = true;
+                renderer.setPixelRatio( window.devicePixelRatio );
+                let camera = new THREE.PerspectiveCamera(80, window.innerWidth / window.innerHeight, 1, 2000);
                 let scene = new THREE.Scene();
-                scene.background = new THREE.Color("#000000")
                 let mousePressed = false;
                 let rotateX = 0, rotateY = 0;
                 let scrolled = 100;
@@ -67,7 +67,7 @@ class MapView extends Component {
                 }, false)
                 window.addEventListener("resize", function (event) {
                     renderer.setSize(window.innerWidth, window.innerHeight);
-                    camera = new THREE.PerspectiveCamera(80, window.innerWidth / window.innerHeight, 0.1, 1000);
+                    camera = new THREE.PerspectiveCamera(80, window.innerWidth / window.innerHeight, 1, 20000);
                 })
                 //INPUTS
 
@@ -85,18 +85,21 @@ class MapView extends Component {
                     }
                 }
 
+                let water,sun;
 
                 //RENDERING METHOD
                 const animate = function () {
+
                     requestAnimationFrame(animate);
                     camDistance -= scrolled;
-                    camDistance = Math.max(20, camDistance)
-                    camDistance = Math.min(100, camDistance)
+                    //camDistance = Math.max(20, camDistance)
+                    //camDistance = Math.min(100, camDistance)
                     camera.position.z = center.z - (camDistance * Math.cos(Math.PI / 4)) * Math.cos(rotateX)
                     camera.position.x = center.x - (camDistance * Math.cos(Math.PI / 4)) * Math.sin(rotateX)
                     camera.position.y = camDistance * Math.sin(Math.PI / 4) + 80
                     camera.lookAt(center)
                     scrolled = 0
+                    water.material.uniforms[ 'time' ].value += 1.0 / 60.0;
                     renderer.render(scene, camera);
 
 
@@ -134,14 +137,11 @@ class MapView extends Component {
                         }
 
                     }
-                    console.table(pointsArray)
                     geometry.setAttribute('normal', new THREE.BufferAttribute(normalsArray, 3))
                     geometry.setAttribute('position', new THREE.BufferAttribute(pointsArray, 3));
                     geometry.computeBoundingSphere()
-                    let material = new THREE.MeshLambertMaterial({color: trianglesColor});
+                    let material = new THREE.MeshStandardMaterial({color: trianglesColor});
                     let mesh = new THREE.Mesh(geometry, material)
-                    mesh.castShadow = true;
-                    mesh.receiveShadow = true;
                     scene.add(mesh)
 
 
@@ -150,74 +150,83 @@ class MapView extends Component {
                 //DATA COMPUTATION
 
                 //ENVIRONMENT
-                const geometry = new THREE.PlaneGeometry(1000, 1000);
-                let water = new Water(geometry,{color: 0x2389da,
-                    scale: 1000,
-                    flowDirection: new THREE.Vector2( 1, 1 ),
-                    textureWidth: 1024,
-                    textureHeight: 1024
-                } )
-                water.rotation.x = 3*Math.PI/2
-                water.position.y=80
-                scene.add(water);
-                scene.fog = new THREE.FogExp2("#8BA6BB", 0.001)
-                scene.background = new THREE.Color(0x87ceeb)
+                sun = new THREE.Vector3();
 
-                let planeGeo = new THREE.PlaneBufferGeometry(1000, 1000);
-                let mat = new THREE.MeshBasicMaterial({color : 0xc2b280,side: THREE.DoubleSide })
-                let planeMesh = new THREE.Mesh(planeGeo,mat)
-                planeMesh.rotation.x = Math.PI/2
-                planeMesh.position.y  = 0
-                scene.add(planeMesh)
+                // Water
 
+                const waterGeometry = new THREE.PlaneBufferGeometry( 10000, 10000 );
 
-                const dirLight = new THREE.DirectionalLight(0xffffff, 1);
-                dirLight.color.setHSL(0.1, 1, 0.95);
-                dirLight.position.multiplyScalar(30);
-                scene.add(dirLight);
+                water = new Water(
+                    waterGeometry,
+                    {
+                        textureWidth: 512,
+                        textureHeight: 512,
+                        waterNormals: new THREE.TextureLoader().load( 'mapData/waternormals.jpg', function ( texture ) {
 
-                dirLight.castShadow = true;
+                            texture.wrapS = texture.wrapT = THREE.RepeatWrapping;
 
-                dirLight.shadow.mapSize.width = 2048;
-                dirLight.shadow.mapSize.height = 2048;
+                        } ),
+                        alpha: 5.0,
+                        sunDirection: new THREE.Vector3(0 ,-1,0),
+                        sunColor: 0xffffff,
+                        waterColor: 0x001e0f,
+                        distortionScale: 3.7
+                    }
+                );
 
-                const d = 50;
+                water.rotation.x = -Math.PI / 2;
+                water.position.y = 80;
 
-                dirLight.shadow.camera.left = -d;
-                dirLight.shadow.camera.right = d;
-                dirLight.shadow.camera.top = d;
-                dirLight.shadow.camera.bottom = -d;
+                scene.add( water );
 
-                dirLight.shadow.camera.far = 1000;
-                dirLight.shadow.bias = -0.0001;
+                // Skybox
 
-                const dirLightHelper = new THREE.DirectionalLightHelper(dirLight, 10);
-                scene.add(dirLightHelper);
+                const sky = new Sky();
+                sky.scale.setScalar( 450000 );
+                scene.add( sky );
 
-                const light = new THREE.PointLight(0xffffff,1)
-                scene.add(light)
+                const skyUniforms = sky.material.uniforms;
 
-                const loader = new THREE.CubeTextureLoader();
-                loader.setPath( 'mapData/texture/' );
+                skyUniforms[ 'turbidity' ].value = 5;
+                skyUniforms[ 'rayleigh' ].value = 2;
+                skyUniforms[ 'mieCoefficient' ].value = 0.005;
+                skyUniforms[ 'mieDirectionalG' ].value = 0.8;
 
-                const textureCube = loader.load( [
-                    'right.png', 'left.png',
-                    'top.png', 'bottom.png',
-                    'center.png', 'back.png'
-                ] ,function(text){
-                    scene.background = text
-                });
+                const parameters = {
+                    inclination: 0.49,
+                    azimuth: 0.205
+                };
 
+                const pmremGenerator = new THREE.PMREMGenerator( renderer );
+
+                function updateSun() {
+
+                    const theta = Math.PI * ( parameters.inclination - 0.5 );
+                    const phi = 2 * Math.PI * ( parameters.azimuth - 0.5 );
+
+                    sun.x = Math.cos( phi );
+                    sun.y = Math.sin( phi ) * Math.sin( theta );
+                    sun.z = Math.sin( phi ) * Math.cos( theta );
+
+                    sky.material.uniforms[ 'sunPosition' ].value.copy( sun );
+                    water.material.uniforms[ 'sunDirection' ].value.copy( sun ).normalize();
+
+                    console.log(water.material.uniforms['sunDirection'].value)
+                    scene.environment = pmremGenerator.fromScene( sky ).texture;
+
+                }
+
+                updateSun();
+
+                const waterUniforms = water.material.uniforms;
                 const gui = new GUI()
                 const cubeFolder = gui.addFolder("Light")
-                cubeFolder.add(water.position,"x",0,100,1)
-                cubeFolder.add(water.position,"y",0,100,1)
-                cubeFolder.add(water.position,"z",0,100,1)
-                cubeFolder.add(water.rotation,"x",-Math.PI*2,Math.PI*2,0.01)
-                cubeFolder.add(water.rotation,"y",-Math.PI*2,Math.PI*2,0.01)
-                cubeFolder.add(water.rotation,"z",-Math.PI*2,Math.PI*2,0.01)
-                cubeFolder.add(dirLight.position, "y", 0, 500, 1)
-                cubeFolder.add(dirLight, "intensity", 0, 100, 0.01)
+                cubeFolder.add( waterUniforms.distortionScale, 'value', 0, 8, 0.1 ).name( 'distortionScale' );
+                cubeFolder.add( waterUniforms.size, 'value', 0.1, 10, 0.1 ).name( 'size' );
+                cubeFolder.add( waterUniforms.alpha, 'value', 0.9, 1, .001 ).name( 'alpha' );
+                const folderSky = gui.addFolder( 'Sky' );
+                folderSky.add( parameters, 'inclination', 0, 0.5, 0.0001 ).onChange( updateSun );
+                folderSky.add( parameters, 'azimuth', 0, 1, 0.0001 ).onChange( updateSun );
                 cubeFolder.open()
                 //ENVIRONMENT
 

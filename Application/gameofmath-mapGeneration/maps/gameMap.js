@@ -1,6 +1,8 @@
 const Perlin = require('./perlin');
 const ddelaunay = require('d3-delaunay');
 const THREE = require('three')
+const {createCanvas,loadImage} = require('canvas')
+const fs = require('fs')
 
 /**
  * Represent a map in the application
@@ -10,6 +12,9 @@ const THREE = require('three')
  */
 let GameMap = function(sizeX,sizeY,nbPoints){
     this.perlin = new Perlin(sizeX,sizeY);
+
+
+
 
     /**
      *
@@ -85,6 +90,7 @@ let GameMap = function(sizeX,sizeY,nbPoints){
     this.perlinAtPos = function (posX, posY, sizeX, sizeY) {
         let perlinAtPos = ((this.perlin.perlin(posX , posY,32)+this.perlin.perlin(posX,posY,16)*0.5+this.perlin.perlin(posX,posY,8)*0.25))
         perlinAtPos = (perlinAtPos+1)/2
+
         perlinAtPos = Math.pow(perlinAtPos,0.2)
         let ratio = 1 - ((posX - sizeX / 2) * (posX - sizeX / 2) + (posY - sizeY / 2) * (posY - sizeY / 2)) / (sizeX * sizeY);
         perlinAtPos = Math.min(perlinAtPos, perlinAtPos * ratio)
@@ -219,7 +225,31 @@ let GameMap = function(sizeX,sizeY,nbPoints){
         }
 
     }
+    let bufferOne = new Uint8ClampedArray(sizeX * sizeY * 4); // have enough bytes
+    for(var y = 0; y < sizeY; y++) {
+        for(var x = 0; x < sizeX; x++) {
+            var pos = (y * sizeY + x) * 4; // position in buffer based on x and y
+            bufferOne[pos  ] = 255*this.perlinAtPos(x , y,sizeX,sizeY);           // some R value [0, 255]
+            bufferOne[pos+1] = 255*this.perlinAtPos(x , y,sizeX,sizeY);         // some G value
+            bufferOne[pos+2] = 255*this.perlinAtPos(x , y,sizeX,sizeY);       // some B value
+            bufferOne[pos+3] = 255;           // set alpha channel
+        }
+    }
 
+    // create off-screen canvas element
+    var canvas = createCanvas(200,200),
+        ctx = canvas.getContext('2d');
+
+// create imageData object
+    var idata = ctx.createImageData(sizeX, sizeY);
+
+// set our buffer as source
+    idata.data.set(bufferOne);
+
+// update canvas with new data
+    ctx.putImageData(idata, 0, 0);
+
+    fs.writeFileSync('tmp/image.png', canvas.toBuffer());
 
     this.sizeX=sizeX
     this.sizeY=sizeY
@@ -241,6 +271,9 @@ let GameMap = function(sizeX,sizeY,nbPoints){
 
         this.recuTriangle(t1,t2,t3,sizeX,sizeY,2,colors)
     }
+
+
+
     this.vertices = Array.from(colors)
 
 }

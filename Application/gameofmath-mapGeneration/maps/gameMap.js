@@ -1,8 +1,6 @@
 const Perlin = require('./perlin');
 const ddelaunay = require('d3-delaunay');
 const THREE = require('three')
-const {createCanvas,loadImage} = require('canvas')
-const fs = require('fs')
 
 /**
  * Represent a map in the application
@@ -13,13 +11,11 @@ const fs = require('fs')
 let GameMap = function(sizeX,sizeY,nbPoints){
     this.perlin = new Perlin(sizeX,sizeY);
 
-
-
-
     /**
-     *
-     * @param height
-     * @returns {[string, number]}
+     * Return the good color of the soil and minimum height for a given perlin height
+     * @param height the perlin height to check
+     * @returns {[string, number]} an array that contain the color in first position and the minimum size in second
+     * position
      */
     this.colorForHeight = function (height) {
         if (height > 0.8) {
@@ -65,6 +61,7 @@ let GameMap = function(sizeX,sizeY,nbPoints){
     }
 
     /**
+     * Legacy
      * Move the specified points with lloyd relaxation
      * @param points the points to edit
      */
@@ -90,7 +87,6 @@ let GameMap = function(sizeX,sizeY,nbPoints){
     this.perlinAtPos = function (posX, posY, sizeX, sizeY) {
         let perlinAtPos = ((this.perlin.perlin(posX , posY,32)+this.perlin.perlin(posX,posY,16)*0.5+this.perlin.perlin(posX,posY,8)*0.25))
         perlinAtPos = (perlinAtPos+1)/2
-
         perlinAtPos = Math.pow(perlinAtPos,0.2)
         let ratio = 1 - ((posX - sizeX / 2) * (posX - sizeX / 2) + (posY - sizeY / 2) * (posY - sizeY / 2)) / (sizeX * sizeY);
         perlinAtPos = Math.min(perlinAtPos, perlinAtPos * ratio)
@@ -123,6 +119,18 @@ let GameMap = function(sizeX,sizeY,nbPoints){
         return [Math.max(perlinAt*100, out[1]), out[0]]
     }
 
+    /**
+     * Recursive method to compute more precise triangles in a diamond shape
+     * @param left the left point of the diamond
+     * @param right the right point of the diamond
+     * @param top the top point of the diamond
+     * @param bottom the bottom point of the diamond
+     * @param sizeX the X size of the global map model
+     * @param sizeY the Y size of the global map model
+     * @param recu a number representing the number of times the recursive function as to iterate before adding
+     * triangles, the more means a better definition but longer generation time
+     * @param colors a map that contains the points for each colors used to return the computed data
+     */
     this.innerRecu = function(left, right, top, bottom, sizeX, sizeY, recu, colors) {
         let perlinAt = this.perlinAtPos(left.x, left.y, sizeX, sizeY)
         let out = this.colorForHeight(perlinAt)
@@ -186,19 +194,18 @@ let GameMap = function(sizeX,sizeY,nbPoints){
 
     }
 
-    this.generateCastles = function(colors,nbCastle){
-        colors.set(0x000000,new Array())
-        let possiblePositions = colors.get(0x608038)
-        for(let i=0;i<nbCastle;i++){
-            let randPos = Math.random()*possiblePositions.length;
-            let randTile = possiblePositions[Math.trunc(randPos)]
-            possiblePositions.splice(randPos,1)
-            console.log("One castle at position" + randTile[0].x+":"+randTile[0].y+":"+randTile[0].z)
-            colors.get(0x000000).push(randTile)
-        }
-    }
-
-    this.recuTriangle = function(t1,t2,t3,sizeX,sizeY,recu,colors,castle){
+    /**
+     * Recursive method to compute more precise triangles in a triangle shape
+     * @param t1 the first point of the triangle
+     * @param t2 the second point of the triangle
+     * @param t3 the third point of the triangle
+     * @param sizeX the X size of the global map model
+     * @param sizeY the Y size of the global map model
+     * @param recu a number representing the number of times the recursive function as to iterate before adding
+     * triangles, the more means a better definition but longer generation time
+     * @param colors a map that contains the points for each colors used to return the computed data
+     */
+    this.recuTriangle = function(t1,t2,t3,sizeX,sizeY,recu,colors){
         if(recu!=0){
             let centerPosX = t3.x + ((t2.x - t3.x)/2)
             let centerPosY = t3.y + ((t2.y - t3.y)/2)
@@ -225,40 +232,21 @@ let GameMap = function(sizeX,sizeY,nbPoints){
         }
 
     }
-    let bufferOne = new Uint8ClampedArray(sizeX * sizeY * 4); // have enough bytes
-    for(var y = 0; y < sizeY; y++) {
-        for(var x = 0; x < sizeX; x++) {
-            var pos = (y * sizeY + x) * 4; // position in buffer based on x and y
-            bufferOne[pos  ] = 255*this.perlinAtPos(x , y,sizeX,sizeY);           // some R value [0, 255]
-            bufferOne[pos+1] = 255*this.perlinAtPos(x , y,sizeX,sizeY);         // some G value
-            bufferOne[pos+2] = 255*this.perlinAtPos(x , y,sizeX,sizeY);       // some B value
-            bufferOne[pos+3] = 255;           // set alpha channel
-        }
-    }
 
-    // create off-screen canvas element
-    var canvas = createCanvas(200,200),
-        ctx = canvas.getContext('2d');
-
-// create imageData object
-    var idata = ctx.createImageData(sizeX, sizeY);
-
-// set our buffer as source
-    idata.data.set(bufferOne);
-
-// update canvas with new data
-    ctx.putImageData(idata, 0, 0);
-
-    fs.writeFileSync('tmp/image.png', canvas.toBuffer());
 
     this.sizeX=sizeX
     this.sizeY=sizeY
+
+    //Compute the starting points of the map
     let startpos = this.computePointsStartingPosition(nbPoints, sizeX,sizeY);
+    //Create a delaunay graph based on the generated points
     this.delaunay = ddelaunay.Delaunay.from(startpos)
 
     let colors = new Map();
+    //Retrieve the data from the delaunay graph
     let {points, triangles} = this.delaunay;
 
+    //For each triangles in the delaunay graph
     for (let i = 0; i < triangles.length; i += 3) {
         let colort1 = this.heightAndColorAtPos(points[triangles[i] * 2],points[triangles[i] * 2 + 1],sizeX,sizeY)
         let t1 = new THREE.Vector3(points[triangles[i] * 2], points[triangles[i] * 2 + 1],colort1[0])
@@ -271,9 +259,7 @@ let GameMap = function(sizeX,sizeY,nbPoints){
 
         this.recuTriangle(t1,t2,t3,sizeX,sizeY,2,colors)
     }
-
-
-
+    //Store locally the map as an array
     this.vertices = Array.from(colors)
 
 }

@@ -12,10 +12,25 @@ let Perlin = function (xSize, ySize) {
         this.gradient[256+i] = ran;
     }
 
+    /**
+     * Linear interpolate between two points
+     * @param a0 the x point to interpolate
+     * @param a1 the y point to interpolate
+     * @param w the interpolant
+     * @returns {number} the midway point
+     */
     this.lerp = function (a0,a1,w){
         return (1.0-w)*a0+w*a1;
     }
 
+    /**
+     * Compute the dot product between the gradient and the point
+     * @param ix x indice of the gradient map
+     * @param iy y indice of the gradient map
+     * @param x X position of the perlin noise researched
+     * @param y Y position of the perlin noise researched
+     * @returns {number} the dot product
+     */
     this.dotGridGradient = function (ix,iy,x,y){
         let dx = x - ix;
         let dy = y- iy;
@@ -23,6 +38,13 @@ let Perlin = function (xSize, ySize) {
     }
 
 
+    /**
+     * Compute the perlin value for a specified location
+     * @param x the x position
+     * @param y the y position
+     * @param res the resolution of the perlin map
+     * @returns {number} the perlin value at the specified location
+     */
     this.perlin = function (x,y,res){
         let tempX,tempY;
         let x0,y0,ii,jj,gi0,gi1,gi2,gi3;

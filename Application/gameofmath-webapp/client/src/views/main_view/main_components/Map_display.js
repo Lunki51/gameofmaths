@@ -49,6 +49,7 @@ class MapView extends Component {
         }
     }
 
+
     animate = () => {
         requestAnimationFrame(this.animate);
         this.state.inputVars.camDistance -= this.state.inputVars.scrolled;
@@ -213,6 +214,7 @@ class MapView extends Component {
         this.updateSun();
     }
 
+
     updateSun = () => {
         const theta = Math.PI * (this.state.sunParameters.inclination - 0.5);
         const phi = 2 * Math.PI * (this.state.sunParameters.azimuth - 0.5);
@@ -228,14 +230,16 @@ class MapView extends Component {
 
     }
 
+
     setupGui =() =>{
         const waterUniforms = this.state.water.material.uniforms;
         let skyUniforms = this.state.sky.material.uniforms;
         const gui = new GUI()
-        const cubeFolder = gui.addFolder("Light")
+        const cubeFolder = gui.addFolder("Water")
         cubeFolder.add(waterUniforms.distortionScale, 'value', 0, 8, 0.1).name('distortionScale');
         cubeFolder.add(waterUniforms.size, 'value', 0.1, 100, 0.1).name('size');
         cubeFolder.add(waterUniforms.alpha, 'value', 0.9, 1, .001).name('alpha');
+        cubeFolder.add(this.state.water.position, 'y', 0, 100, .1);
         const folderSky = gui.addFolder('Sky');
         folderSky.add(this.state.sunParameters, 'inclination', 0, 0.5, 0.0001).onChange(this.updateSun);
         folderSky.add(this.state.sunParameters, 'azimuth', 0, 1, 0.0001).onChange(this.updateSun);
@@ -245,8 +249,11 @@ class MapView extends Component {
         folderSky.add(skyUniforms.mieCoefficient, 'value', 0, 5, 0.01).onChange(this.updateSun).name('mieCoefficient')
         folderSky.add(skyUniforms.mieDirectionalG, 'value', 0, 5, 0.01).onChange(this.updateSun).name('mieDirectionalG')
 
+
+
         cubeFolder.open()
     }
+
 
     reloadScene = () =>{
         Axios.get("/api/graphics/map").then(r => {

@@ -33,7 +33,7 @@ renderApi.setupRouter(function(req,res){
         }
 
     }
-    res.send(renderApi.createMap(200,200,10000))
+    res.send(renderApi.createMap(1000,1000,10000))
 })
 
 

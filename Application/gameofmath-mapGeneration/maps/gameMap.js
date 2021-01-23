@@ -1,6 +1,8 @@
 const Perlin = require('./perlin');
 const ddelaunay = require('d3-delaunay');
 const THREE = require('three')
+const fs = require('fs')
+const {createCanvas} = require('canvas')
 
 /**
  * Represent a map in the application
@@ -8,8 +10,9 @@ const THREE = require('three')
  * @param sizeY the y size of the map
  * @param nbPoints the number of points in the map
  */
-let GameMap = function(sizeX,sizeY,nbPoints){
-    this.perlin = new Perlin(sizeX,sizeY);
+let GameMap = function (sizeX, sizeY, nbPoints) {
+    this.heightPerlin = new Perlin(sizeX, sizeY);
+    this.biomePerlin = new Perlin(sizeX,sizeY);
 
     /**
      * Return the good color of the soil and minimum height for a given perlin height
@@ -17,23 +20,49 @@ let GameMap = function(sizeX,sizeY,nbPoints){
      * @returns {[string, number]} an array that contain the color in first position and the minimum size in second
      * position
      */
-    this.colorForHeight = function (height) {
-        if (height > 0.8) {
-            if(height>0.81){
-                if(height>0.88){
-                    if(height>0.89){
-                        return ['#ffffff', 80]
+    this.colorForHeight = function (height,biome) {
+        if(biome==undefined)console.log("problem")
+        if (height > 0.805) {
+            if (height > 0.89) {
+                if (height > 1) {
+                    //SNOW
+                    return ['#ffffff', 80]
+                } else {
+                    if(biome>0.33){
+                        if(biome>0.66){
+                            //MOUTAINS
+                            return ['#A8A59C', 80]
+                        }else{
+                            //TUNDRA
+                            return ['#e4e8dc',80]
+                        }
                     }else{
-                        return ['#A8A59C', 80]
+                        //TAIGA
+                            return ['#a49864',80]
+                    }
+
+                }
+            } else {
+                if(biome>0.25){
+                    if(biome>0.5){
+                        //SAVANNA
+                        return ['#bd8d5b',0]
+                    }else{
+                        if(biome>0.75){
+                            //FOREST
+                            return ['#2cb42c', 0]
+                        }else{
+                            //GRASSLAND
+                            return ['#608038', 0]
+                        }
                     }
                 }else{
-                    return ['#608038',80]
+                    //DESERT
+                    return ['#c2b280', 0]
                 }
-            }else{
-                return ['#c2b280', 80]
             }
-
-        }else{
+        } else {
+            //SAND
             return ['#c2b280', 0]
         }
     }
@@ -45,14 +74,14 @@ let GameMap = function(sizeX,sizeY,nbPoints){
      * @param sizeY the y size of the map
      * @returns {[]} an array that represent the position of all the marked points
      */
-    this.computePointsStartingPosition = function(nbPoints,sizeX,sizeY){
+    this.computePointsStartingPosition = function (nbPoints, sizeX, sizeY) {
         let markedPoints = [];
 
-        for(let i=0;i<nbPoints;){
-            let posX = Math.floor(Math.random() * Math.floor(sizeX-1));
-            let posY = Math.floor(Math.random() * Math.floor(sizeY-1));
-            if(!markedPoints.includes([posX,posY])){
-                markedPoints.push([posX,posY]);
+        for (let i = 0; i < nbPoints;) {
+            let posX = Math.floor(Math.random() * Math.floor(sizeX - 1));
+            let posY = Math.floor(Math.random() * Math.floor(sizeY - 1));
+            if (!markedPoints.includes([posX, posY])) {
+                markedPoints.push([posX, posY]);
                 i++;
             }
         }
@@ -65,12 +94,12 @@ let GameMap = function(sizeX,sizeY,nbPoints){
      * Move the specified points with lloyd relaxation
      * @param points the points to edit
      */
-    this.LloydRelax = function(points){
-        for(let i=0;i<100;i++){
-            for(let j=0;j<100;j++){
-                let cell = this.delaunay.find(i,j);
-                points[cell] = (points[cell*2]+i)/2
-                points[cell+1] = (points[cell*2+1]+j)/2
+    this.LloydRelax = function (points) {
+        for (let i = 0; i < 100; i++) {
+            for (let j = 0; j < 100; j++) {
+                let cell = this.delaunay.find(i, j);
+                points[cell] = (points[cell * 2] + i) / 2
+                points[cell + 1] = (points[cell * 2 + 1] + j) / 2
             }
         }
     }
@@ -85,12 +114,24 @@ let GameMap = function(sizeX,sizeY,nbPoints){
      * @returns {*|number} the perlin value at the position
      */
     this.perlinAtPos = function (posX, posY, sizeX, sizeY) {
-        let perlinAtPos = ((this.perlin.perlin(posX , posY,32)+this.perlin.perlin(posX,posY,16)*0.5+this.perlin.perlin(posX,posY,8)*0.25))
-        perlinAtPos = (perlinAtPos+1)/2
-        perlinAtPos = Math.pow(perlinAtPos,0.2)
-        let ratio = 1 - ((posX - sizeX / 2) * (posX - sizeX / 2) + (posY - sizeY / 2) * (posY - sizeY / 2)) / (sizeX * sizeY);
-        perlinAtPos = Math.min(perlinAtPos, perlinAtPos * ratio)
+        let perlinAtPos = this.perlinOctave(posX,posY,this.heightPerlin)
+        perlinAtPos = Math.pow(perlinAtPos, 0.2)
+        let ratio = 1 - ((posX - sizeX / 2) * (posX - sizeX / 2) + (posY - sizeY / 2) * (posY - sizeY / 2)) / (sizeX* sizeY);
+        perlinAtPos *= ratio
+        if (perlinAtPos > 0.88) {
+            perlinAtPos = 0.88 + Math.pow(perlinAtPos, 5) - Math.pow(0.88, 5)
+        }
         return perlinAtPos
+    }
+
+    this.biomeAtPos = function(posX,posY){
+        let perlinAtPos = this.perlinOctave(posX,posY,this.biomePerlin);
+        return perlinAtPos;
+    }
+
+    this.perlinOctave = function(posX,posY,perlin){
+        let perlinAtPos = perlin.perlin(posX, posY, 128) + perlin.perlin(posX, posY, 64) * 0.5 + perlin.perlin(posX, posY, 32) * 0.25 + perlin.perlin(posX, posY, 16) * 0.125  + perlin.perlin(posX, posY, 8) * 0.0625 + perlin.perlin(posX, posY, 4) * 0.03125
+        return (perlinAtPos + 1) / 2
     }
 
     /**
@@ -114,9 +155,10 @@ let GameMap = function(sizeX,sizeY,nbPoints){
      * @returns {[number, *]} an array that contains the height at position 0 and the color at position 1
      */
     this.heightAndColorAtPos = function (posX, posY, sizeX, sizeY) {
-        let perlinAt = this.perlinAtPos(posX, posY, sizeX, sizeY)
-        let out = this.colorForHeight(perlinAt)
-        return [Math.max(perlinAt*100, out[1]), out[0]]
+        let heihtNoise = this.perlinAtPos(posX, posY, sizeX, sizeY)
+        let biomeNoise = this.biomeAtPos(posX,posY);
+        let out = this.colorForHeight(heihtNoise,biomeNoise)
+        return [Math.max(heihtNoise * 100, out[1]), out[0]]
     }
 
     /**
@@ -131,27 +173,26 @@ let GameMap = function(sizeX,sizeY,nbPoints){
      * triangles, the more means a better definition but longer generation time
      * @param colors a map that contains the points for each colors used to return the computed data
      */
-    this.innerRecu = function(left, right, top, bottom, sizeX, sizeY, recu, colors) {
-        let perlinAt = this.perlinAtPos(left.x, left.y, sizeX, sizeY)
-        let out = this.colorForHeight(perlinAt)
+    this.innerRecu = function (left, right, top, bottom, sizeX, sizeY, recu, colors) {
+        let out = this.colorForHeight(this.perlinAtPos(left.x, left.y, sizeX, sizeY),this.biomeAtPos(left.x,left.y))
         let colourLeft = out[0]
 
         perlinAt = this.perlinAtPos(right.x, right.y, sizeX, sizeY)
-        out = this.colorForHeight(perlinAt)
+        out = this.colorForHeight(perlinAt,this.biomeAtPos(right.x,right.y))
         let colourRight = out[0]
 
         perlinAt = this.perlinAtPos(top.x, top.y, sizeX, sizeY)
-        out = this.colorForHeight(perlinAt)
+        out = this.colorForHeight(perlinAt,this.biomeAtPos(top.x,top.y))
         let colourTop = out[0]
 
         perlinAt = this.perlinAtPos(bottom.x, bottom.y, sizeX, sizeY)
-        out = this.colorForHeight(perlinAt)
+        out = this.colorForHeight(perlinAt,this.biomeAtPos(bottom.x, bottom.y))
         let colourBottom = out[0]
 
 
         if (recu != 0) {
-            let posX = bottom.x + ((top.x - bottom.x)/2)
-            let posY = bottom.y + ((top.y - bottom.y)/2)
+            let posX = bottom.x + ((top.x - bottom.x) / 2)
+            let posY = bottom.y + ((top.y - bottom.y) / 2)
             let heightAndColor1 = this.heightAndColorAtPos(posX, posY, sizeX, sizeY)
             let centerOpp = new THREE.Vector3(posX, posY, heightAndColor1[0])
 
@@ -177,18 +218,18 @@ let GameMap = function(sizeX,sizeY,nbPoints){
 
             this.innerRecu(left, centerOpp, centerTopLeft, centerBottomLeft, sizeX, sizeY, recu - 1, colors)
             this.innerRecu(centerOpp, right, centerTopRight, centerBottomRight, sizeX, sizeY, recu - 1, colors)
-            this.recuTriangle(top, centerOpp, centerTopLeft,sizeX,sizeY,recu-1,colors)
-            this.recuTriangle(top, centerTopRight, centerOpp,sizeX,sizeY,recu-1,colors)
-            this.recuTriangle(centerBottomLeft, centerOpp, bottom,sizeX,sizeY,recu-1,colors)
-            this.recuTriangle(bottom, centerOpp, centerBottomRight,sizeX,sizeY,recu-1,colors)
+            this.recuTriangle(top, centerOpp, centerTopLeft, sizeX, sizeY, recu - 1, colors)
+            this.recuTriangle(top, centerTopRight, centerOpp, sizeX, sizeY, recu - 1, colors)
+            this.recuTriangle(centerBottomLeft, centerOpp, bottom, sizeX, sizeY, recu - 1, colors)
+            this.recuTriangle(bottom, centerOpp, centerBottomRight, sizeX, sizeY, recu - 1, colors)
         } else {
             let key
             key = this.moyColor(this.moyColor(colourLeft, colourTop), colourBottom)
-            if (colors.get(key.getHex())==null) colors.set(key.getHex(), new Array())
+            if (colors.get(key.getHex()) == null) colors.set(key.getHex(), new Array())
             colors.get(key.getHex()).push([left, top, bottom])
 
             key = this.moyColor(this.moyColor(colourTop, colourRight), colourBottom)
-            if (colors.get(key.getHex())==null) colors.set(key.getHex(), new Array())
+            if (colors.get(key.getHex()) == null) colors.set(key.getHex(), new Array())
             colors.get(key.getHex()).push([top, right, bottom])
         }
 
@@ -205,61 +246,61 @@ let GameMap = function(sizeX,sizeY,nbPoints){
      * triangles, the more means a better definition but longer generation time
      * @param colors a map that contains the points for each colors used to return the computed data
      */
-    this.recuTriangle = function(t1,t2,t3,sizeX,sizeY,recu,colors){
-        if(recu!=0){
-            let centerPosX = t3.x + ((t2.x - t3.x)/2)
-            let centerPosY = t3.y + ((t2.y - t3.y)/2)
-            let centerOpColor = this.heightAndColorAtPos(centerPosX,centerPosY,sizeX,sizeY)
-            let centerOpp = new THREE.Vector3((t2.x + t3.x)/2, (t2.y + t3.y)/2,centerOpColor[0])
+    this.recuTriangle = function (t1, t2, t3, sizeX, sizeY, recu, colors) {
+        if (recu != 0) {
+            let centerPosX = t3.x + ((t2.x - t3.x) / 2)
+            let centerPosY = t3.y + ((t2.y - t3.y) / 2)
+            let centerOpColor = this.heightAndColorAtPos(centerPosX, centerPosY, sizeX, sizeY)
+            let centerOpp = new THREE.Vector3((t2.x + t3.x) / 2, (t2.y + t3.y) / 2, centerOpColor[0])
 
-            let downPointColor = this.heightAndColorAtPos((t1.x + t3.x) / 2,(t1.y + t3.y) / 2,sizeX,sizeY)
-            let downPoint = new THREE.Vector3((t1.x + t3.x) / 2, (t1.y + t3.y) / 2,downPointColor[0])
+            let downPointColor = this.heightAndColorAtPos((t1.x + t3.x) / 2, (t1.y + t3.y) / 2, sizeX, sizeY)
+            let downPoint = new THREE.Vector3((t1.x + t3.x) / 2, (t1.y + t3.y) / 2, downPointColor[0])
 
-            let upPointColor = this.heightAndColorAtPos((t1.x + t2.x) / 2,(t1.y + t2.y) / 2,sizeX,sizeY)
-            let upPoint = new THREE.Vector3((t1.x + t2.x) / 2, (t1.y + t2.y) / 2,upPointColor[0])
+            let upPointColor = this.heightAndColorAtPos((t1.x + t2.x) / 2, (t1.y + t2.y) / 2, sizeX, sizeY)
+            let upPoint = new THREE.Vector3((t1.x + t2.x) / 2, (t1.y + t2.y) / 2, upPointColor[0])
 
-            this.recuTriangle(t2,centerOpp,upPoint,sizeX,sizeY,recu-1,colors)
-            this.recuTriangle(downPoint,centerOpp,t3,sizeX,sizeY,recu-1,colors)
-            this.innerRecu(t1, centerOpp, upPoint, downPoint, sizeX, sizeY, recu-1, colors)
-        }else{
-            let colorT1 = this.heightAndColorAtPos(t1.x,t1.y,sizeX,sizeY)
-            let colorT2 = this.heightAndColorAtPos(t2.x,t2.y,sizeX,sizeY)
-            let colorT3 = this.heightAndColorAtPos(t3.x,t3.y,sizeX,sizeY)
+            this.recuTriangle(t2, centerOpp, upPoint, sizeX, sizeY, recu - 1, colors)
+            this.recuTriangle(downPoint, centerOpp, t3, sizeX, sizeY, recu - 1, colors)
+            this.innerRecu(t1, centerOpp, upPoint, downPoint, sizeX, sizeY, recu - 1, colors)
+        } else {
+            let colorT1 = this.heightAndColorAtPos(t1.x, t1.y, sizeX, sizeY)
+            let colorT2 = this.heightAndColorAtPos(t2.x, t2.y, sizeX, sizeY)
+            let colorT3 = this.heightAndColorAtPos(t3.x, t3.y, sizeX, sizeY)
             let key
             key = this.moyColor(this.moyColor(colorT1[1], colorT2[1]), colorT3[1])
-            if (colors.get(key.getHex())==null) colors.set(key.getHex(), new Array())
+            if (colors.get(key.getHex()) == null) colors.set(key.getHex(), new Array())
             colors.get(key.getHex()).push([t1, t2, t3])
         }
 
     }
 
 
-    this.sizeX=sizeX
-    this.sizeY=sizeY
+    this.sizeX = sizeX
+    this.sizeY = sizeY
 
-    //Compute the starting points of the map
-    let startpos = this.computePointsStartingPosition(nbPoints, sizeX,sizeY);
-    //Create a delaunay graph based on the generated points
+//Compute the starting points of the map
+    let startpos = this.computePointsStartingPosition(nbPoints, sizeX, sizeY);
+//Create a delaunay graph based on the generated points
     this.delaunay = ddelaunay.Delaunay.from(startpos)
 
     let colors = new Map();
-    //Retrieve the data from the delaunay graph
+//Retrieve the data from the delaunay graph
     let {points, triangles} = this.delaunay;
 
-    //For each triangles in the delaunay graph
+//For each triangles in the delaunay graph
     for (let i = 0; i < triangles.length; i += 3) {
-        let colort1 = this.heightAndColorAtPos(points[triangles[i] * 2],points[triangles[i] * 2 + 1],sizeX,sizeY)
-        let t1 = new THREE.Vector3(points[triangles[i] * 2], points[triangles[i] * 2 + 1],colort1[0])
+        let colort1 = this.heightAndColorAtPos(points[triangles[i] * 2], points[triangles[i] * 2 + 1], sizeX, sizeY)
+        let t1 = new THREE.Vector3(points[triangles[i] * 2], points[triangles[i] * 2 + 1], colort1[0])
 
-        let colort2 = this.heightAndColorAtPos(points[triangles[i + 1] * 2],points[triangles[i + 1] * 2 + 1],sizeX,sizeY)
-        let t2 = new THREE.Vector3(points[triangles[i + 1] * 2], points[triangles[i + 1] * 2 + 1],colort2[0])
+        let colort2 = this.heightAndColorAtPos(points[triangles[i + 1] * 2], points[triangles[i + 1] * 2 + 1], sizeX, sizeY)
+        let t2 = new THREE.Vector3(points[triangles[i + 1] * 2], points[triangles[i + 1] * 2 + 1], colort2[0])
 
-        let colort3 = this.heightAndColorAtPos(points[triangles[i + 2] * 2],points[triangles[i + 2] * 2 + 1],sizeX,sizeY)
-        let t3 = new THREE.Vector3(points[triangles[i + 2] * 2], points[triangles[i + 2] * 2 + 1],colort3[0])
+        let colort3 = this.heightAndColorAtPos(points[triangles[i + 2] * 2], points[triangles[i + 2] * 2 + 1], sizeX, sizeY)
+        let t3 = new THREE.Vector3(points[triangles[i + 2] * 2], points[triangles[i + 2] * 2 + 1], colort3[0])
 
-        this.recuTriangle(t1,t2,t3,sizeX,sizeY,2,colors)
+        this.recuTriangle(t1, t2, t3, sizeX, sizeY, 2, colors)
     }
-    //Store locally the map as an array
+//Store locally the map as an array
     this.vertices = Array.from(colors)
 
 }

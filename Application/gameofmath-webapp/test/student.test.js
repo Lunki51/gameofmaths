@@ -23,7 +23,7 @@ beforeAll(async (done) => {
         classID: -1,
         grade: '6',
         name: 'C'
-    });
+    }).catch(done);
     await student_dao.insertUser({
         userID: -1,
         login: 'login1',
@@ -32,7 +32,7 @@ beforeAll(async (done) => {
         firstname: 'prenom',
         theClass: 1,
         mp: 20
-    });
+    }).catch(done);
     done();
 });
 
@@ -66,21 +66,21 @@ describe('Test the getMPArray path', () => {
             type: 'QUIZ',
             date: new Date(500000),
             theStudent: 1
-        })
+        }).catch(done)
         await mpGain_dao.insert({
             mpGainID: -1,
             amount: 20,
             type: 'QUIZ',
             date: new Date(550000),
             theStudent: 1
-        })
+        }).catch(done)
         await mpGain_dao.insert({
             mpGainID: -1,
             amount: 15,
             type: 'QUIZ',
             date: new Date(850000),
             theStudent: 1
-        })
+        }).catch(done)
 
         const rep = await postC(res, '/api/student/getMPArray').send().catch(done);
         expect(rep.body).toEqual({

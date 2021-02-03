@@ -1,8 +1,8 @@
 const Perlin = require('./perlin');
 const ddelaunay = require('d3-delaunay');
 const THREE = require('three')
-const fs = require('fs')
-const {createCanvas} = require('canvas')
+const PoissonDiskSampling = require('poisson-disk-sampling');
+
 
 /**
  * Represent a map in the application
@@ -21,7 +21,6 @@ let GameMap = function (sizeX, sizeY, nbPoints) {
      * position
      */
     this.colorForHeight = function (height,biome) {
-        if(biome==undefined)console.log("problem")
         if (height > 0.805) {
             if (height > 0.89) {
                 if (height > 1) {
@@ -34,20 +33,17 @@ let GameMap = function (sizeX, sizeY, nbPoints) {
                             return ['#A8A59C', 80]
                         }else{
                             //TUNDRA
-                            return ['#e4e8dc',80]
+                            return ['#d9c5a9',80]
                         }
                     }else{
                         //TAIGA
-                            return ['#a49864',80]
+                            return ['#295D52',80]
                     }
 
                 }
             } else {
                 if(biome>0.25){
                     if(biome>0.5){
-                        //SAVANNA
-                        return ['#bd8d5b',0]
-                    }else{
                         if(biome>0.75){
                             //FOREST
                             return ['#2cb42c', 0]
@@ -55,6 +51,9 @@ let GameMap = function (sizeX, sizeY, nbPoints) {
                             //GRASSLAND
                             return ['#608038', 0]
                         }
+                    }else{
+                        //SAVANNA
+                        return ['#bd8d5b',0]
                     }
                 }else{
                     //DESERT
@@ -174,47 +173,26 @@ let GameMap = function (sizeX, sizeY, nbPoints) {
      * @param colors a map that contains the points for each colors used to return the computed data
      */
     this.innerRecu = function (left, right, top, bottom, sizeX, sizeY, recu, colors) {
-        let out = this.colorForHeight(this.perlinAtPos(left.x, left.y, sizeX, sizeY),this.biomeAtPos(left.x,left.y))
-        let colourLeft = out[0]
-
-        perlinAt = this.perlinAtPos(right.x, right.y, sizeX, sizeY)
-        out = this.colorForHeight(perlinAt,this.biomeAtPos(right.x,right.y))
-        let colourRight = out[0]
-
-        perlinAt = this.perlinAtPos(top.x, top.y, sizeX, sizeY)
-        out = this.colorForHeight(perlinAt,this.biomeAtPos(top.x,top.y))
-        let colourTop = out[0]
-
-        perlinAt = this.perlinAtPos(bottom.x, bottom.y, sizeX, sizeY)
-        out = this.colorForHeight(perlinAt,this.biomeAtPos(bottom.x, bottom.y))
-        let colourBottom = out[0]
-
-
         if (recu != 0) {
             let posX = bottom.x + ((top.x - bottom.x) / 2)
             let posY = bottom.y + ((top.y - bottom.y) / 2)
-            let heightAndColor1 = this.heightAndColorAtPos(posX, posY, sizeX, sizeY)
-            let centerOpp = new THREE.Vector3(posX, posY, heightAndColor1[0])
+            let centerOpp = new THREE.Vector2(posX, posY)
 
             posX = (left.x + top.x) / 2
             posY = (left.y + top.y) / 2
-            let heightAndColor2 = this.heightAndColorAtPos(posX, posY, sizeX, sizeY)
-            let centerTopLeft = new THREE.Vector3(posX, posY, heightAndColor2[0])
+            let centerTopLeft = new THREE.Vector2(posX, posY)
 
             posX = (top.x + right.x) / 2
             posY = (top.y + right.y) / 2
-            let heightAndColor3 = this.heightAndColorAtPos(posX, posY, sizeX, sizeY)
-            let centerTopRight = new THREE.Vector3(posX, posY, heightAndColor3[0])
+            let centerTopRight = new THREE.Vector2(posX, posY)
 
             posX = (bottom.x + left.x) / 2
             posY = (bottom.y + left.y) / 2
-            let heightAndColor4 = this.heightAndColorAtPos(posX, posY, sizeX, sizeY)
-            let centerBottomLeft = new THREE.Vector3(posX, posY, heightAndColor4[0])
+            let centerBottomLeft = new THREE.Vector3(posX, posY)
 
             posX = (bottom.x + right.x) / 2
             posY = (bottom.y + right.y) / 2
-            let heightAndColor5 = this.heightAndColorAtPos(posX, posY, sizeX, sizeY)
-            let centerBottomRight = new THREE.Vector3(posX, posY, heightAndColor5[0])
+            let centerBottomRight = new THREE.Vector3(posX, posY)
 
             this.innerRecu(left, centerOpp, centerTopLeft, centerBottomLeft, sizeX, sizeY, recu - 1, colors)
             this.innerRecu(centerOpp, right, centerTopRight, centerBottomRight, sizeX, sizeY, recu - 1, colors)
@@ -223,14 +201,8 @@ let GameMap = function (sizeX, sizeY, nbPoints) {
             this.recuTriangle(centerBottomLeft, centerOpp, bottom, sizeX, sizeY, recu - 1, colors)
             this.recuTriangle(bottom, centerOpp, centerBottomRight, sizeX, sizeY, recu - 1, colors)
         } else {
-            let key
-            key = this.moyColor(this.moyColor(colourLeft, colourTop), colourBottom)
-            if (colors.get(key.getHex()) == null) colors.set(key.getHex(), new Array())
-            colors.get(key.getHex()).push([left, top, bottom])
-
-            key = this.moyColor(this.moyColor(colourTop, colourRight), colourBottom)
-            if (colors.get(key.getHex()) == null) colors.set(key.getHex(), new Array())
-            colors.get(key.getHex()).push([top, right, bottom])
+            this.recuTriangle(left,top,bottom,sizeX,sizeY,0,colors)
+            this.recuTriangle(top,right,bottom,sizeX,sizeY,0,colors)
         }
 
     }
@@ -246,18 +218,11 @@ let GameMap = function (sizeX, sizeY, nbPoints) {
      * triangles, the more means a better definition but longer generation time
      * @param colors a map that contains the points for each colors used to return the computed data
      */
-    this.recuTriangle = function (t1, t2, t3, sizeX, sizeY, recu, colors) {
+    this.recuTriangle = function (t1, t2, t3, sizeX, sizeY, recu,colors) {
         if (recu != 0) {
-            let centerPosX = t3.x + ((t2.x - t3.x) / 2)
-            let centerPosY = t3.y + ((t2.y - t3.y) / 2)
-            let centerOpColor = this.heightAndColorAtPos(centerPosX, centerPosY, sizeX, sizeY)
-            let centerOpp = new THREE.Vector3((t2.x + t3.x) / 2, (t2.y + t3.y) / 2, centerOpColor[0])
-
-            let downPointColor = this.heightAndColorAtPos((t1.x + t3.x) / 2, (t1.y + t3.y) / 2, sizeX, sizeY)
-            let downPoint = new THREE.Vector3((t1.x + t3.x) / 2, (t1.y + t3.y) / 2, downPointColor[0])
-
-            let upPointColor = this.heightAndColorAtPos((t1.x + t2.x) / 2, (t1.y + t2.y) / 2, sizeX, sizeY)
-            let upPoint = new THREE.Vector3((t1.x + t2.x) / 2, (t1.y + t2.y) / 2, upPointColor[0])
+            let centerOpp = new THREE.Vector2((t2.x + t3.x) / 2, (t2.y + t3.y) / 2)
+            let downPoint = new THREE.Vector2((t1.x + t3.x) / 2, (t1.y + t3.y) / 2)
+            let upPoint = new THREE.Vector2((t1.x + t2.x) / 2, (t1.y + t2.y) / 2)
 
             this.recuTriangle(t2, centerOpp, upPoint, sizeX, sizeY, recu - 1, colors)
             this.recuTriangle(downPoint, centerOpp, t3, sizeX, sizeY, recu - 1, colors)
@@ -268,41 +233,88 @@ let GameMap = function (sizeX, sizeY, nbPoints) {
             let colorT3 = this.heightAndColorAtPos(t3.x, t3.y, sizeX, sizeY)
             let key
             key = this.moyColor(this.moyColor(colorT1[1], colorT2[1]), colorT3[1])
-            if (colors.get(key.getHex()) == null) colors.set(key.getHex(), new Array())
-            colors.get(key.getHex()).push([t1, t2, t3])
+            if (colors.get(key.getHex()) == null) colors.set(key.getHex(), [new Array(),new Array()])
+            let vec1 = new THREE.Vector3(t1.x-sizeX/2,colorT1[0],t1.y - sizeY / 2)
+            let vec2 = new THREE.Vector3(t2.x-sizeX/2,colorT2[0],t2.y- sizeY / 2)
+            let vec3 = new THREE.Vector3(t3.x-sizeX/2,colorT3[0],t3.y- sizeY / 2)
+            colors.get(key.getHex())[0].push(vec1.x,vec1.y,vec1.z,vec2.x,vec2.y,vec2.z,vec3.x,vec3.y,vec3.z)
+            let ab = new THREE.Vector3()
+            let cb = new THREE.Vector3()
+            ab.subVectors(vec1, vec2)
+            cb.subVectors(vec3, vec2)
+            cb.cross(ab)
+            cb.normalize()
+            for (let j = 0; j < 3; j++) {
+                colors.get(key.getHex())[1].push(cb.x,cb.y,cb.z)
+            }
+
         }
 
     }
 
+    this.generateCastle = function(startPoints,nbCastle){
+        let castlePositions = new Array();
+        while(nbCastle>0){
+            let position = Math.round(Math.random()*startPoints.length);
+            let height = this.heightAndColorAtPos(startPoints[position][0],startPoints[position][1],this.sizeX,this.sizeY)
+            let perlin = this.perlinAtPos(startPoints[position][0],startPoints[position][1],this.sizeX,this.sizeY)
+            if(!castlePositions.includes(startPoints[position]) && perlin>0.80){
+                castlePositions.push([startPoints[position][0]-sizeX/2,height[0],startPoints[position][1]-sizeY/2])
+                nbCastle--;
+            }
+        }
+        return castlePositions;
+    }
+
+    let poissonForestSampling = new PoissonDiskSampling({shape:[sizeX,sizeY],minDistance:5,maxDistance:10})
+    let poissonPoints = poissonForestSampling.getAllPoints();
+    poissonForestSampling.fill();
+
+    let poissonAridSampling = new PoissonDiskSampling({shape:[sizeX,sizeY],minDistance:15,maxDistance:20})
+    let aridPoints = poissonAridSampling.getAllPoints();
+    poissonAridSampling.fill();
+
+
+    this.treePoints = new Array();
+    for(let i=0;i<poissonPoints.length;i++){
+        let perlinValue = this.perlinAtPos(poissonPoints[i][0],poissonPoints[i][1],sizeX,sizeY)
+        let biome = this.biomeAtPos(poissonPoints[i][0],poissonPoints[i][1]);
+        if(perlinValue>0.80 && perlinValue<0.90 && biome>0.5){
+            this.treePoints.push(new THREE.Vector3(poissonPoints[i][0]-sizeX/2,perlinValue*100,poissonPoints[i][1]-sizeY/2))
+        }
+    }
+    for(let i=0;i<aridPoints.length;i++){
+        console.log("one arid point")
+        let perlinValue = this.perlinAtPos(aridPoints[i][0],aridPoints[i][1],sizeX,sizeY)
+        let biome = this.biomeAtPos(aridPoints[i][0],aridPoints[i][1]);
+        if(perlinValue>0.80 && perlinValue<0.90 && biome>0.25 && biome<0.5){
+            this.treePoints.push(new THREE.Vector3(aridPoints[i][0]-sizeX/2,perlinValue*100,aridPoints[i][1]-sizeY/2))
+        }
+    }
 
     this.sizeX = sizeX
     this.sizeY = sizeY
 
-//Compute the starting points of the map
+    //Compute the starting points of the map
     let startpos = this.computePointsStartingPosition(nbPoints, sizeX, sizeY);
-//Create a delaunay graph based on the generated points
+    //Create a delaunay graph based on the generated points
     this.delaunay = ddelaunay.Delaunay.from(startpos)
 
-    let colors = new Map();
-//Retrieve the data from the delaunay graph
+    this.castlePosition = this.generateCastle(startpos,8)
+    //Retrieve the data from the delaunay graph
     let {points, triangles} = this.delaunay;
 
-//For each triangles in the delaunay graph
+    let colors = new Map();
+
+    //For each triangles in the delaunay graph
     for (let i = 0; i < triangles.length; i += 3) {
-        let colort1 = this.heightAndColorAtPos(points[triangles[i] * 2], points[triangles[i] * 2 + 1], sizeX, sizeY)
-        let t1 = new THREE.Vector3(points[triangles[i] * 2], points[triangles[i] * 2 + 1], colort1[0])
-
-        let colort2 = this.heightAndColorAtPos(points[triangles[i + 1] * 2], points[triangles[i + 1] * 2 + 1], sizeX, sizeY)
-        let t2 = new THREE.Vector3(points[triangles[i + 1] * 2], points[triangles[i + 1] * 2 + 1], colort2[0])
-
-        let colort3 = this.heightAndColorAtPos(points[triangles[i + 2] * 2], points[triangles[i + 2] * 2 + 1], sizeX, sizeY)
-        let t3 = new THREE.Vector3(points[triangles[i + 2] * 2], points[triangles[i + 2] * 2 + 1], colort3[0])
-
-        this.recuTriangle(t1, t2, t3, sizeX, sizeY, 2, colors)
+        let t1 = new THREE.Vector2(points[triangles[i] * 2], points[triangles[i] * 2 + 1])
+        let t2 = new THREE.Vector2(points[triangles[i + 1] * 2],  points[triangles[i + 1] * 2 + 1])
+        let t3 = new THREE.Vector2(points[triangles[i + 2] * 2] , points[triangles[i + 2] * 2 + 1])
+        this.recuTriangle(t1, t2, t3, sizeX, sizeY, 2,colors)
     }
-//Store locally the map as an array
-    this.vertices = Array.from(colors)
 
+    this.colors = Array.from(colors);
 }
 
 module.exports = GameMap;

@@ -29,6 +29,7 @@
     "gameofmath-mapGeneration": "file:../gameofmath-mapGeneration",
     "multer": "^1.4.2",
     "nodemon": "^2.0.6",
+    "poisson-disk-sampling": "^2.2.2",
     "pug": "^3.0.0",
     "redis": "^3.0.2",
     "sqlite3": "^5.0.0",

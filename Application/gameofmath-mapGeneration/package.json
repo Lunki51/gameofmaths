@@ -13,6 +13,7 @@
     "d3-delaunay": "^5.3.0",
     "express": "^4.17.1",
     "path": "^0.12.7",
+    "poisson-disk-sampling": "^2.2.2",
     "three": "^0.123.0"
   }
 }

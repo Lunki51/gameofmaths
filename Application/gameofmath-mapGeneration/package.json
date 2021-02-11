@@ -4,7 +4,7 @@
   "description": "The npm module used to generate 3D maps on the \"game of math\" webapp",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "jest"
   },
   "author": "",
   "license": "ISC",
@@ -12,6 +12,7 @@
     "canvas": "^2.6.1",
     "d3-delaunay": "^5.3.0",
     "express": "^4.17.1",
+    "jest": "^26.6.3",
     "path": "^0.12.7",
     "poisson-disk-sampling": "^2.2.2",
     "three": "^0.123.0"

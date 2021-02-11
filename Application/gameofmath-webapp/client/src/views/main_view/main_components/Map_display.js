@@ -1,11 +1,10 @@
 import React, {Component} from 'react';
 import * as THREE from 'three'
-import {Color, MeshStandardMaterial, Object3D} from 'three'
+import {Color, MeshStandardMaterial} from 'three'
 import {GUI} from "dat.gui";
 import {Water} from "three/examples/jsm/objects/Water";
 import {Sky} from "three/examples/jsm/objects/Sky"
 import {GLTFLoader} from 'three/examples/jsm/loaders/GLTFLoader';
-import {FBXLoader} from "three/examples/jsm/loaders/FBXLoader";
 import {BufferGeometryUtils} from 'three/examples/jsm/utils/BufferGeometryUtils';
 import Axios from "axios";
 import Stats from "stats.js"
@@ -33,6 +32,8 @@ class MapView extends Component {
             sun: new THREE.Vector3(),
             water: new Water(),
             stats: new Stats(),
+            currentCastle: 0,
+            castles: new Array(),
             inputVars: {
                 mousePressed: false,
                 rotateX: 0,
@@ -62,13 +63,12 @@ class MapView extends Component {
         requestAnimationFrame(this.animate);
         this.state.stats.begin();
         this.state.inputVars.camDistance -= this.state.inputVars.scrolled;
-        this.state.inputVars.camDistance = Math.min(Math.max(-100, this.state.inputVars.camDistance), 2000)
+        this.state.inputVars.camDistance = Math.min(Math.max(20, this.state.inputVars.camDistance), 100)
         this.state.camera.position.z = this.state.center.z - (this.state.inputVars.camDistance * Math.cos(Math.PI / 4)) * Math.cos(this.state.inputVars.rotateX)
         this.state.camera.position.x = this.state.center.x - (this.state.inputVars.camDistance * Math.cos(Math.PI / 4)) * Math.sin(this.state.inputVars.rotateX)
         this.state.camera.position.y = this.state.inputVars.camDistance * Math.sin(Math.PI / 4) + 80
         this.state.camera.lookAt(this.state.center)
         this.state.inputVars.scrolled = 0
-        //console.log(this.state.renderer.info.render);
         this.state.water.material.uniforms['time'].value += 1.0 / 60.0;
         this.state.renderer.render(this.state.scene, this.state.camera);
         this.state.stats.end();
@@ -80,9 +80,10 @@ class MapView extends Component {
             this.state.inputVars.rotateY += event.movementY / 100;
         }
     }
+
     mouseDownEvent = (event) => {
         this.state.inputVars.mousePressed = true;
-        if (event.shiftKey) this.rayCasting((event.clientX / window.innerWidth) * 2 - 1, -(event.clientY / window.innerHeight) * 2 + 1)
+        //if (event.shiftKey) this.rayCasting((event.clientX / window.innerWidth) * 2 - 1, -(event.clientY / window.innerHeight) * 2 + 1) #ENABLE SHIFT CLICK MOVE THE CAMERA CENTER
     }
 
 
@@ -99,11 +100,31 @@ class MapView extends Component {
         this.state.camera = new THREE.PerspectiveCamera(80, window.innerWidth / window.innerHeight, 1, 20000);
     }
 
+    keyDownEvent = (event) =>{
+        if(event.key=="ArrowLeft"){
+            if(this.state.currentCastle>0){
+                this.state.currentCastle--;
+            }else{
+                this.state.currentCastle = this.state.castles.length-1;
+            }
+            this.state.center = this.state.castles[this.state.currentCastle];
+        }else if(event.key=="ArrowRight"){
+            if(this.state.currentCastle<this.state.castles.length-1){
+                this.state.currentCastle++;
+            }else{
+                this.state.currentCastle = 0;
+            }
+            this.state.center = this.state.castles[this.state.currentCastle];
+        }
+    }
+
     setupController() {
-        this.state.renderer.domElement.addEventListener("mousedown", this.mouseDownEvent, false)
-        this.state.renderer.domElement.addEventListener("mouseup", this.mouseUpEvent, false)
-        this.state.renderer.domElement.addEventListener("mousemove", this.mouseMoveEvent, false)
-        this.state.renderer.domElement.addEventListener("wheel", this.mouseWheelEvent, false)
+        let domElement = this.state.renderer.domElement;
+        domElement.addEventListener("mousedown", this.mouseDownEvent, false)
+        domElement.addEventListener("mouseup", this.mouseUpEvent, false)
+        domElement.addEventListener("mousemove", this.mouseMoveEvent, false)
+        domElement.addEventListener("wheel", this.mouseWheelEvent, false)
+        window.addEventListener("keydown",this.keyDownEvent);
         window.addEventListener("resize", this.windowResizeEvent)
     }
 
@@ -139,7 +160,12 @@ class MapView extends Component {
             let castlesPosition = map.castlePosition;
             for (let position of castlesPosition) {
                 let positionModel = model.scene.clone(true);
+                let vectorPos = new THREE.Vector3(position[0], position[1], position[2]);
+                this.state.castles.push(vectorPos);
+                this.state.center = vectorPos;
+                this.state.currentCastle++;
                 positionModel.position.set(position[0], position[1], position[2])
+
                 positionModel.scale.set(0.5, 0.5, 0.5)
 
                 let PointLight = new THREE.PointLight(new Color(255, 255, 0), 0.005, 20)
@@ -152,7 +178,14 @@ class MapView extends Component {
             console.error(error);
         })
 
-        gltfLoader.load("/mapData/arbreLOD1.glb", gltf=> {
+        this.setupTrees("/mapData/arbreLOD1.glb",map.forestTrees,0.5);
+        this.setupTrees("/mapData/treeSavanna.glb",map.savannaTrees,0.5);
+        this.setupTrees("/mapData/buisson.glb",map.plainTrees,0.25);
+    }
+
+    setupTrees = (link,map,scale) =>{
+        let gltfLoader = new GLTFLoader();
+        gltfLoader.load(link, gltf => {
             let geometries = new Map();
             let GLTFscene = gltf.scene;
 
@@ -160,19 +193,18 @@ class MapView extends Component {
                 geometries.set(GLTFscene.children[i].material.color, new Array())
             }
 
-
-            for (let i = 0; i < map.treePoints.length; i++) {
-                let randRot = Math.random()*Math.PI*2;
+            for (let i = 0; i < map.length; i++) {
+                let randRot = Math.random() * Math.PI * 2;
                 for (let j = 0; j < GLTFscene.children.length; j++) {
                     let childObject = GLTFscene.children[j];
 
                     let childGeometry = new THREE.InstancedBufferGeometry();
-                    THREE.BufferGeometry.prototype.copy.call( childGeometry, childObject.geometry );
+                    THREE.BufferGeometry.prototype.copy.call(childGeometry, childObject.geometry);
 
                     let childMat = childObject.material;
 
-                    childGeometry.scale(0.5,0.5,0.5)
-                    childGeometry.translate(map.treePoints[i].x,map.treePoints[i].y,map.treePoints[i].z)
+                    childGeometry.scale(scale, scale, scale)
+                    childGeometry.translate(map[i].x, map[i].y, map[i].z)
                     childGeometry.translate(childObject.position.x, childObject.position.y, childObject.position.z)
                     geometries.get(childMat.color).push(childGeometry)
                 }
@@ -181,14 +213,13 @@ class MapView extends Component {
             for (let key of geometries.keys()) {
                 let geometryArray = geometries.get(key);
                 let geometry = BufferGeometryUtils.mergeBufferGeometries(geometryArray, false)
-                let mesh = new THREE.Mesh(geometry, new MeshStandardMaterial({color : key}))
+                let mesh = new THREE.Mesh(geometry, new MeshStandardMaterial({color: key}))
                 this.state.scene.add(mesh)
             }
-            console.log(this.state.scene.children)
 
         }, undefined, error => {
-            console.log(error)
-        })
+            console.error(error)
+        });
     }
 
     setupWater = () => {
@@ -230,7 +261,7 @@ class MapView extends Component {
         skyUniforms['mieDirectionalG'].value = 0.8;
 
         this.state.sunParameters = {
-            inclination: 0.49,
+            inclination: 0,
             azimuth: 0.205
         };
 
@@ -257,12 +288,9 @@ class MapView extends Component {
     setupGui = () => {
         const waterUniforms = this.state.water.material.uniforms;
         let skyUniforms = this.state.sky.material.uniforms;
+
+        waterUniforms.size.value = 100;
         const gui = new GUI()
-        const cubeFolder = gui.addFolder("Water")
-        cubeFolder.add(waterUniforms.distortionScale, 'value', 0, 8, 0.1).name('distortionScale');
-        cubeFolder.add(waterUniforms.size, 'value', 0.1, 100, 0.1).name('size');
-        cubeFolder.add(waterUniforms.alpha, 'value', 0.9, 1, .001).name('alpha');
-        cubeFolder.add(this.state.water.position, 'y', -10, 100, .1);
         const folderSky = gui.addFolder('Sky');
         folderSky.add(this.state.sunParameters, 'inclination', 0, 0.5, 0.0001).onChange(this.updateSun);
         folderSky.add(this.state.sunParameters, 'azimuth', 0, 1, 0.0001).onChange(this.updateSun);
@@ -271,9 +299,6 @@ class MapView extends Component {
         folderSky.add(skyUniforms.rayleigh, 'value', 0, 5, 0.01).onChange(this.updateSun).name('rayleigh')
         folderSky.add(skyUniforms.mieCoefficient, 'value', 0, 5, 0.01).onChange(this.updateSun).name('mieCoefficient')
         folderSky.add(skyUniforms.mieDirectionalG, 'value', 0, 5, 0.01).onChange(this.updateSun).name('mieDirectionalG')
-
-
-        cubeFolder.open()
     }
 
 

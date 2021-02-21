@@ -40,7 +40,7 @@ router.post('/getChapter', (req, res, next) => {
  *  1: if the chapter's name is incorrect
  */
 router.post('/createChapter', (req, res, next) => {
-    if (!req.session.isLogged & !req.session.isTeacher) return next(new Error('Client must be logged on a Teacher account'))
+    if (!req.session.isLogged && !req.session.isTeacher) return next(new Error('Client must be logged on a Teacher account'))
 
     const name = req.body.name
 
@@ -53,7 +53,7 @@ router.post('/createChapter', (req, res, next) => {
         chapterID: -1,
         name: name
     }).then(id => {
-        res.send({returnState: 0, chapterID: id, name: name})
+        res.send({returnState: 0, chapter: {chapterID: id, name: name}})
     }).catch(err => next(err))
 })
 
@@ -66,7 +66,7 @@ router.post('/createChapter', (req, res, next) => {
  *  1: if the chapter id is incorrect
  */
 router.post('/deleteChapter', (req, res, next) => {
-    if (!req.session.isLogged & !req.session.isTeacher) return next(new Error('Client must be logged on a Teacher account'))
+    if (!req.session.isLogged && !req.session.isTeacher) return next(new Error('Client must be logged on a Teacher account'))
 
     const id = req.body.id
 
@@ -148,7 +148,7 @@ router.post('/deleteChapter', (req, res, next) => {
  *  2: if the name is incorrect
  */
 router.post('/setChapterName', (req, res, next) => {
-    if (!req.session.isLogged & !req.session.isTeacher) return next(new Error('Client must be logged on a Teacher account'))
+    if (!req.session.isLogged && !req.session.isTeacher) return next(new Error('Client must be logged on a Teacher account'))
 
     const id = req.body.id
     const name = req.body.name
@@ -184,7 +184,7 @@ router.post('/setChapterName', (req, res, next) => {
  *  1: if the ordered or/and chapter is incorrect
  */
 router.post('/createQuiz', (req, res, next) => {
-    if (!req.session.isLogged & !req.session.isTeacher) return next(new Error('Client must be logged on a Teacher account'))
+    if (!req.session.isLogged && !req.session.isTeacher) return next(new Error('Client must be logged on a Teacher account'))
 
     const isOrder = req.body.ordered
     const chapter = req.body.chapter
@@ -199,7 +199,7 @@ router.post('/createQuiz', (req, res, next) => {
         asAnOrder: isOrder,
         theChapter: chapter
     }).then(id => {
-        res.send({returnState: 0, id: id, asAnOrder: isOrder, theChapter: chapter})
+        res.send({returnState: 0, quiz: {quizID: id, asAnOrder: isOrder, theChapter: chapter}})
     }).catch(err => next(err))
 })
 
@@ -212,7 +212,7 @@ router.post('/createQuiz', (req, res, next) => {
  *  1: if the quiz id is incorrect
  */
 router.post('/deleteQuiz', (req, res, next) => {
-    if (!req.session.isLogged & !req.session.isTeacher) return next(new Error('Client must be logged on a Teacher account'))
+    if (!req.session.isLogged && !req.session.isTeacher) return next(new Error('Client must be logged on a Teacher account'))
 
     const id = req.body.id
 
@@ -279,7 +279,7 @@ router.post('/deleteQuiz', (req, res, next) => {
  *  2: if isOrder is incorrect
  */
 router.post('/setOrder', (req, res, next) => {
-    if (!req.session.isLogged & !req.session.isTeacher) return next(new Error('Client must be logged on a Teacher account'))
+    if (!req.session.isLogged && !req.session.isTeacher) return next(new Error('Client must be logged on a Teacher account'))
 
     const id = req.body.id
     const isOrder = req.body.isOrder
@@ -308,7 +308,7 @@ router.post('/setOrder', (req, res, next) => {
  *  0: quizzes: List of quiz
  */
 router.post('/getQuizList', (req, res, next) => {
-    if (!req.session.isLogged & !req.session.isTeacher) return next(new Error('Client must be logged on a Teacher account'))
+    if (!req.session.isLogged && !req.session.isTeacher) return next(new Error('Client must be logged on a Teacher account'))
 
     quiz_dao.findAll().then(q => {
         res.send({returnState: 0, quizzes: q})
@@ -324,7 +324,7 @@ router.post('/getQuizList', (req, res, next) => {
  *  1: if the chapter id is incorrect
  */
 router.post('/getQuizListWithChapterId', (req, res, next) => {
-    if (!req.session.isLogged & !req.session.isTeacher) return next(new Error('Client must be logged on a Teacher account'))
+    if (!req.session.isLogged && !req.session.isTeacher) return next(new Error('Client must be logged on a Teacher account'))
 
     const id = req.body.id
 
@@ -345,13 +345,13 @@ router.post('/getQuizListWithChapterId', (req, res, next) => {
  * @param chapterId The if of chapter
  * @param quizId the id of quiz
  * @return
- *  0: question: THe question
+ *  0: question: The question
  *  1: if the chapterId is incorrect
  *  2: if the quizId is incorrect
  *  3: if quizId and chapterId dont match
  */
 router.post('/createQuestion', (req, res, next) => {
-    if (!req.session.isLogged & !req.session.isTeacher) return next(new Error('Client must be logged on a Teacher account'))
+    if (!req.session.isLogged && !req.session.isTeacher) return next(new Error('Client must be logged on a Teacher account'))
 
     const chapterId = req.body.chapterId
     const quizId = req.body.quizId
@@ -361,7 +361,7 @@ router.post('/createQuestion', (req, res, next) => {
 
     quiz_dao.findByID(quizId).then(quiz => {
         if (quiz == null) res.send({returnState: 2, msg: 'QuizId is incorrect'})
-        else if (quiz.theChapter === chapterId) res.send({returnState: 3, msg: 'QuizId and chapterId dont match'})
+        else if (quiz.theChapter !== chapterId) res.send({returnState: 3, msg: 'QuizId and chapterId dont match'})
         else {
             db.all('SELECT MAX(qNumber)+1 AS next FROM QuizQuestion WHERE theQuiz = ?', [quizId], function (err, rows) {
                 if (err) next(err)
@@ -377,7 +377,7 @@ router.post('/createQuestion', (req, res, next) => {
                                 lowerText: '',
                                 image: '',
                                 type: 'QCM',
-                                level: '1',
+                                level: 1,
                                 theChapter: chapterId,
                                 theQuiz: quizId,
                                 qNumber: nb
@@ -418,7 +418,7 @@ router.post('/createQuestion', (req, res, next) => {
  *  2: if the quizId is incorrect
  */
 router.post('/deleteQuestion', (req, res, next) => {
-    if (!req.session.isLogged & !req.session.isTeacher) return next(new Error('Client must be logged on a Teacher account'))
+    if (!req.session.isLogged && !req.session.isTeacher) return next(new Error('Client must be logged on a Teacher account'))
 
     const questionId = req.body.questionId
     const quizId = req.body.quizId
@@ -496,7 +496,7 @@ router.post('/deleteQuestion', (req, res, next) => {
  *  2: if the quizId is incorrect
  */
 router.post('/setQNumber', (req, res, next) => {
-    if (!req.session.isLogged & !req.session.isTeacher) return next(new Error('Client must be logged on a Teacher account'))
+    if (!req.session.isLogged && !req.session.isTeacher) return next(new Error('Client must be logged on a Teacher account'))
 
     const questionId = req.body.questionId
     const quizId = req.body.quizId
@@ -510,7 +510,7 @@ router.post('/setQNumber', (req, res, next) => {
         if (err) next(err)
         else {
             const q = questions[0]
-            if (q == null) res.send({returnState: 1, msg: 'The quiz id is incorrect'})
+            if (q == null) res.send({returnState: 1, msg: 'The question id is incorrect'})
             else if (q.theQuiz !== Number(quizId)) res.send({
                 returnState: 4,
                 msg: 'The quizId don\'t match'
@@ -519,37 +519,30 @@ router.post('/setQNumber', (req, res, next) => {
 
                 db.beginTransaction(function (err, t) {
 
-                    t.run('UPDATE QuizQuestion SET qNumber = -1 WHERE theQuiz = ? AND theQuestion = ?', [quizId, questionId], function (err) {
+                    t.run('UPDATE QuizQuestion SET qNumber = 0 WHERE theQuiz = ? AND theQuestion = ?', [quizId, questionId], function (err) {
                         if (err) {
                             t.rollback()
                             next(err)
                         } else {
-                            t.run('UPDATE QuizQuestion SET qNumber = qNumber - 1 WHERE theQuiz = ? AND qNumber > ?', [quizId, q.qNumber], function (err) {
+                            t.run('UPDATE QuizQuestion SET qNumber = -(qNumber + ?) WHERE theQuiz = ? AND ((qNumber BETWEEN ? AND ?) OR (qNumber BETWEEN ? AND ?))', [q.qNumber > newQNumber ? 1 : -1, quizId, q.qNumber, newQNumber, newQNumber, q.qNumber], function (err) {
                                 if (err) {
                                     t.rollback()
                                     next(err)
                                 } else {
-                                    t.run('UPDATE QuizQuestion SET qNumber = -(qNumber + 1) WHERE theQuiz = ? AND qNumber >= ?', [quizId, newQNumber], function (err) {
+                                    t.run('UPDATE QuizQuestion SET qNumber = -qNumber WHERE theQuiz = ? AND qNumber < 0', [quizId], function (err) {
                                         if (err) {
                                             t.rollback()
                                             next(err)
                                         } else {
-                                            t.run('UPDATE QuizQuestion SET qNumber = -qNumber WHERE theQuiz = ? AND qNumber < -1', [quizId], function (err) {
+                                            t.run('UPDATE QuizQuestion SET qNumber = ? WHERE theQuiz = ? AND qNumber = 0', [newQNumber, quizId], function (err) {
                                                 if (err) {
                                                     t.rollback()
                                                     next(err)
                                                 } else {
-                                                    t.run('UPDATE QuizQuestion SET qNumber = ? WHERE theQuiz = ? AND theQuestion = ?', [newQNumber, quizId, questionId], function (err) {
-                                                        if (err) {
-                                                            t.rollback()
-                                                            next(err)
-                                                        } else {
-                                                            t.commit(err => {
-                                                                if (err) next(err);
-                                                                else res.send({returnState: 0});
-                                                            });
-                                                        }
-                                                    })
+                                                    t.commit(err => {
+                                                        if (err) next(err);
+                                                        else res.send({returnState: 0});
+                                                    });
                                                 }
                                             })
                                         }
@@ -580,7 +573,7 @@ router.post('/setQNumber', (req, res, next) => {
  *  4: if the quizId and quizId of question dont match
  */
 router.post('/setUpperText', (req, res, next) => {
-    if (!req.session.isLogged & !req.session.isTeacher) return next(new Error('Client must be logged on a Teacher account'))
+    if (!req.session.isLogged && !req.session.isTeacher) return next(new Error('Client must be logged on a Teacher account'))
 
     const id = req.body.id
     const quizId = req.body.quizId
@@ -623,7 +616,7 @@ router.post('/setUpperText', (req, res, next) => {
  *  4: if the quizId and quizId of question dont match
  */
 router.post('/setLowerText', (req, res, next) => {
-    if (!req.session.isLogged & !req.session.isTeacher) return next(new Error('Client must be logged on a Teacher account'))
+    if (!req.session.isLogged && !req.session.isTeacher) return next(new Error('Client must be logged on a Teacher account'))
 
     const id = req.body.id
     const quizId = req.body.quizId
@@ -673,7 +666,7 @@ const upload = multer({
  *  4: if the quizId and quizId of question dont match
  */
 router.post('/setImage', upload.single('image'), (req, res, next) => {
-    if (!req.session.isLogged & !req.session.isTeacher) return next(new Error('Client must be logged on a Teacher account'))
+    if (!req.session.isLogged && !req.session.isTeacher) return next(new Error('Client must be logged on a Teacher account'))
 
     const questionId = req.body.questionId
     const quizId = req.body.quizId
@@ -734,7 +727,7 @@ router.post('/setImage', upload.single('image'), (req, res, next) => {
  *  3: if the quizId and quizId of question dont match
  */
 router.post('/deleteImage', (req, res, next) => {
-    if (!req.session.isLogged & !req.session.isTeacher) return next(new Error('Client must be logged on a Teacher account'))
+    if (!req.session.isLogged && !req.session.isTeacher) return next(new Error('Client must be logged on a Teacher account'))
 
     const questionId = req.body.questionId
     const quizId = req.body.quizId
@@ -756,8 +749,9 @@ router.post('/deleteImage', (req, res, next) => {
                 const img = q.image
                 q.image = ''
                 question_dao.update(q).then(() => {
-                    if (fs.existsSync(path.join('./client/public/',img))) {
-                        fs.unlink(path.join('./client/public/',img), err => {})
+                    if (fs.existsSync(path.join('./client/public/', img))) {
+                        fs.unlink(path.join('./client/public/', img), err => {
+                        })
                     }
                     res.send({returnState: 0, question: q})
                 }).catch(err => next(err))
@@ -780,7 +774,7 @@ router.post('/deleteImage', (req, res, next) => {
  *  4: if the quizId and quizId of question dont match
  */
 router.post('/setType', (req, res, next) => {
-    if (!req.session.isLogged & !req.session.isTeacher) return next(new Error('Client must be logged on a Teacher account'))
+    if (!req.session.isLogged && !req.session.isTeacher) return next(new Error('Client must be logged on a Teacher account'))
 
     const id = req.body.id
     const quizId = req.body.quizId
@@ -802,7 +796,7 @@ router.post('/setType', (req, res, next) => {
                 returnState: 4,
                 msg: 'The quizId and quizId of question dont match'
             })
-            else {
+            else { //TODO nage answer depending of the type
                 q.type = type
                 question_dao.update(q).then(() => {
                     res.send({returnState: 0, question: q})
@@ -826,7 +820,7 @@ router.post('/setType', (req, res, next) => {
  *  4: if the quizId and quizId of question dont match
  */
 router.post('/setLevel', (req, res, next) => {
-    if (!req.session.isLogged & !req.session.isTeacher) return next(new Error('Client must be logged on a Teacher account'))
+    if (!req.session.isLogged && !req.session.isTeacher) return next(new Error('Client must be logged on a Teacher account'))
 
     const id = req.body.id
     const quizId = req.body.quizId
@@ -864,7 +858,7 @@ router.post('/setLevel', (req, res, next) => {
  *  1: if the quiz id is incorrect
  */
 router.post('/getQuestionList', (req, res, next) => {
-    if (!req.session.isLogged & !req.session.isTeacher) return next(new Error('Client must be logged on a Teacher account'))
+    if (!req.session.isLogged && !req.session.isTeacher) return next(new Error('Client must be logged on a Teacher account'))
 
     const id = req.body.id
 
@@ -886,13 +880,13 @@ router.post('/getQuestionList', (req, res, next) => {
  * @param quizId the id of quiz
  * @param questionId the id of question
  * @return
- *  0: answer: THe answer
+ *  0: answer: The answer
  *  1: if the questionId is incorrect
  *  2: if the quizId is incorrect
  *  3: if quizId dont match the question
  */
 router.post('/createAnswer', (req, res, next) => {
-    if (!req.session.isLogged & !req.session.isTeacher) return next(new Error('Client must be logged on a Teacher account'))
+    if (!req.session.isLogged && !req.session.isTeacher) return next(new Error('Client must be logged on a Teacher account'))
 
     const questionId = req.body.questionId
     const quizId = req.body.quizId
@@ -934,7 +928,7 @@ router.post('/createAnswer', (req, res, next) => {
  *  3: if the questionId is incorrect
  */
 router.post('/deleteAnswer', (req, res, next) => {
-    if (!req.session.isLogged & !req.session.isTeacher) return next(new Error('Client must be logged on a Teacher account'))
+    if (!req.session.isLogged && !req.session.isTeacher) return next(new Error('Client must be logged on a Teacher account'))
 
     const id = req.body.id
     const quizId = req.body.quizId
@@ -968,7 +962,7 @@ router.post('/deleteAnswer', (req, res, next) => {
  * @param id The id of answer
  * @param text the text
  * @param quizId the id of quiz
- * @param theQuestion the question id
+ * @param questionId the question id
  * @return
  *  0: answer: The answer
  *  1: if the answer id is incorrect
@@ -977,7 +971,7 @@ router.post('/deleteAnswer', (req, res, next) => {
  *  4: if the text is incorrect
  */
 router.post('/setText', (req, res, next) => {
-    if (!req.session.isLogged & !req.session.isTeacher) return next(new Error('Client must be logged on a Teacher account'))
+    if (!req.session.isLogged && !req.session.isTeacher) return next(new Error('Client must be logged on a Teacher account'))
 
     const text = req.body.text
     const id = req.body.id
@@ -1017,16 +1011,17 @@ router.post('/setText', (req, res, next) => {
  * @param id The id of answer
  * @param isValid the isValis value
  * @param quizId the id of quiz
- * @param theQuestion the question id
+ * @param questionId the question id
  * @return
  *  0: answer: The answer
  *  1: if the answer id is incorrect
  *  2: if isValid is incorrect
- *  3: if the theQuestion is incorrect
- *  3: if the the question is a QCU and isValid is false
+ *  3: if the questionId is incorrect
+ *  4: if the the question is a QCU and isValid is false
+ *  5: can't be call on an OPEN question
  */
 router.post('/setIsValid', (req, res, next) => {
-    if (!req.session.isLogged & !req.session.isTeacher) return next(new Error('Client must be logged on a Teacher account'))
+    if (!req.session.isLogged && !req.session.isTeacher) return next(new Error('Client must be logged on a Teacher account'))
 
     const isValid = req.body.isValid
     const id = req.body.id
@@ -1036,7 +1031,7 @@ router.post('/setIsValid', (req, res, next) => {
     if (id == null) return res.send({returnState: 1, msg: 'The answer id is incorrect'})
     if (questionId == null) return res.send({returnState: 2, msg: 'questionId is incorrect'})
     if (isValid == null || ['0', '1', 'true', 'false'].find(o => o === isValid) == null) return res.send({
-        returnState: 4,
+        returnState: 2,
         msg: 'isValid is incorrect'
     })
     if (quizId == null) return res.send({returnState: 3, msg: 'QuizId is incorrect'})
@@ -1052,7 +1047,12 @@ router.post('/setIsValid', (req, res, next) => {
 
                 a.isValid = isValid
 
-                if (a.type === 'QCU') {
+                if (a.type === 'OPEN') {
+                    return res.send({
+                        returnState: 5,
+                        msg: 'can\'t be call on an OPEN question'
+                    })
+                } else if (a.type === 'QCU') {
 
                     if (['0', 'false'].find(o => o === isValid) != null) return res.send({
                         returnState: 4,
@@ -1096,7 +1096,7 @@ router.post('/setIsValid', (req, res, next) => {
                     })
 
                 } else {
-                    answer_dao.update(a, t).then(() => {
+                    answer_dao.update(a).then(() => {
                         res.send({
                             returnState: 0,
                             answer: {answerID: a.answerID, text: a.text, isValid: a.isValid, theQuestion: a.theQuestion}
@@ -1115,14 +1115,14 @@ router.post('/setIsValid', (req, res, next) => {
  * Get list of answer
  *
  * @param quizId the id of quiz
- * @param theQuestion the question id
+ * @param questionId the question id
  * @return
  *  0: answers: list of answers in this question
  *  1: if the theQuestion is incorrect
  *  2: if the quizId is incorrect
  */
 router.post('/getAnswersList', (req, res, next) => {
-    if (!req.session.isLogged & !req.session.isTeacher) return next(new Error('Client must be logged on a Teacher account'))
+    if (!req.session.isLogged && !req.session.isTeacher) return next(new Error('Client must be logged on a Teacher account'))
 
     const quizId = req.body.quizId
     const questionId = req.body.questionId
@@ -1134,7 +1134,11 @@ router.post('/getAnswersList', (req, res, next) => {
         if (err) next(err)
         else {
             const a = answers[0]
-            if (a == null) res.send({returnState: 1, msg: 'questionId is incorrect'})
+            if (a == null) {
+                res.send({
+                    returnState: 0, answers: []
+                })
+            }
             else if (a.theQuiz !== Number(quizId)) res.send({returnState: 2, msg: 'QuizId is incorrect'})
             else {
 

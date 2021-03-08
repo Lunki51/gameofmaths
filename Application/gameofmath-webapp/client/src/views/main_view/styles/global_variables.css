@@ -1,9 +1,6 @@
-
-
-
-
-
 :root{
+
+    /*//////////////| color |///////////////*/
 
     --primary_color : #485962;
     --secondary_color : #6d96aa;
@@ -15,5 +12,9 @@
     --wood_style_color-hover: #0f0d0b;
     --input_color-active: #1b3037;
     --button-waring : #366371;
+    --primary_color-shadow: #323e44;
 
+    /*/////////////////| dimension |////////////*/
+
+    --teacher_nav-width:80px;
 }

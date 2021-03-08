@@ -1,6 +1,5 @@
 import React,{Component} from "react";
 import '../../styles/teacher_style.css'
-import {NavBar} from "./global_components";
 
 export class NavigationBar extends Component{
 

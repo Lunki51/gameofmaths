@@ -24,3 +24,4 @@ export function deleteClass(id){
  return Axios.post('/api/classManagement/delete', {id})
 
 }
+

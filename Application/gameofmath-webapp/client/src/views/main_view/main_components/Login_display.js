@@ -64,7 +64,7 @@ class LoginView extends Component {
 
     render() {
 
-            return <div className="background">
+            return <>
                     <ContainerTitle className="container-login" title="GAME OF MATH">
                         <form onSubmit={this.props.handleLogin}>
 
@@ -76,7 +76,7 @@ class LoginView extends Component {
                         </form>
                     </ContainerTitle>
 
-                </div>
+            </>
 
     }
 }

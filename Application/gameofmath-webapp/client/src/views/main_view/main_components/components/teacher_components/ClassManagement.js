@@ -2,10 +2,8 @@ import React, {Component} from "react";
 import {
     createClass,
     deleteClass,
-    getAllClass,
     getAllClasses,
     updateTheClass,
-    validCreate
 } from "../../../../../model/classModel";
 import '../../../styles/teacher_style.css';
 
@@ -32,25 +30,22 @@ export class ClassManagement extends Component{
         this._isMount = true
 
         if(this._isMount)
-        this.updateClasses()
+        this.updateAllClasses()
 
 
 
     }
 
-    updateClasses = ()=>{
-
-            getAllClasses().then((response) => {
+    updateAllClasses = ()=>{
+       getAllClasses().then((response) => {
 
                 console.log(response)
-
                 this.setState({
                     classes: response.data.classes,
                 })
                 this.render()
 
             })
-
 
     }
 
@@ -70,18 +65,20 @@ export class ClassManagement extends Component{
         this.props.displayWarning("êtes vous sûr de vouloir supprimer la classe "+name ,() => {
             deleteClass(classID).then(res => {
                 console.log(res)
+                this.props.closeWarning()
+                this.updateAllClasses()
             })
-            this.props.closeWarning()
-            this.updateClasses()
+
         })
         //TODO update the list
     }
 
     handleCreateClass = (className, classGrade) => {
 
-        console.log(className, classGrade)
-        createClass(className,classGrade).then(res => {
-            this.updateClasses()
+
+        createClass(className,classGrade).then((res) => {
+            console.log(res)
+            //this.updateAllClasses()
         })
 
     }
@@ -108,7 +105,7 @@ export class ClassManagement extends Component{
 
     handleCloseForm = () => {
         this.props.closeForm()
-        this.updateClasses()
+        //this.updateAllClasses()
     }
 
 
@@ -118,7 +115,7 @@ export class ClassManagement extends Component{
         if(id && name && grade){
             this.props.displayForm(<CreateForm type="edit" edit={this.handleEditClass} id={id} name={name} grade={grade} closeForm={this.handleCloseForm}/>)
         }else{
-            this.props.displayForm(<CreateForm type="create" create={this.handleCreateClass} closeForm={this.handleCloseForm}/>)
+            this.props.displayForm(<CreateForm type="create" updateClasses={this.updateAllClasses} create={this.handleCreateClass} closeForm={this.handleCloseForm}/>)
         }
 
 
@@ -291,9 +288,14 @@ class CreateForm extends Component{
                 alert("tout les champs doivent être remplis")
                 //TODO error style
             }else{
+
+
                 this.props.create(this.state.name, this.state.grade)
-                this.props.updateClasses()
+                //this.props.updateClasses()
                 this.props.closeForm()
+
+
+
             }
 
         }else{

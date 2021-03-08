@@ -174,10 +174,6 @@ export class NavBar extends Component{
 export class NavElement extends Component{
 
 
-
-
-
-
     render() {
         return <>
             <li className={this.props.className}>
@@ -195,10 +191,6 @@ export class NavElement extends Component{
 
 
 export class Warning extends Component{
-
-
-
-
 
 
     render() {

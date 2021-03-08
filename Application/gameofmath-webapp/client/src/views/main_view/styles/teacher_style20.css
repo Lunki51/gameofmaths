@@ -1,0 +1,654 @@
+.background{
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    background-color: var(--primary_color);
+    z-index: -1;
+
+}
+.teacher-logo-container{
+    width:500px;
+    height: 80px;
+    background-color: var(--primary_color);
+    filter: drop-shadow(0px 0px 10px var(--primary_color-shadow));
+    border-bottom-left-radius: 20px;
+    border-bottom-right-radius: 20px;
+    position: absolute;
+    left: 53%;
+    top: 0;
+    z-index: 3;
+    transform: translateX(-50%);
+}
+
+.teacher-GOM-logo{
+    position: absolute;
+    z-index: 3;
+    width: 400px;
+    transform: translateX(-50%);
+
+    left: 50%;
+}
+
+.dim-background{
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    z-index: 20;
+    background-color: rgba(0, 0, 0, 0.5);
+    transition-duration: 200ms;
+}
+
+
+/*------------| mobile display |-------------*/
+@media (max-width: 800px) {
+
+}
+
+/*------------| desktop display |-------------*/
+@media (min-width: 800px) {
+
+}
+
+
+
+
+
+/*//////////////////////| NAVIGATION |//////////////////////////*/
+
+.teacher-nav-container{
+
+    position: absolute;
+    display: inline-block;
+    width: var(--teacher_nav-width);
+    height: 100%;
+    padding-left: 5px;
+    padding-right: 5px;
+    background-color: var(--primary_color);
+    filter: drop-shadow(0px 0px 20px var(--primary_color-shadow));
+    transition-duration: 300ms;
+    overflow: hidden;
+    z-index: 10;
+
+}
+
+.teacher-nav-container:hover{
+    width: 300px;
+}
+
+.teacher-nav-container:first-child{
+    margin-top: 5px;
+}
+
+
+
+
+/*------| navigation element |-------*/
+
+.teacher-nav-element-stack-top{
+    height: 70px;
+    width: 100%;
+    cursor: pointer;
+    align-self: flex-start;
+    transition-duration: 200ms;
+    background-color: var(--primary_color);
+    border-radius: 10px;
+    margin-bottom: 5px;
+    overflow: hidden;
+    filter: drop-shadow(0px 0px 2px var(--primary_color-shadow));
+}
+.teacher-nav-element-stack-top:hover{
+
+    background-color: var(--primary_color-shadow);
+}
+
+
+
+
+.teacher-nav-element-stack-bottom{
+    height: 70px;
+    width: 100%;
+    cursor: pointer;
+    margin-top: 2px;
+    bottom: 0;
+    transition-duration: 200ms;
+    border-radius: 10px;
+    margin-bottom: 5px;
+    background-color: var(--primary_color-shadow);
+    overflow: hidden;
+    filter: drop-shadow(0px 0px 2px var(--primary_color-shadow));
+}
+
+.teacher-nav-element-stack-bottom:hover{
+
+    background-color: var(--secondary_color);
+}
+
+.teacher-nav-element-title{
+    position: relative;
+    color: white;
+    font-family: sans-serif;
+    float: right;
+    top: 50% ;
+    transform: translateY(-50%);
+    margin-right: 10px;
+
+}
+
+.teacher-nav-element-icon{
+    position:relative;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    left: 40px;
+
+
+}
+
+/*/////////////////////| DASHBOARD |//////////////////////////*/
+
+/*---| default |------*/
+.teacher-default-dashboard-container{
+
+    position: absolute;
+    width: calc(100% - var(--teacher_nav-width));
+    height: 100%;
+    left: var(--teacher_nav-width);
+    animation-name: openDisplay;
+    animation-duration: 600ms;
+
+}
+
+@keyframes openDisplay {
+    from{
+        width: 0;
+        opacity: 0;
+    }
+
+    to{
+        width: calc(100% - var(--teacher_nav-width));
+        opacity: 100%;
+
+    }
+}
+
+
+/*------| default widget |-------*/
+
+.teacher-classes-amount{
+
+    width: 300px;
+    height: 200px;
+    background-color: var(--primary_color-shadow);
+    position: relative;
+    top: 150px;
+    left: 100px;
+    border-radius: 20px;
+    overflow: hidden;
+    text-align: center;
+    z-index: -1;
+
+
+}
+
+.teacher-widget-title{
+
+    position: relative;
+    top: 10px;
+    color: white;
+
+    font-family: sans-serif;
+}
+
+.teacher-widget-classes{
+    transform: translateX(-50%);
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    color: white;
+    font-family: sans-serif;
+    font-size: 60px;
+}
+
+.teacher-student-amount{
+    width: 300px;
+    height: 200px;
+    background-color: var(--primary_color-shadow);
+    position: absolute;
+    top:400px;
+    left: 100px;
+    border-radius: 20px;
+    overflow: hidden;
+    text-align: center;
+    z-index: -1;
+}
+
+.teacher-widget-stats{
+    width: 1000px;
+    height: 450px;
+    background-color: var(--primary_color-shadow);
+    position: absolute;
+    top:150px;
+    left: 460px;
+    border-radius: 20px;
+    overflow: hidden;
+    text-align: center;
+    z-index: -1;
+}
+
+/*//////////////////////////////| CLASSES DISPLAY |//////////////////*/
+
+
+/*--------| classes list |-------*/
+
+.teacher-class-list-overview{
+    width: 400px;
+    background-color: var(--primary_color-shadow);
+    height: 80%;
+    transform: translateY(-50%);
+    top: 50%;
+    position: relative;
+    left: 40px;
+    border-radius: 20px;
+    overflow: auto;
+    padding: 10px;
+    box-shadow:  0 0 10px 5px  var(--primary_color-shadow) inset;
+}
+
+.teacher-class-row{
+    position: relative;
+    margin-bottom: 10px;
+    width: 100%;
+    background-color: var(--primary_color);
+    filter: drop-shadow(0px 0px 5px var(--primary_color-shadow));
+    height: 100px;
+    transform: translateX(-50%);
+    left: 50%;
+    border-radius: 20px;
+    text-align: center;
+    z-index: -2;
+    cursor: pointer;
+    transition-duration: 200ms;
+}
+
+.teacher-class-row:hover{
+    background-color: var(--secondary_color);
+    filter: drop-shadow(0px 5px 20px var(--primary_color-shadow));
+    width: 103%;
+    z-index: -2;
+
+}
+
+.teacher-class-row-title{
+    color: white;
+    font-family: sans-serif;
+    position: relative;
+    pointer-events: none;
+    transform: translateY(-50%);
+    top: 50%;
+}
+
+
+/*--------| overview |--------*/
+.teacher-class-overview{
+    width: 70%;
+    position: absolute;
+    height: 80%;
+    right: 20px;
+    transform: translateY(-50%);
+    top: 50%;
+    background-color: var(--primary_color-shadow);
+    border-radius: 20px;
+    z-index: -1;
+
+}
+
+.teacher-no-class{
+    color: white;
+    font-family: sans-serif;
+    font-size: 35px;
+    transform: translate(-50%, -50%);
+    top: 50%;
+    left: 50%;
+    position: absolute;
+}
+
+.teacher-class-overview-title{
+    position: absolute;
+    transform: translateX(-50%);
+    top: 20px;
+    color: white;
+    font-family: sans-serif;
+    left: 50%;
+}
+
+.teacher-class-overview-grade-container{
+    position: absolute;
+    padding: 10px;
+    transform: translateX(-50%);
+    top: 70px;
+    left: 50%;
+    background-color: var(--primary_color);
+    border-radius: 20px;
+}
+
+.teacher-class-overview-grade-text{
+    color: white;
+    font-family: sans-serif;
+}
+
+
+.teacher-class-overview-numb{
+    width: 350px;
+    height: 200px;
+    text-align: center;
+
+    background-color: var(--primary_color);
+    border-radius: 20px;
+    position: absolute;
+    left: 100px;
+    top: 200px;
+}
+
+/*////////////////////////////| STUDENT DISPLAY |/////////////////////////////*/
+
+.teacher-student-list-none{
+    color: white;
+    font-family: sans-serif;
+    font-size: 20px;
+    transform: translate(-50%,-50%);
+    top: 50%;
+    left: 50%;
+    position: absolute;
+
+}
+
+.teacher-student-list-title{
+
+}
+
+
+
+/*////////////////////////////| ADDING DISPLAY |//////////////////////////////*/
+
+.teacher-selection-option-list{
+
+    position: absolute;
+    display: flex;
+    transform: translate(-50%, -50%);
+    top: 50%;
+    left: 50%;
+    background-color: var(--primary_color-shadow);
+    border-radius: 20px;
+    align-content: center;
+    padding: 10px;
+
+}
+
+.teacher-selection-choice-container{
+    background-color: var(--primary_color);
+    display: inline-block;
+
+    margin: 10px;
+    text-align: center;
+    position: relative;
+    width: 300px;
+    height: 300px;
+    border-radius: 20px;
+    filter: drop-shadow(0px 0px 10px var(--primary_color-shadow));
+    transition-duration: 200ms;
+
+}
+
+.teacher-selection-choice-container:hover{
+    width: 320px;
+}
+
+
+.teacher-selection-choice-text{
+    color: white;
+    top: 50%;
+    position: relative;
+    transform: translateY(-50%);
+    font-family: sans-serif;
+    pointer-events: none
+}
+
+.teacher-add-choice-title{
+    transform: translateX(-50%);
+    position: absolute;
+    top: 40px;
+    left: 50%;
+    font-size: 40px;
+    color: white;
+    font-family: sans-serif;
+}
+
+.teacher-next-btn{
+    position: absolute;
+    bottom: -10px;
+    right: -80px;
+    background-color: var(--primary_color-shadow);
+    width: 200px;
+    height: 70px;
+    border: none;
+    border-radius: 20px;
+    color: white;
+    font-family: sans-serif;
+    font-size: 30px;
+    transition-duration: 200ms;
+    transform: translate(-50%,-50%);
+    cursor: pointer;
+}
+
+.teacher-next-btn:hover{
+    width: 205px;
+    height: 75px;
+    font-size: 32px;
+    filter: drop-shadow(0px 0px 2px var(--primary_color-shadow));
+}
+
+.teacher-adding-step-container{
+    width: 90%;
+    height: 80%;
+    background-color: var(--secondary_color);
+    position: absolute;
+    border-radius: 20px;
+    transform: translate(-50%, -50%);
+    top: 50%;
+    left: 50%;
+}
+
+
+.teacher-previous-btn{
+    position: absolute;
+    bottom: -10px;
+    left: 120px;
+    background-color: var(--primary_color-shadow);
+    width: 200px;
+    height: 70px;
+    border: none;
+    border-radius: 20px;
+    color: white;
+    font-family: sans-serif;
+    font-size: 30px;
+    transition-duration: 200ms;
+    transform: translate(-50%,-50%);
+    cursor: pointer;
+}
+.teacher-previous-btn:hover{
+    width: 205px;
+    height: 75px;
+    font-size: 32px;
+    filter: drop-shadow(0px 0px 2px var(--primary_color-shadow));
+}
+
+
+.teacher-student-creation-container{
+    width: 500px;
+    height: 700px;
+    background-color: var(--primary_color-shadow);
+    border-radius: 20px;
+    transform: translate(-50%, -50%);
+    top: 50%;
+    left: 50%;
+    position: absolute;
+}
+
+.teacher-student-creation-input:first-child{
+    margin-top: 20px;
+}
+.teacher-student-creation-input{
+    position: relative;
+    margin-bottom: 20px;
+    height: 60px;
+    width: 90%;
+    transform: translateX(-50%);
+    left: 50%;
+    background-color: var(--primary_color);
+    border: none;
+    border-radius: 20px;
+    font-size: 25px;
+    padding-left: 20px;
+    color: white;
+    outline-style: none;
+}
+
+.teacher-student-creation-option{
+
+    background-color: var(--primary_color);
+
+}
+
+.teacher-student-creation-input:focus{
+    background-color: var(--secondary_color);
+}
+
+.teacher-student-creation-valid{
+    position: absolute;
+    height: 60px;
+    width: 50%;
+    transform: translateX(-50%);
+    left: 50%;
+    bottom: 20px;
+    background-color: var(--primary_color);
+    border: none;
+    font-family: sans-serif;
+    font-size: 35px;
+    color: white;
+    border-radius: 20px;
+    transition-duration: 200ms;
+}
+
+.teacher-student-creation-valid:hover{
+    background-color: var(--secondary_color);
+}
+/*////////////////////////////| DELETE DISPLAY |//////////////////////////////*/
+
+
+
+/*----------| classes |------------*/
+
+.teacher-class-list-delete{
+    width: 400px;
+    background-color: var(--primary_color-shadow);
+    height: 80%;
+    transform: translate(-50%, -50%);
+    left: 50%;
+    top: 50%;
+    position: absolute;
+    border-radius: 20px;
+    overflow: auto;
+    padding: 10px;
+    box-shadow:  0 0 10px 5px  var(--primary_color-shadow) inset;
+}
+
+
+.teacher-class-valid-delete-btn{
+    position: absolute;
+    z-index: 20;
+    transform: translate(-50%, -50%);
+    left: 50%;
+    bottom: 10%;
+    cursor: pointer;
+    width: 200px;
+    height: 50px;
+    border: none;
+    border-radius: 20px;
+    outline-style: none;
+    background-color: var(--button-waring);
+    color: white;
+    font-family: sans-serif;
+    font-size: 30px;
+}
+
+.teacher-class-valid-delete-btn:hover{
+    width: 205px;
+    height: 53px;
+}
+/*////////////////////////////| SEARCH DISPLAY |//////////////////////////////*/
+
+.teacher-search-input{
+
+    position: absolute;
+    z-index: 30;
+    transform: translate(-50%, -50%);
+    top: 30%;
+    left: 50%;
+    background-color: var(--secondary_color);
+    width: 500px;
+    height: 50px;
+    border: none;
+    border-radius: 20px;
+    outline: none;
+    padding-left: 20px;
+    font-size: 30px;
+    animation-duration: 300ms;
+    color: white;
+    animation-name:openSearchBar ;
+
+}
+
+@keyframes openSearchBar {
+    from{
+        width: 0;
+        height: 0;
+    }
+    to{
+        width: 500px;
+        height: 50px;
+    }
+}
+
+.teacher-search-result{
+    position: absolute;
+    z-index: 30;
+    transform: translateX(-50%);
+    top: 40%;
+    left: 50%;
+    width: 500px;
+    height: 500px;
+    border-radius: 20px;
+    background-color: var(--secondary_color);
+}
+
+.teacher-search-no-result{
+    position: absolute;
+    z-index: 30;
+    transform: translateX(-50%);
+    top: 35%;
+    left: 50%;
+    width: 500px;
+    height:80px;
+    border-radius: 20px;
+    background-color: var(--secondary_color);
+}
+
+
+.teacher-search-no-result-text{
+    color: white;
+    transform: translate(-50%,-50%);
+    top: 50%;
+    left: 50%;
+    font-size: 30px;
+    position: absolute;
+    font-family: sans-serif;
+}

@@ -8,7 +8,7 @@ import {MobileHeader, NavigationBar, Warning} from "./main_components/components
 import MapView from "./main_components/Map_display";
 import Axios from "axios";
 import {Quiz} from "./overlay_components/chapters_overlay";
-import {TeacherDisplay} from "./main_components/teacher_display";
+import {TeacherDisplay20} from "./main_components/teacher_display_2.0";
 
 
 /**
@@ -97,7 +97,10 @@ class MainView extends Component {
 
     handleDisplayWarning = (msg, validate) => {
         this.setState({
-            errorMsg: <Warning msg={msg} cancel={this.closeWarning} okClick={validate}/>
+            errorMsg: <>
+                <div className="blur-background"/>
+                <Warning msg={msg} cancel={this.closeWarning} okClick={validate}/>
+                </>
         })
     }
 
@@ -214,8 +217,11 @@ class MainView extends Component {
             } else {
 
                 //user is a teacher
-                return <><TeacherDisplay closeWarning={this.closeWarning} displayWarning={this.handleDisplayWarning} logout={this.handleLogout}/>
+                return <>
+
+                    <TeacherDisplay20 closeWarning={this.closeWarning} displayWarning={this.handleDisplayWarning} logout={this.handleLogout}/>
                     {this.state.errorMsg}
+
                 </>
 
             }

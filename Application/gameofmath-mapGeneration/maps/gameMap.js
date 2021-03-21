@@ -266,31 +266,34 @@ let GameMap = function (sizeX, sizeY, nbPoints) {
         return castlePositions;
     }
 
-    let poissonForestSampling = new PoissonDiskSampling({shape:[sizeX,sizeY],minDistance:5,maxDistance:10})
-    let poissonPoints = poissonForestSampling.getAllPoints();
-    poissonForestSampling.fill();
-
-    let poissonAridSampling = new PoissonDiskSampling({shape:[sizeX,sizeY],minDistance:15,maxDistance:20})
-    let aridPoints = poissonAridSampling.getAllPoints();
-    poissonAridSampling.fill();
-
-
-    this.treePoints = new Array();
-    for(let i=0;i<poissonPoints.length;i++){
-        let perlinValue = this.perlinAtPos(poissonPoints[i][0],poissonPoints[i][1],sizeX,sizeY)
-        let biome = this.biomeAtPos(poissonPoints[i][0],poissonPoints[i][1]);
-        if(perlinValue>0.80 && perlinValue<0.90 && biome>0.5){
-            this.treePoints.push(new THREE.Vector3(poissonPoints[i][0]-sizeX/2,perlinValue*100,poissonPoints[i][1]-sizeY/2))
+    this.setupTree = function(points,minHeight,maxHeight,minBiome,maxBiome){
+        let pointsArray = new Array();
+        for(let i=0;i<points.length;i++){
+            let perlinValue = this.perlinAtPos(points[i][0],points[i][1],sizeX,sizeY)
+            let biome = this.biomeAtPos(points[i][0],points[i][1]);
+            if(perlinValue>minHeight && perlinValue<maxHeight && biome>minBiome && biome<maxBiome){
+                pointsArray.push(new THREE.Vector3(points[i][0]-sizeX/2,perlinValue*100,points[i][1]-sizeY/2))
+            }
         }
+        return pointsArray;
     }
-    for(let i=0;i<aridPoints.length;i++){
-        console.log("one arid point")
-        let perlinValue = this.perlinAtPos(aridPoints[i][0],aridPoints[i][1],sizeX,sizeY)
-        let biome = this.biomeAtPos(aridPoints[i][0],aridPoints[i][1]);
-        if(perlinValue>0.80 && perlinValue<0.90 && biome>0.25 && biome<0.5){
-            this.treePoints.push(new THREE.Vector3(aridPoints[i][0]-sizeX/2,perlinValue*100,aridPoints[i][1]-sizeY/2))
-        }
-    }
+
+    let sampling = new PoissonDiskSampling({shape:[sizeX,sizeY],minDistance:5,maxDistance:10})
+    sampling.fill();
+    let samplingPoints = sampling.getAllPoints();
+    this.forestTrees = this.setupTree(samplingPoints,0.8,0.9,0.5,0.75)
+
+    sampling = new PoissonDiskSampling({shape:[sizeX,sizeY],minDistance:15,maxDistance:20})
+    sampling.fill();
+    samplingPoints = sampling.getAllPoints();
+    this.savannaTrees = this.setupTree(samplingPoints,0.8,0.9,0.25,0.5)
+
+    sampling = new PoissonDiskSampling({shape:[sizeX,sizeY],minDistance:15,maxDistance:20})
+    sampling.fill();
+    samplingPoints = sampling.getAllPoints();
+    this.plainTrees = this.setupTree(samplingPoints,0.8,0.9,0.75,1)
+
+
 
     this.sizeX = sizeX
     this.sizeY = sizeY

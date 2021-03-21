@@ -63,7 +63,7 @@ class MapView extends Component {
         requestAnimationFrame(this.animate);
         this.state.stats.begin();
         this.state.inputVars.camDistance -= this.state.inputVars.scrolled;
-        this.state.inputVars.camDistance = Math.min(Math.max(20, this.state.inputVars.camDistance), 100)
+        this.state.inputVars.camDistance = Math.min(Math.max(30, this.state.inputVars.camDistance), 100)
         this.state.camera.position.z = this.state.center.z - (this.state.inputVars.camDistance * Math.cos(Math.PI / 4)) * Math.cos(this.state.inputVars.rotateX)
         this.state.camera.position.x = this.state.center.x - (this.state.inputVars.camDistance * Math.cos(Math.PI / 4)) * Math.sin(this.state.inputVars.rotateX)
         this.state.camera.position.y = this.state.inputVars.camDistance * Math.sin(Math.PI / 4) + 80
@@ -156,7 +156,7 @@ class MapView extends Component {
             this.state.scene.add(mesh);
         }
         let gltfLoader = new GLTFLoader();
-        gltfLoader.load("mapData/castle_2.glb", model => {
+        gltfLoader.load("mapData/castle.glb", model => {
             let castlesPosition = map.castlePosition;
             for (let position of castlesPosition) {
                 let positionModel = model.scene.clone(true);
@@ -178,9 +178,9 @@ class MapView extends Component {
             console.error(error);
         })
 
-        this.setupTrees("/mapData/arbreLOD1.glb",map.forestTrees,0.5);
-        this.setupTrees("/mapData/treeSavanna.glb",map.savannaTrees,0.5);
-        this.setupTrees("/mapData/buisson.glb",map.plainTrees,0.25);
+        this.setupTrees("/mapData/forestTree.glb",map.forestTrees,0.5);
+        this.setupTrees("/mapData/savannaTree.glb",map.savannaTrees,0.5);
+        this.setupTrees("/mapData/bush.glb",map.plainTrees,0.25);
     }
 
     setupTrees = (link,map,scale) =>{

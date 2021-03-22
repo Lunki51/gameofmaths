@@ -178,12 +178,12 @@ class MapView extends Component {
             console.error(error);
         })
 
-        this.setupTrees("/mapData/forestTree.glb",map.forestTrees,0.7);
-        this.setupTrees("/mapData/savannaTree.glb",map.savannaTrees,0.3);
-        this.setupTrees("/mapData/bush.glb",map.plainTrees,0.25);
+        this.setupTrees("/mapData/forestTree.glb",map.forestTrees,0.7,map.castlePosition);
+        this.setupTrees("/mapData/savannaTree.glb",map.savannaTrees,0.3,map.castlePosition);
+        this.setupTrees("/mapData/bush.glb",map.plainTrees,0.25,map.castlePosition);
     }
 
-    setupTrees = (link,map,scale) =>{
+    setupTrees = (link,map,scale,castles) =>{
         let gltfLoader = new GLTFLoader();
         gltfLoader.load(link, gltf => {
             let geometries = new Map();
@@ -194,25 +194,33 @@ class MapView extends Component {
             }
 
             for (let i = 0; i < map.length; i++) {
-                let randRot = Math.random() * Math.PI * 2;
-                for (let j = 0; j < GLTFscene.children.length; j++) {
-                    let childObject = GLTFscene.children[j];
+                let valid = true;
+                castles.forEach(castle => {
+                    if((castle[0]-map[i].x<=10 && castle[0]-map[i].x>=-10) && (castle[2]-map[i].z<=10 && castle[2]-map[i].z>=-10)){
+                        valid = false;
+                    }
+                })
+                if(valid){
+                    let randRot = Math.random() * Math.PI * 2;
+                    for (let j = 0; j < GLTFscene.children.length; j++) {
+                        let childObject = GLTFscene.children[j];
 
-                    let childGeometry = new THREE.InstancedBufferGeometry();
-                    THREE.BufferGeometry.prototype.copy.call(childGeometry, childObject.geometry);
+                        let childGeometry = new THREE.InstancedBufferGeometry();
+                        THREE.BufferGeometry.prototype.copy.call(childGeometry, childObject.geometry);
 
-                    let childMat = childObject.material;
+                        let childMat = childObject.material;
 
-                    childGeometry.scale(childObject.scale.x,childObject.scale.y,childObject.scale.z)
-                    childGeometry.rotateX(childObject.rotation.x);
-                    childGeometry.rotateY(childObject.rotation.y);
-                    childGeometry.rotateZ(childObject.rotation.z);
-                    childGeometry.translate(childObject.position.x, childObject.position.y, childObject.position.z)
-                    childGeometry.scale(scale, scale, scale)
+                        childGeometry.scale(childObject.scale.x,childObject.scale.y,childObject.scale.z)
+                        childGeometry.rotateX(childObject.rotation.x);
+                        childGeometry.rotateY(childObject.rotation.y);
+                        childGeometry.rotateZ(childObject.rotation.z);
+                        childGeometry.translate(childObject.position.x, childObject.position.y, childObject.position.z)
+                        childGeometry.scale(scale, scale, scale)
 
-                    childGeometry.rotateY(randRot)
-                    childGeometry.translate(map[i].x, map[i].y, map[i].z)
-                    geometries.get(childMat.color).push(childGeometry)
+                        childGeometry.rotateY(randRot)
+                        childGeometry.translate(map[i].x, map[i].y, map[i].z)
+                        geometries.get(childMat.color).push(childGeometry)
+                    }
                 }
             }
 

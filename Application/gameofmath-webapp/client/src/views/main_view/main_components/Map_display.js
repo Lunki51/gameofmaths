@@ -178,8 +178,8 @@ class MapView extends Component {
             console.error(error);
         })
 
-        this.setupTrees("/mapData/forestTree.glb",map.forestTrees,0.5);
-        this.setupTrees("/mapData/savannaTree.glb",map.savannaTrees,0.5);
+        this.setupTrees("/mapData/forestTree.glb",map.forestTrees,0.7);
+        this.setupTrees("/mapData/savannaTree.glb",map.savannaTrees,0.3);
         this.setupTrees("/mapData/bush.glb",map.plainTrees,0.25);
     }
 
@@ -203,9 +203,15 @@ class MapView extends Component {
 
                     let childMat = childObject.material;
 
-                    childGeometry.scale(scale, scale, scale)
-                    childGeometry.translate(map[i].x, map[i].y, map[i].z)
+                    childGeometry.scale(childObject.scale.x,childObject.scale.y,childObject.scale.z)
+                    childGeometry.rotateX(childObject.rotation.x);
+                    childGeometry.rotateY(childObject.rotation.y);
+                    childGeometry.rotateZ(childObject.rotation.z);
                     childGeometry.translate(childObject.position.x, childObject.position.y, childObject.position.z)
+                    childGeometry.scale(scale, scale, scale)
+
+                    childGeometry.rotateY(randRot)
+                    childGeometry.translate(map[i].x, map[i].y, map[i].z)
                     geometries.get(childMat.color).push(childGeometry)
                 }
             }

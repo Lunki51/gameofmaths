@@ -283,7 +283,7 @@ let GameMap = function (sizeX, sizeY, nbPoints) {
     let samplingPoints = sampling.getAllPoints();
     this.forestTrees = this.setupTree(samplingPoints,0.8,0.9,0.5,0.75)
 
-    sampling = new PoissonDiskSampling({shape:[sizeX,sizeY],minDistance:15,maxDistance:20})
+    sampling = new PoissonDiskSampling({shape:[sizeX,sizeY],minDistance:10,maxDistance:15})
     sampling.fill();
     samplingPoints = sampling.getAllPoints();
     this.savannaTrees = this.setupTree(samplingPoints,0.8,0.9,0.25,0.5)

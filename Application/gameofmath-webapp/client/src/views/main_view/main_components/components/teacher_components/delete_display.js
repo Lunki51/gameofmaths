@@ -171,7 +171,6 @@ class SelectionChoice extends Component{
         </div>
     }
 
-
 }
 
 

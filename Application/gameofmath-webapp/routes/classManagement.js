@@ -39,7 +39,7 @@ router.post('/getClasses', (req, res, next) => {
  */
 router.post('/create', (req, res, next) => {
 
-    if (!req.session.isLogged & !req.session.isTeacher) return next(new Error('Client must be logged on a Teacher account'))
+    if (!req.session.isLogged && !req.session.isTeacher) return next(new Error('Client must be logged on a Teacher account'))
 
 
 
@@ -90,7 +90,7 @@ router.post('/create', (req, res, next) => {
  *  2: if the the name is incorrect
  */
 router.post('/rename', (req, res, next) => {
-    if (!req.session.isLogged & !req.session.isTeacher) return next(new Error('Client must be logged on a Teacher account'))
+    if (!req.session.isLogged && !req.session.isTeacher) return next(new Error('Client must be logged on a Teacher account'))
 
     const id = req.body.id
     const newName = req.body.newName
@@ -507,7 +507,7 @@ router.post('/createStudent', (req, res, next) => {
  * @param studentId id of the student
  * @return
  *  0:
- *  1: the student od is incorrect
+ *  1: the student id is incorrect
  *  2: the class id is incorrect
  *  3: if the the student is not in the class
  */
@@ -516,6 +516,10 @@ router.post('/deleteStudent', (req, res, next) => {
 
     const classId = req.body.classId
     const studentId = req.body.studentId
+
+    console.log("classId: "+classId)
+    console.log("studentId: "+studentId)
+
     if (classId == null) return res.send({returnState: 2, msg: 'The class id is incorrect'})
     if (studentId == null) return res.send({returnState: 1, msg: 'The student id is incorrect'})
 

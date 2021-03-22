@@ -1,5 +1,4 @@
 import {Component} from "react";
-import Axios from "axios";
 import {getAllClasses} from "../../../../../model/classModel";
 import {getAllStudents} from "../../../../../model/studentModel";
 
@@ -17,6 +16,14 @@ export class ClassesDisplay extends Component{
 
     componentDidMount() {
         this.handleGetClasses()
+
+        if(this.props.fromCreate){
+            this.setState({
+                currentOverviewClass: this.props.fromCreate
+            })
+        }
+
+
     }
 
     handleGetClasses = () => {
@@ -28,6 +35,8 @@ export class ClassesDisplay extends Component{
             })
 
         })
+
+
 
 
 

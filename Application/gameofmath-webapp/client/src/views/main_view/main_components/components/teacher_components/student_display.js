@@ -18,6 +18,8 @@ export class StudentDisplay extends Component{
     componentDidMount() {
 
 
+
+
         getAllClasses().then(res => {
             this.setState({
                 classesList: res.data.classes
@@ -25,13 +27,25 @@ export class StudentDisplay extends Component{
 
             getAllStudents(res.data.classes[0].classID).then(res => {
 
-                this.setState({
-                    studentList:res.data.students
-                })
+                if(this.props.formCreate){
+                    this.setState({
+                        studentList:res.data.students,
+                        currentClass:this.props.formCreate.theClass,
+                        currentStudent:this.props.formCreate.theStudent
+                    })
+                }else{
+                    this.setState({
+                        studentList:res.data.students
+                    })
+                }
+
+
 
 
             })
         })
+
+
     }
 
     handleDisplayOverView = (theStudent) => {
@@ -108,7 +122,7 @@ class StudentOverview extends Component{
 
     render() {
         return<>
-            <h1 className="teacher-class-overview-title">Nom: {this.props.theStudent.firstname} Prénom: {this.props.theStudent.lastname} </h1>
+            <h1 className="teacher-class-overview-title">Nom: {this.props.theStudent.username} Prénom: {this.props.theStudent.lastname} </h1>
 
             <div className="teacher-class-overview-grade-container">
                 <h1 className="teacher-class-overview-grade-text">Niveau: {this.props.theStudent.grade}</h1>

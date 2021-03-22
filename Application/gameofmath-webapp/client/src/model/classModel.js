@@ -9,7 +9,7 @@ export function getAllClasses(){
 
 export function createClass(name, grade){
 
- return Axios.post('/api/classManagement/create', {name,grade})
+ return Axios.post('/api/classManagement/create', {name:name,grade:grade})
 
 }
 

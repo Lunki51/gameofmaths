@@ -74,6 +74,8 @@ class DeleteSelectStep extends Component{
         switch (this.state.currentChoice) {
             case this.STUDENT_TEXT:
 
+                this.props.next(<DeleteStudentStep openPopup={this.props.openPopup} closePopup={this.props.closePopup}
+                                                 next={this.props.next} previous={this.props.previous}/>)
 
 
                 break

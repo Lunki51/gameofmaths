@@ -39,13 +39,17 @@ export class TeacherDisplay20 extends Component{
         this.setState({currentDisplay: <StudentDisplay/>})
     }
     handleGotoAdding = () => {
-        this.setState({currentDisplay: <AddingDisplay  openPopup={this.handleCreatePopup} closePopup={this.handleDismissPopup}/>})
+        this.setState({currentDisplay: <AddingDisplay redirect={this.handleRedirectTo}  openPopup={this.handleCreatePopup} closePopup={this.handleDismissPopup}/>})
     }
-
 
     handleGotoDelete = () => {
-        this.setState({currentDisplay: <DeleteDisplay  openPopup={this.handleCreatePopup} closePopup={this.handleDismissPopup}/>})
+        this.setState({currentDisplay: <DeleteDisplay redirect={this.handleRedirectTo} openPopup={this.handleCreatePopup} closePopup={this.handleDismissPopup}/>})
     }
+
+    handleRedirectTo(goalElement){
+        this.setState({currentDisplay: goalElement})
+    }
+
     ////////////////////////////////////////////////
 
     handleOpenSearch = () => {

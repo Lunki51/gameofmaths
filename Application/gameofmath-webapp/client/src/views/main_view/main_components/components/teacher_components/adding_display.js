@@ -2,6 +2,7 @@ import {Component} from "react";
 import {createClass, getAllClasses} from "../../../../../model/classModel";
 import {createStudent, getAllTheStudents} from "../../../../../model/studentModel";
 import {PopupMessage} from "../../teacher_display_2.0";
+import {StudentDisplay} from "./student_display";
 
 export class AddingDisplay extends Component{
 
@@ -9,9 +10,16 @@ export class AddingDisplay extends Component{
         super();
 
         this.state = {
-            currentStepScreen: <AddSelectStep openPopup={this.handleOpenPopup} previous={this.handlePrevious} next={this.handleNext}/>
+            currentStepScreen: null
         }
 
+    }
+
+    componentDidMount() {
+        this.setState({
+            currentStepScreen: <AddSelectStep redirect={this.props.redirect} openPopup={this.handleOpenPopup}
+                                              previous={this.handlePrevious} next={this.handleNext}/>
+        })
     }
 
     handleOpenPopup = (Object) => {
@@ -71,17 +79,22 @@ class AddSelectStep extends Component{
         switch (this.state.currentChoice) {
             case this.STUDENT_TEXT:
 
-                this.props.next(<AddStudentStep openPopup={this.props.openPopup} closePopup={this.props.closePopup}  next={this.props.next} previous={this.props.previous}/>)
-
+                this.props.next(<AddStudentStep redirect={this.props.redirect} openPopup={this.props.openPopup}
+                                                closePopup={this.props.closePopup} next={this.props.next}
+                                                previous={this.props.previous}/>)
 
                 break
             case this.CLASS_TEXT:
 
-                this.props.next(<AddClassStep openPopup={this.props.openPopup} closePopup={this.props.closePopup}  next={this.props.next} previous={this.props.previous} />)
+                this.props.next(<AddClassStep redirect={this.props.redirect} openPopup={this.props.openPopup}
+                                              closePopup={this.props.closePopup} next={this.props.next}
+                                              previous={this.props.previous}/>)
                 break
             case this.CHAPTER_TEXT:
 
-
+                this.props.next(<AddChapterStep redirect={this.props.redirect} openPopup={this.props.openPopup}
+                                                closePopup={this.props.closePopup} next={this.props.next}
+                                                previous={this.props.previous}/>)
                 break
             case this.QUESTION_TEXT:
 
@@ -231,15 +244,17 @@ class AddStudentStep extends Component{
 
                 if(response.data.returnState === 0){
 
-                }else{
+                    alert("Elève inserer")
+                    alert("mot de passe: " + response.data.password)
+                    console.log(response)
+                    //  this.props.redirect(<StudentDisplay formCreate={{studentID:response.data.student.userID, classID:response.data.student.theClass}}/>);
+                } else {
                     //TODO error msg
                     alert(response.data.msg)
                 }
 
             })
         }
-
-
 
         //no reload
         event.preventDefault();
@@ -275,8 +290,6 @@ class AddStudentStep extends Component{
 
 
 //////////////////////////////////| ADDING CLASSES |////////////////////////////////////
-
-
 
 
 class AddClassStep extends Component{

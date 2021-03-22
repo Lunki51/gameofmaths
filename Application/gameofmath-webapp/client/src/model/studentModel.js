@@ -12,6 +12,7 @@ export function getAllStudents(id){
 
 
 }
+
 export function getAllTheStudents(){
 
     return Axios.post('/api/classManagement/getAllStudents' )

@@ -369,6 +369,8 @@
 
 /*////////////////////////////| ADDING DISPLAY |//////////////////////////////*/
 
+/*--------| selection |---------*/
+
 .teacher-selection-option-list{
 
     position: absolute;
@@ -541,6 +543,70 @@
 .teacher-student-creation-valid:hover{
     background-color: var(--secondary_color);
 }
+
+/*------------| chapter |------------*/
+
+.teacher-chapter-creation-container{
+    width: 500px;
+    height: 700px;
+    background-color: var(--primary_color-shadow);
+    border-radius: 20px;
+    transform: translate(-50%, -50%);
+    top: 50%;
+    left: 50%;
+    position: absolute;
+}
+
+.teacher-chapter-creation-input:first-child{
+    margin-top: 20px;
+}
+
+.teacher-chapter-creation-input{
+    position: relative;
+    margin-bottom: 20px;
+    height: 60px;
+    width: 90%;
+    transform: translateX(-50%);
+    left: 50%;
+    background-color: var(--primary_color);
+    border: none;
+    border-radius: 20px;
+    font-size: 25px;
+    padding-left: 20px;
+    color: white;
+    outline-style: none;
+}
+
+.teacher-chapter-creation-option{
+
+    background-color: var(--primary_color);
+
+}
+
+.teacher-chapter-creation-input:focus{
+    background-color: var(--secondary_color);
+}
+
+.teacher-chapter-creation-valid{
+    position: absolute;
+    height: 60px;
+    width: 50%;
+    transform: translateX(-50%);
+    left: 50%;
+    bottom: 20px;
+    background-color: var(--primary_color);
+    border: none;
+    font-family: sans-serif;
+    font-size: 35px;
+    color: white;
+    border-radius: 20px;
+    transition-duration: 200ms;
+}
+
+.teacher-chapter-creation-valid:hover {
+    background-color: var(--secondary_color);
+}
+
 /*////////////////////////////| DELETE DISPLAY |//////////////////////////////*/
 
 

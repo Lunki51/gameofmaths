@@ -111,9 +111,9 @@ beforeEach(async (done) => {
     done()
 })
 
-describe('Test the getChapter path', () => {
+describe('Test the getChapters path', () => {
     test('A student should be able to get the chapter list', async (done) => {
-        const rep = await postC(res, '/api/quiz/getChapter').send().catch(done);
+        const rep = await postC(res, '/api/quiz/getChapters').send().catch(done);
         expect(rep.body).toEqual({
             returnState: 0,
             chapters: ['chap1', 'chap2']

@@ -13,7 +13,7 @@ const db = require('gameofmath-db').db
  * @return
  *  0: the chapter name in an array (chapters)
  */
-router.post('/getChapter', (req, res, next) => {
+router.post('/getChapters', (req, res, next) => {
     if (!req.session.isLogged) next(new Error('The client must be logged'))
 
     chapter_dao.findAll().then(rep => {

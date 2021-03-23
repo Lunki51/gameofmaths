@@ -56,9 +56,9 @@ beforeEach(async (done) => {
 // ################################### CHAPTER MANAGEMENT ###################################
 // ##########################################################################################
 
-describe('Test the getChapter path', () => {
+describe('Test the getChapters path', () => {
     test('A teacher should be able to get the chapter list', async (done) => {
-        const rep = await postC(res, '/api/quizManagement/getChapter').send().catch(done);
+        const rep = await postC(res, '/api/quizManagement/getChapters').send().catch(done);
         rep.body.chapters.sort((a, b) => a.chapterID - b.chapterID)
         expect(rep.body).toEqual({
             returnState: 0,
@@ -71,6 +71,22 @@ describe('Test the getChapter path', () => {
                     name: 'chap2',
                 }
             ]
+        })
+        done();
+    });
+});
+
+describe('Test the getChapter path', () => {
+    test('A teacher should be able to get a chapter by id', async (done) => {
+        const rep = await postC(res, '/api/quizManagement/getChapter').send({
+            id: 2
+        }).catch(done);
+        expect(rep.body).toEqual({
+            returnState: 0,
+            chapter: {
+                chapterID: 2,
+                name: 'chap2',
+            }
         })
         done();
     });
@@ -89,7 +105,7 @@ describe('Test the createChapter path', () => {
             }
         })
 
-        const rep2 = await postC(res, '/api/quizManagement/getChapter').send().catch(done);
+        const rep2 = await postC(res, '/api/quizManagement/getChapters').send().catch(done);
         rep2.body.chapters.sort((a, b) => a.chapterID - b.chapterID)
         expect(rep2.body).toEqual({
             returnState: 0,
@@ -119,7 +135,7 @@ describe('Test the deleteChapter path', () => {
             returnState: 0
         })
 
-        const rep2 = await postC(res, '/api/quizManagement/getChapter').send().catch(done);
+        const rep2 = await postC(res, '/api/quizManagement/getChapters').send().catch(done);
         rep2.body.chapters.sort((a, b) => a.chapterID - b.chapterID)
         expect(rep2.body).toEqual({
             returnState: 0,
@@ -182,7 +198,7 @@ describe('Test the deleteChapter path', () => {
         })
 
         //CHAPTER
-        const rep2 = await postC(res, '/api/quizManagement/getChapter').send().catch(done);
+        const rep2 = await postC(res, '/api/quizManagement/getChapters').send().catch(done);
         rep2.body.chapters.sort((a, b) => a.chapterID - b.chapterID)
         expect(rep2.body).toEqual({
             returnState: 0,
@@ -231,7 +247,7 @@ describe('Test the setChapterName path', () => {
             }
         })
 
-        rep = await postC(res, '/api/quizManagement/getChapter').send().catch(done);
+        rep = await postC(res, '/api/quizManagement/getChapters').send().catch(done);
         rep.body.chapters.sort((a, b) => a.chapterID - b.chapterID)
         expect(rep.body).toEqual({
             returnState: 0,
@@ -458,6 +474,42 @@ describe('Test the getQuizListWithChapterId path', () => {
                     quizName: 'q3'
                 }
             ]
+        })
+        done();
+    });
+});
+
+describe('Test the getQuiz path', () => {
+    test('A teacher should be able to get a quiz by id', async (done) => {
+        const rep = await postC(res, '/api/quizManagement/getQuiz').send({
+            id: 3
+        }).catch(done);
+        expect(rep.body).toEqual({
+            returnState: 0,
+            quiz: {
+                quizID: 3,
+                asAnOrder: '1',
+                theChapter: 1,
+                quizName: 'q3'
+            }
+        })
+        done();
+    });
+});
+
+describe('Test the getQuizByName path', () => {
+    test('A teacher should be able to get a quiz by name', async (done) => {
+        const rep = await postC(res, '/api/quizManagement/getQuizByName').send({
+            name: 'q3'
+        }).catch(done);
+        expect(rep.body).toEqual({
+            returnState: 0,
+            quiz: {
+                quizID: 3,
+                asAnOrder: '1',
+                theChapter: 1,
+                quizName: 'q3'
+            }
         })
         done();
     });
@@ -917,6 +969,27 @@ describe('Test the setLevel path', () => {
     });
 });
 
+describe('Test the getQuestion path', () => {
+    test('A teacher should be able to get a question by id', async (done) => {
+        const rep = await postC(res, '/api/quizManagement/getQuestion').send({
+            id: 3
+        }).catch(done);
+        expect(rep.body).toEqual({
+            returnState: 0,
+            question: {
+                questionID: 3,
+                upperText: '',
+                lowerText: '',
+                image: '',
+                type: 'QCM',
+                level: 1,
+                theChapter: 1
+            }
+        })
+        done();
+    });
+});
+
 //TODO set image
 //TODO delete image
 
@@ -1333,6 +1406,24 @@ describe('Test the setIsValid path', () => {
             msg: 'can\'t be call on an OPEN question'
         })
 
+        done();
+    });
+});
+
+describe('Test the getAnswer path', () => {
+    test('A teacher should be able to get a answer by id', async (done) => {
+        const rep = await postC(res, '/api/quizManagement/getAnswer').send({
+            id: 4
+        }).catch(done);
+        expect(rep.body).toEqual({
+            returnState: 0,
+            answer: {
+                answerID: 4,
+                text: 'text t',
+                isValid: '1',
+                theQuestion:3
+            }
+        })
         done();
     });
 });

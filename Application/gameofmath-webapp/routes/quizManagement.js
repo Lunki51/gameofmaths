@@ -21,7 +21,7 @@ const fs = require('fs')
  * @return
  *  0: chapters: an array with all the chapters
  */
-router.post('/getChapter', (req, res, next) => {
+router.post('/getChapters', (req, res, next) => {
     if (!req.session.isLogged || !req.session.isTeacher) next(-1, 'The client must be logged on a teacher account')
 
     chapter_dao.findAll().then(rep => {
@@ -29,6 +29,27 @@ router.post('/getChapter', (req, res, next) => {
     }).catch(err => {
         next(err)
     })
+})
+
+/**
+ * Get a chapter by ID
+ *
+ * @param id chapter id
+ * @return
+ *  0: chapter: the chapter
+ *  1: if the chapter id is incorrect
+ */
+router.post('/getChapter', (req, res, next) => {
+    if (!req.session.isLogged & !req.session.isTeacher) return next(new Error('Client must be logged on a Teacher account'))
+
+    const id = req.body.id
+
+    if (id == null) return res.send({returnState: 1, msg: 'The chapter id is incorrect'})
+
+    chapter_dao.findByID(id).then(chapter => {
+        if (chapter == null) res.send({returnState: 1, msg: 'The chapter id is incorrect'})
+        else res.send({returnState: 0, chapter: chapter})
+    }).catch(err => next(err))
 })
 
 /**
@@ -373,6 +394,48 @@ router.post('/getQuizListWithChapterId', (req, res, next) => {
 
     quiz_dao.findAllInChapter(id).then(q => {
         res.send({returnState: 0, quizzes: q})
+    }).catch(err => next(err))
+})
+
+/**
+ * Get a quiz by ID
+ *
+ * @param id quiz id
+ * @return
+ *  0: quiz: the quiz
+ *  1: if the quiz id is incorrect
+ */
+router.post('/getQuiz', (req, res, next) => {
+    if (!req.session.isLogged & !req.session.isTeacher) return next(new Error('Client must be logged on a Teacher account'))
+
+    const id = req.body.id
+
+    if (id == null) return res.send({returnState: 1, msg: 'The quiz id is incorrect'})
+
+    quiz_dao.findByID(id).then(quiz => {
+        if (quiz == null) res.send({returnState: 1, msg: 'The quiz id is incorrect'})
+        else res.send({returnState: 0, quiz: quiz})
+    }).catch(err => next(err))
+})
+
+/**
+ * Get a quiz by name
+ *
+ * @param name quiz name
+ * @return
+ *  0: quiz: the quiz
+ *  1: if the quiz name is incorrect
+ */
+router.post('/getQuizByName', (req, res, next) => {
+    if (!req.session.isLogged & !req.session.isTeacher) return next(new Error('Client must be logged on a Teacher account'))
+
+    const name = req.body.name
+
+    if (name == null) return res.send({returnState: 1, msg: 'The name id is incorrect'})
+
+    quiz_dao.findByName(name).then(quiz => {
+        if (quiz == null) res.send({returnState: 1, msg: 'The name id is incorrect'})
+        else res.send({returnState: 0, quiz: quiz})
     }).catch(err => next(err))
 })
 
@@ -911,6 +974,27 @@ router.post('/getQuestionList', (req, res, next) => {
     })
 })
 
+/**
+ * Get a question by ID
+ *
+ * @param id question id
+ * @return
+ *  0: question: the question
+ *  1: if the question id is incorrect
+ */
+router.post('/getQuestion', (req, res, next) => {
+    if (!req.session.isLogged & !req.session.isTeacher) return next(new Error('Client must be logged on a Teacher account'))
+
+    const id = req.body.id
+
+    if (id == null) return res.send({returnState: 1, msg: 'The question id is incorrect'})
+
+    question_dao.findByID(id).then(question => {
+        if (question == null) res.send({returnState: 1, msg: 'The question id is incorrect'})
+        else res.send({returnState: 0, question: question})
+    }).catch(err => next(err))
+})
+
 // #############################################################################################
 // #################################### ANSWER MANAGEMENT ####################################
 // #############################################################################################
@@ -1192,6 +1276,27 @@ router.post('/getAnswersList', (req, res, next) => {
             }
         }
     })
+})
+
+/**
+ * Get a answer by ID
+ *
+ * @param id answer id
+ * @return
+ *  0: answer: the answer
+ *  1: if the answer id is incorrect
+ */
+router.post('/getAnswer', (req, res, next) => {
+    if (!req.session.isLogged & !req.session.isTeacher) return next(new Error('Client must be logged on a Teacher account'))
+
+    const id = req.body.id
+
+    if (id == null) return res.send({returnState: 1, msg: 'The answer id is incorrect'})
+
+    answer_dao.findByID(id).then(answer => {
+        if (answer == null) res.send({returnState: 1, msg: 'The answer id is incorrect'})
+        else res.send({returnState: 0, answer: answer})
+    }).catch(err => next(err))
 })
 
 module.exports = router;

@@ -10,12 +10,17 @@ export function getAllStudents(id){
 
     return Axios.post('/api/classManagement/getStudents', {id})
 
-
 }
 
 export function getAllTheStudents(){
 
     return Axios.post('/api/classManagement/getAllStudents' )
+
+}
+
+export function deleteTheStudents(studentId,classId){
+
+    return Axios.post('/api/classManagement/deleteStudent', {studentId:studentId, classId:classId} )
 
 
 }

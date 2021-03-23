@@ -358,14 +358,108 @@
     top: 50%;
     left: 50%;
     position: absolute;
+}
+
+/*--------| students list |-------*/
+
+.teacher-students-list-overview{
+    width: 400px;
+    background-color: var(--primary_color-shadow);
+    height: 80%;
+    transform: translate(-50%, -50%);
+    top: 50%;
+    position: absolute;
+    left: 50%;
+    border-radius: 20px;
+    overflow: auto;
+    padding: 10px;
+    box-shadow:  0 0 10px 5px  var(--primary_color-shadow) inset;
+}
+
+.teacher-student-row{
+    position: relative;
+    margin-bottom: 10px;
+    width: 100%;
+    background-color: var(--primary_color);
+    filter: drop-shadow(0px 0px 5px var(--primary_color-shadow));
+    height: 100px;
+    transform: translateX(-50%);
+    left: 50%;
+    border-radius: 20px;
+    text-align: center;
+    z-index: -2;
+    cursor: pointer;
+    transition-duration: 200ms;
+}
+
+.teacher-student-row:hover{
+    background-color: var(--secondary_color);
+    filter: drop-shadow(0px 5px 20px var(--primary_color-shadow));
+    width: 103%;
+    z-index: -2;
 
 }
 
-.teacher-student-list-title{
+.teacher-student-row-title{
+    color: white;
+    font-family: sans-serif;
+    position: relative;
+    pointer-events: none;
+    transform: translateY(-50%);
+    top: 50%;
+}
+
+/*//////////////////////////////| CHAPTERS DISPLAY |//////////////////*/
+
+
+/*--------| chapters list |-------*/
+
+.teacher-chapter-list-overview{
+    width: 400px;
+    background-color: var(--primary_color-shadow);
+    height: 80%;
+    transform: translateY(-50%);
+    top: 50%;
+    position: relative;
+    left: 40px;
+    border-radius: 20px;
+    overflow: auto;
+    padding: 10px;
+    box-shadow:  0 0 10px 5px  var(--primary_color-shadow) inset;
+}
+
+.teacher-chapter-row{
+    position: relative;
+    margin-bottom: 10px;
+    width: 100%;
+    background-color: var(--primary_color);
+    filter: drop-shadow(0px 0px 5px var(--primary_color-shadow));
+    height: 100px;
+    transform: translateX(-50%);
+    left: 50%;
+    border-radius: 20px;
+    text-align: center;
+    z-index: -2;
+    cursor: pointer;
+    transition-duration: 200ms;
+}
+
+.teacher-chapter-row:hover{
+    background-color: var(--secondary_color);
+    filter: drop-shadow(0px 5px 20px var(--primary_color-shadow));
+    width: 103%;
+    z-index: -2;
 
 }
 
-
+.teacher-chapter-row-title{
+    color: white;
+    font-family: sans-serif;
+    position: relative;
+    pointer-events: none;
+    transform: translateY(-50%);
+    top: 50%;
+}
 
 /*////////////////////////////| ADDING DISPLAY |//////////////////////////////*/
 
@@ -640,13 +734,93 @@
     border: none;
     border-radius: 20px;
     outline-style: none;
-    background-color: var(--button-waring);
+    background-color: var(--button-delete);
     color: white;
     font-family: sans-serif;
     font-size: 30px;
 }
 
 .teacher-class-valid-delete-btn:hover{
+    width: 205px;
+    height: 53px;
+}
+
+/*----------| student |------------*/
+
+.teacher-student-list-delete{
+    width: 400px;
+    background-color: var(--primary_color-shadow);
+    height: 80%;
+    transform: translate(-50%, -50%);
+    left: 50%;
+    top: 50%;
+    position: absolute;
+    border-radius: 20px;
+    overflow: auto;
+    padding: 10px;
+    box-shadow:  0 0 10px 5px  var(--primary_color-shadow) inset;
+}
+
+
+.teacher-student-valid-delete-btn{
+    position: absolute;
+    z-index: 20;
+    transform: translate(-50%, -50%);
+    left: 50%;
+    bottom: 10%;
+    cursor: pointer;
+    width: 200px;
+    height: 50px;
+    border: none;
+    border-radius: 20px;
+    outline-style: none;
+    background-color: var(--button-delete);
+    color: white;
+    font-family: sans-serif;
+    font-size: 30px;
+}
+
+.teacher-student-valid-delete-btn:hover{
+    width: 205px;
+    height: 53px;
+}
+
+/*----------| chapter |------------*/
+
+.teacher-chapter-list-delete{
+    width: 400px;
+    background-color: var(--primary_color-shadow);
+    height: 80%;
+    transform: translate(-50%, -50%);
+    left: 50%;
+    top: 50%;
+    position: absolute;
+    border-radius: 20px;
+    overflow: auto;
+    padding: 10px;
+    box-shadow:  0 0 10px 5px  var(--primary_color-shadow) inset;
+}
+
+
+.teacher-chapter-valid-delete-btn{
+    position: absolute;
+    z-index: 20;
+    transform: translate(-50%, -50%);
+    left: 50%;
+    bottom: 10%;
+    cursor: pointer;
+    width: 200px;
+    height: 50px;
+    border: none;
+    border-radius: 20px;
+    outline-style: none;
+    background-color: var(--button-delete);
+    color: white;
+    font-family: sans-serif;
+    font-size: 30px;
+}
+
+.teacher-chapter-valid-delete-btn:hover{
     width: 205px;
     height: 53px;
 }

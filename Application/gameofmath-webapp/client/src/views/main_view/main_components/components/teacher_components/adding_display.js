@@ -3,6 +3,7 @@ import {createClass, getAllClasses} from "../../../../../model/classModel";
 import {createStudent, getAllTheStudents} from "../../../../../model/studentModel";
 import {PopupMessage} from "../../teacher_display_2.0";
 import {StudentDisplay} from "./student_display";
+import {createChapter} from "../../../../../model/chapterModel";
 
 export class AddingDisplay extends Component{
 
@@ -117,21 +118,22 @@ class AddSelectStep extends Component{
 
     }
 
-    handleSelectChoice = (event, text) => {
-
+    handleSelectChoice = (event, text,id) => {
+        let domObject = document.getElementById(id);
         if(!this.state.currentChoiceDOM){
-            event.nativeEvent.explicitOriginalTarget.style.backgroundColor = "var(--secondary_color)"
+
+            domObject.style.backgroundColor = "var(--secondary_color)"
 
             this.setState({
-                currentChoiceDOM :event.nativeEvent.explicitOriginalTarget,
+                currentChoiceDOM :domObject,
                 currentChoice: text
             })
         }else{
             this.state.currentChoiceDOM.style.backgroundColor = "var(--primary_color)"
-            event.nativeEvent.explicitOriginalTarget.style.backgroundColor = "var(--secondary_color)"
+            domObject.style.backgroundColor = "var(--secondary_color)"
 
             this.setState({
-                currentChoiceDOM :event.nativeEvent.explicitOriginalTarget,
+                currentChoiceDOM :domObject,
                 currentChoice: text
             })
         }
@@ -147,10 +149,10 @@ class AddSelectStep extends Component{
             <h1 className="teacher-add-choice-title">Ajouter</h1>
 
             <div className="teacher-selection-option-list">
-                <SelectionChoice onClick={this.handleSelectChoice} title={this.STUDENT_TEXT}  />
-                <SelectionChoice onClick={this.handleSelectChoice} title={this.CLASS_TEXT} />
-                <SelectionChoice onClick={this.handleSelectChoice} title={this.CHAPTER_TEXT} />
-                <SelectionChoice onClick={this.handleSelectChoice} title={this.QUESTION_TEXT} />
+                <SelectionChoice id="student" onClick={this.handleSelectChoice} title={this.STUDENT_TEXT}  />
+                <SelectionChoice id="class" onClick={this.handleSelectChoice} title={this.CLASS_TEXT} />
+                <SelectionChoice id="chapter" onClick={this.handleSelectChoice} title={this.CHAPTER_TEXT} />
+                <SelectionChoice id="question" onClick={this.handleSelectChoice} title={this.QUESTION_TEXT} />
 
             </div>
 
@@ -165,12 +167,12 @@ class SelectionChoice extends Component{
 
 
     handleClick = (event) =>{
-        this.props.onClick(event, this.props.title)
+        this.props.onClick(event, this.props.title, this.props.id)
     }
 
 
     render() {
-        return <div onClick={this.handleClick} className="teacher-selection-choice-container">
+        return <div id={this.props.id} onClick={this.handleClick} className="teacher-selection-choice-container">
             <h1 className="teacher-selection-choice-text">{this.props.title}</h1>
         </div>
     }
@@ -345,6 +347,57 @@ class AddClassStep extends Component{
 
 
             <button onClick={this.handlePrevious} className="teacher-previous-btn" >Précedent</button>
+        </div>
+    }
+
+}
+
+//////////////////////////////////| ADDING CHAPTER |////////////////////////////////////
+
+class AddChapterStep extends Component {
+
+
+    handleValidate = (event) => {
+
+        let valid = true;
+        let name = document.getElementById("select-name").value;
+
+
+        if (name === "") {
+            valid = false
+            //TODO custom message error
+            alert("Nom - obligatoire")
+
+        }
+        if (valid) {
+            createChapter(name).then((res) => {
+
+                console.log(res)
+
+            })
+        }
+
+        //no reload
+        event.preventDefault();
+
+    }
+
+    handlePrevious = () => {
+        this.props.previous(<AddSelectStep previous={this.props.previous} next={this.props.next}/>)
+    }
+
+    render() {
+        return <div className="teacher-add-chapter-step">
+
+            <form className="teacher-chapter-creation-container" onSubmit={this.handleValidate}>
+
+                <input className="teacher-chapter-creation-input" id="select-name" placeholder="Nom" type="text"/>
+                <input className="teacher-chapter-creation-valid" type="submit" value="Valider"/>
+
+            </form>
+
+
+            <button onClick={this.handlePrevious} className="teacher-previous-btn">Précedent</button>
         </div>
     }
 

@@ -29,6 +29,27 @@ router.post('/getClasses', (req, res, next) => {
 })
 
 /**
+ * Get a class by ID
+ *
+ * @param id class id
+ * @return
+ *  0: classO: the class
+ *  1: if the class id is incorrect
+ */
+router.post('/getClass', (req, res, next) => {
+    if (!req.session.isLogged & !req.session.isTeacher) return next(new Error('Client must be logged on a Teacher account'))
+
+    const id = req.body.id
+
+    if (id == null) return res.send({returnState: 1, msg: 'The class id is incorrect'})
+
+    class_dao.findByID(id).then(classO => {
+        if (classO == null) res.send({returnState: 1, msg: 'The class id is incorrect'})
+        else res.send({returnState: 0, classO: classO})
+    }).catch(err => next(err))
+})
+
+/**
  * Create a class
  *
  * @param grade the grade of the class
@@ -251,6 +272,30 @@ router.post('/getStudents', (req, res, next) => {
             delete o.name
         })
         res.send({returnState: 0, class: id, students: students})
+    }).catch(err => next(err))
+})
+
+/**
+ * Get a student by ID
+ *
+ * @param id student id
+ * @return
+ *  0: student: the student
+ *  1: if the student id is incorrect
+ */
+router.post('/getStudent', (req, res, next) => {
+    if (!req.session.isLogged & !req.session.isTeacher) return next(new Error('Client must be logged on a Teacher account'))
+
+    const id = req.body.id
+
+    if (id == null) return res.send({returnState: 1, msg: 'The student id is incorrect'})
+
+    student_dao.findUserByID(id).then(student => {
+        if (student == null) res.send({returnState: 1, msg: 'The student id is incorrect'})
+        else {
+            delete student.password
+            res.send({returnState: 0, student: student})
+        }
     }).catch(err => next(err))
 })
 

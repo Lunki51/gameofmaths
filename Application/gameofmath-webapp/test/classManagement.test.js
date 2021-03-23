@@ -90,12 +90,29 @@ describe('Test the getClasses path', () => {
                     classID: 1,
                     name: 'n1',
                     grade: 'g1'
-                },{
+                }, {
                     classID: 2,
                     name: 'n2',
                     grade: 'g2'
                 }
             ]
+        })
+        done();
+    });
+});
+
+describe('Test the getClass path', () => {
+    test('A teacher should be able to get a class by id', async (done) => {
+        const rep = await postC(res, '/api/classManagement/getClass').send({
+            id: 2
+        }).catch(done);
+        expect(rep.body).toEqual({
+            returnState: 0,
+            classO: {
+                classID: 2,
+                name: 'n2',
+                grade: 'g2'
+            }
         })
         done();
     });
@@ -144,7 +161,7 @@ describe('Test the rename path', () => {
     test('A teacher should be able to rename a class', async (done) => {
         let rep = await postC(res, '/api/classManagement/rename').send({
             id: 2,
-            newName:'second'
+            newName: 'second'
         }).catch(done);
         expect(rep.body).toEqual({
             returnState: 0,
@@ -164,7 +181,7 @@ describe('Test the rename path', () => {
                     classID: 1,
                     name: 'n1',
                     grade: 'g1'
-                },{
+                }, {
                     classID: 2,
                     name: 'second',
                     grade: 'g2'
@@ -179,7 +196,7 @@ describe('Test the setGrade path', () => {
     test('A teacher should be able to set the grade a class', async (done) => {
         let rep = await postC(res, '/api/classManagement/setGrade').send({
             id: 1,
-            newGrade:'grade'
+            newGrade: 'grade'
         }).catch(done);
         expect(rep.body).toEqual({
             returnState: 0,
@@ -199,7 +216,7 @@ describe('Test the setGrade path', () => {
                     classID: 1,
                     name: 'n1',
                     grade: 'grade'
-                },{
+                }, {
                     classID: 2,
                     name: 'second',
                     grade: 'g2'
@@ -216,7 +233,7 @@ describe('Test the setGrade path', () => {
 
 describe('Test the getStudents path', () => {
     test('A teacher should be able to get the student list of a class', async (done) => {
-        const rep = await postC(res, '/api/classManagement/getStudents').send({id:1}).catch(done);
+        const rep = await postC(res, '/api/classManagement/getStudents').send({id: 1}).catch(done);
         rep.body.students.sort((a, b) => a.userID - b.userID)
         expect(rep.body).toEqual({
             returnState: 0,
@@ -244,6 +261,27 @@ describe('Test the getStudents path', () => {
     });
 });
 
+describe('Test the getStudent path', () => {
+    test('A teacher should be able to get a student by id', async (done) => {
+        const rep = await postC(res, '/api/classManagement/getStudent').send({
+            id: 2
+        }).catch(done);
+        expect(rep.body).toEqual({
+            returnState: 0,
+            student: {
+                firstname: 'p1',
+                lastname: 'n1',
+                login: 'e1',
+                mp: 0,
+                theClass: 1,
+                userID: 2,
+                theUser:2
+            }
+        })
+        done();
+    });
+});
+
 describe('Test the setLastname path', () => {
     test('A teacher should be able to set the lastname of a student', async (done) => {
         let rep = await postC(res, '/api/classManagement/setLastname').send({
@@ -264,7 +302,7 @@ describe('Test the setLastname path', () => {
             }
         })
 
-        rep = await postC(res, '/api/classManagement/getStudents').send({id:1}).catch(done);
+        rep = await postC(res, '/api/classManagement/getStudents').send({id: 1}).catch(done);
         rep.body.students.sort((a, b) => a.userID - b.userID)
         expect(rep.body).toEqual({
             returnState: 0,
@@ -312,7 +350,7 @@ describe('Test the setFirstname path', () => {
             }
         })
 
-        rep = await postC(res, '/api/classManagement/getStudents').send({id:2}).catch(done);
+        rep = await postC(res, '/api/classManagement/getStudents').send({id: 2}).catch(done);
         rep.body.students.sort((a, b) => a.userID - b.userID)
         expect(rep.body).toEqual({
             returnState: 0,
@@ -352,7 +390,7 @@ describe('Test the setLogin path', () => {
             }
         })
 
-        rep = await postC(res, '/api/classManagement/getStudents').send({id:1}).catch(done);
+        rep = await postC(res, '/api/classManagement/getStudents').send({id: 1}).catch(done);
         rep.body.students.sort((a, b) => a.userID - b.userID)
         expect(rep.body).toEqual({
             returnState: 0,
@@ -402,14 +440,14 @@ describe('Test the createStudent path', () => {
         expect(rep.body.returnState).toBe(0);
         expect(rep.body.student).toEqual({
             firstname: 'f4',
-                lastname: 'l4',
-                login: 'e4',
-                mp: 0,
-                theClass: 2,
-                userID: 5
+            lastname: 'l4',
+            login: 'e4',
+            mp: 0,
+            theClass: 2,
+            userID: 5
         })
 
-        rep = await postC(res, '/api/classManagement/getStudents').send({id:2}).catch(done);
+        rep = await postC(res, '/api/classManagement/getStudents').send({id: 2}).catch(done);
         rep.body.students.sort((a, b) => a.userID - b.userID)
         expect(rep.body).toEqual({
             returnState: 0,
@@ -422,7 +460,7 @@ describe('Test the createStudent path', () => {
                     mp: 10,
                     theClass: 2,
                     userID: 3
-                },{
+                }, {
                     firstname: 'f4',
                     lastname: 'l4',
                     login: 'e4',
@@ -446,7 +484,7 @@ describe('Test the deleteStudent path', () => {
             returnState: 0
         });
 
-        rep = await postC(res, '/api/classManagement/getStudents').send({id:2}).catch(done);
+        rep = await postC(res, '/api/classManagement/getStudents').send({id: 2}).catch(done);
         rep.body.students.sort((a, b) => a.userID - b.userID)
         expect(rep.body).toEqual({
             returnState: 0,

@@ -3,6 +3,11 @@ const request = require('supertest');
 const app = require('../app').app;
 const db = require('gameofmath-db').db;
 const teacher_dao = require('gameofmath-db').teacher_dao;
+const class_dao = require('gameofmath-db').class_dao;
+const student_dao = require('gameofmath-db').student_dao;
+const chapter_dao = require('gameofmath-db').chapter_dao;
+const quiz_dao = require('gameofmath-db').quiz_dao;
+const question_dao = require('gameofmath-db').question_dao;
 const crypto = require('crypto')
 
 function hash(v) {
@@ -104,6 +109,98 @@ describe('Test the changeFirstname path', () => {
         expect(rep.body.returnState).toEqual(1)
         const teacher = await teacher_dao.findUserByLogin('login2').catch(done)
         expect(teacher.firstname === 'prenom2')
+        done();
+    });
+});
+
+describe('Test the search path', () => {
+    test('A teacher should be able to search in the db', async (done) => {
+        await class_dao.insert({
+            classID: -1,
+            grade: '6eme',
+            name: 'voldemort'
+        }).catch(done)
+        await class_dao.insert({
+            classID: -1,
+            grade: '6eme',
+            name: 'vodemort'
+        }).catch(done)
+        await student_dao.insertUser({
+            userID: -1,
+            login: 'e1',
+            password: hash('pp1'),
+            lastname: 'n1',
+            firstname: 'vol',
+            theClass: 1,
+            mp: 0
+        }).catch(done)
+        await chapter_dao.insert({
+            chapterID: -1,
+            name: "voiture qui vol"
+        }).catch(done);
+        await quiz_dao.insert({
+            quizID: -1,
+            theChapter: 1,
+            asAnOrder: 'true'
+        }).catch(done);
+        await question_dao.insert({
+            questionID: -1,
+            upperText: 'le vol c\'est mal',
+            lowerText: 'low1',
+            image: '',
+            type: 'QCM',
+            level: 1,
+            theChapter: 1
+        }).catch(done);
+
+        const rep = await postC(res, '/api/teacher/search').send({
+            key: 'vol'
+        }).catch(done);
+        expect(rep.body).toEqual({
+            returnState: 0,
+            results: [
+                {
+                    type: 'class',
+                    object: {
+                        classID: 1,
+                        grade: '6eme',
+                        name: 'voldemort'
+                    }
+                },
+                {
+                    type: 'student',
+                    object: {
+                        userID: 2,
+                        theUser: 2,
+                        login: 'e1',
+                        password: hash('pp1'),
+                        lastname: 'n1',
+                        firstname: 'vol',
+                        theClass: 1,
+                        mp: 0
+                    }
+                },
+                {
+                    type: 'chapter',
+                    object: {
+                        chapterID: 1,
+                        name: "voiture qui vol"
+                    }
+                },
+                {
+                    type: 'question',
+                    object: {
+                        questionID: 1,
+                        upperText: 'le vol c\'est mal',
+                        lowerText: 'low1',
+                        image: '',
+                        type: 'QCM',
+                        level: 1,
+                        theChapter: 1
+                    }
+                }
+            ]
+        })
         done();
     });
 });

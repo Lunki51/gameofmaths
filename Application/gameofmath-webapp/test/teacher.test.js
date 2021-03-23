@@ -141,7 +141,8 @@ describe('Test the search path', () => {
         await quiz_dao.insert({
             quizID: -1,
             theChapter: 1,
-            asAnOrder: 'true'
+            asAnOrder: 'true',
+            quizName: 'un aval, des avols'
         }).catch(done);
         await question_dao.insert({
             questionID: -1,
@@ -185,6 +186,15 @@ describe('Test the search path', () => {
                     object: {
                         chapterID: 1,
                         name: "voiture qui vol"
+                    }
+                },
+                {
+                    type: 'quiz',
+                    object: {
+                        quizID: 1,
+                        theChapter: 1,
+                        asAnOrder: '1',
+                        quizName: 'un aval, des avols'
                     }
                 },
                 {

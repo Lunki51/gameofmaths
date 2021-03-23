@@ -28,7 +28,7 @@ router.post('/getChapter', (req, res, next) => {
  *
  * @param chapter the chapter of the quiz
  * @return
- *  0: the number of question in the quiz (nbQuestion)
+ *  0: the number of question in the quiz (nbQuestion) and the quiz name (quizName)
  *  1: if there isn't any quiz in the chapter
  */
 router.post('/startQuiz', (req, res, next) => {
@@ -44,7 +44,7 @@ router.post('/startQuiz', (req, res, next) => {
                 else {
                     const quiz = quizs[Math.floor(Math.random() * quizs.length)]
 
-                    db.all('SELECT questionID, upperText, lowerText, image, type, level, U.theChapter, answerID, text, isValid, theQuiz, qNumber, asAnOrder FROM Question U, Answer A, QuizQuestion Q, Quiz Z WHERE questionID = A.theQuestion AND questionID = Q.theQuestion AND theQuiz = quizID AND quizID = ?', [quiz.quizID], function (err, questions) {
+                    db.all('SELECT questionID, upperText, lowerText, image, type, level, U.theChapter, answerID, text, isValid, theQuiz, qNumber, asAnOrder, quizName FROM Question U, Answer A, QuizQuestion Q, Quiz Z WHERE questionID = A.theQuestion AND questionID = Q.theQuestion AND theQuiz = quizID AND quizID = ?', [quiz.quizID], function (err, questions) {
                         if (err) next(err)
                         else if (questions.length === 0) next(new Error('The quiz don\'t have any question'))
                         else {
@@ -53,6 +53,7 @@ router.post('/startQuiz', (req, res, next) => {
                             req.session.currentQuiz.quizID = quiz.quizID
                             req.session.currentQuiz.quizLastQuestion = 0
                             req.session.currentQuiz.score = 0
+                            req.session.currentQuiz.quizName = quiz.quizName
                             req.session.currentQuiz.questions = questions.reduce((o, cur) => {
 
                                 const index = o.findIndex(q => q.questionID === cur.questionID)
@@ -107,7 +108,7 @@ router.post('/startQuiz', (req, res, next) => {
                                 score: 0
                             }).then(id => {
                                 req.session.currentQuiz.theGain = id
-                                res.send({returnState: 0, nbQuestion: req.session.currentQuiz.questions.length})
+                                res.send({returnState: 0, nbQuestion: req.session.currentQuiz.questions.length, quizName: req.session.currentQuiz.quizName})
                             }).catch(
                                 err => {
                                     next(err)
@@ -273,7 +274,7 @@ router.post('/quit', (req, res, next) => {
  * Get the state in the quiz.
  *
  * @return
- *  0: state: { questionNb: the number of question, lastQuestion: the question where the student is }
+ *  0: state: { questionNb: the number of question, lastQuestion: the question where the student is, quizName: the name of the quiz }
  */
 router.post('/getState', (req, res, next) => {
     if (!req.session.isLogged || !req.session.isStudent) return next(new Error('Client must be logged and a student'))
@@ -283,7 +284,8 @@ router.post('/getState', (req, res, next) => {
         returnState: 0,
         state: {
             questionNb: req.session.currentQuiz.questions.length,
-            lastQuestion: req.session.currentQuiz.quizLastQuestion
+            lastQuestion: req.session.currentQuiz.quizLastQuestion,
+            quizName: req.session.currentQuiz.quizName
         }
     })
 })

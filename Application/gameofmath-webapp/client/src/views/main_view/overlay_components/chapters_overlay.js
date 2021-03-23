@@ -26,7 +26,7 @@ export class ChapterSelection extends Component{
 
         this._isMounted=true
 
-        Axios.post('/api/quiz/getChapter')
+        Axios.post('/api/quiz/getChapters')
             .then((response) =>{
                 if(this._isMounted)
                 this.setState({

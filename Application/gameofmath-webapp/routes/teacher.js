@@ -122,7 +122,7 @@ router.post('/search', (req, res, next) => {
         promises.push(search('class','Class', ['grade', 'name']))
         promises.push(search('student','User, Student', ['firstname', 'lastname', 'login'], 'theUser = userID'))
         promises.push(search('chapter','Chapter', ['name']))
-        //promises.push(search('quiz','Quiz', ['quizName'])) //TODO change with a chapter name
+        promises.push(search('quiz','Quiz', ['quizName']))
         promises.push(search('question','Question', ['upperText', 'lowerText']))
 
         Promise.all(promises).then((values) => {

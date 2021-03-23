@@ -130,6 +130,23 @@ const QuizQuestionDAO = function () {
     };
 
     /**
+     * Get all the quizQuestion for a specific quiz name
+     *
+     * @param quizName quiz name
+     * @param db db instance to use
+     * @returns {Promise<Array>} A promise that resolve all the rows
+     */
+    this.findAllByQuizName = function (quizName, db = dbD) {
+        return new Promise((resolve, reject) => {
+            let request = 'SELECT theQuestion, theQuiz, qNumber FROM QuizQuestion, Quiz WHERE theQuiz = quizID AND quizName = ?';
+            db.all(request, [quizName], function (err, rows) {
+                if (err) reject(err);
+                else resolve(rows);
+            });
+        });
+    };
+
+    /**
      * Get the quizQuestion with a specific id.
      *
      * @param question question id

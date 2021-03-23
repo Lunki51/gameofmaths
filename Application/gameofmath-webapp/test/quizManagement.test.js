@@ -143,12 +143,14 @@ describe('Test the deleteChapter path', () => {
         await quiz_dao.insert({
             quizID: -1,
             asAnOrder: 'true',
-            theChapter: 4
+            theChapter: 4,
+            quizName: 'q1'
         }).catch(done);
         await quiz_dao.insert({
             quizID: -1,
             asAnOrder: 'false',
-            theChapter: 4
+            theChapter: 4,
+            quizName: 'q2'
         }).catch(done);
         await question_dao.insert({
             questionID: -1,
@@ -257,7 +259,8 @@ describe('Test the getQuizList path', () => {
         await quiz_dao.insert({
             quizID: -1,
             asAnOrder: 'false',
-            theChapter: 1
+            theChapter: 1,
+            quizName: 'q3'
         }).catch(done);
 
         const rep = await postC(res, '/api/quizManagement/getQuizList').send().catch(done);
@@ -268,7 +271,8 @@ describe('Test the getQuizList path', () => {
                 {
                     quizID: 3,
                     asAnOrder: '0',
-                    theChapter: 1
+                    theChapter: 1,
+                    quizName: 'q3'
                 }
             ]
         })
@@ -280,14 +284,16 @@ describe('Test the createQuiz path', () => {
     test('A teacher should be able to create a quiz in a chapter', async (done) => {
         const rep = await postC(res, '/api/quizManagement/createQuiz').send({
             ordered: 'true',
-            chapter: 2
+            chapter: 2,
+            quizName: 'q4'
         }).catch(done);
         expect(rep.body).toEqual({
             returnState: 0,
             quiz: {
                 quizID: 4,
                 asAnOrder: 'true',
-                theChapter: 2
+                theChapter: 2,
+                quizName: 'q4'
             }
         })
 
@@ -299,11 +305,13 @@ describe('Test the createQuiz path', () => {
                 {
                     quizID: 3,
                     asAnOrder: '0',
-                    theChapter: 1
+                    theChapter: 1,
+                    quizName: 'q3'
                 }, {
                     quizID: 4,
                     asAnOrder: '1',
-                    theChapter: 2
+                    theChapter: 2,
+                    quizName: 'q4'
                 }
             ]
         })
@@ -328,7 +336,8 @@ describe('Test the deleteQuiz path', () => {
                 {
                     quizID: 3,
                     asAnOrder: '0',
-                    theChapter: 1
+                    theChapter: 1,
+                    quizName: 'q3'
                 }
             ]
         })
@@ -339,7 +348,8 @@ describe('Test the deleteQuiz path', () => {
         await quiz_dao.insert({
             quizID: -1,
             asAnOrder: 'true',
-            theChapter: 2
+            theChapter: 2,
+            quizName: 'q5'
         }).catch(done);
         await question_dao.insert({
             questionID: -1,
@@ -379,7 +389,8 @@ describe('Test the deleteQuiz path', () => {
                 {
                     quizID: 3,
                     asAnOrder: '0',
-                    theChapter: 1
+                    theChapter: 1,
+                    quizName: 'q3'
                 }
             ]
         })
@@ -411,7 +422,8 @@ describe('Test the setOrder path', () => {
             quiz: {
                 quizID: 3,
                 asAnOrder: 'true',
-                theChapter: 1
+                theChapter: 1,
+                quizName: 'q3'
             }
         })
 
@@ -423,7 +435,8 @@ describe('Test the setOrder path', () => {
                 {
                     quizID: 3,
                     asAnOrder: '1',
-                    theChapter: 1
+                    theChapter: 1,
+                    quizName: 'q3'
                 }
             ]
         })
@@ -441,7 +454,8 @@ describe('Test the getQuizListWithChapterId path', () => {
                 {
                     quizID: 3,
                     asAnOrder: '1',
-                    theChapter: 1
+                    theChapter: 1,
+                    quizName: 'q3'
                 }
             ]
         })

@@ -11,7 +11,8 @@ const QuizDAO = function () {
     this.format = function (object) {
         const quiz = object_helper.formatPropertiesWithType([
             {t: 'number', ps: ['quizID', 'theChapter']},
-            {t: 'boolean', ps: ['asAnOrder']}
+            {t: 'boolean', ps: ['asAnOrder']},
+            {t: 'string', ps: ['quizName']}
             ], object);
         if (!quiz) return null;
 
@@ -30,8 +31,8 @@ const QuizDAO = function () {
             const quiz = this.format(obj);
             if (!quiz) reject(new Error('Invalid input quiz!'));
             else {
-                let request = 'INSERT INTO Quiz (theChapter, asAnOrder) VALUES (?, ?)';
-                db.run(request, [quiz.theChapter, quiz.asAnOrder], function (err) {
+                let request = 'INSERT INTO Quiz (theChapter, asAnOrder, quizName) VALUES (?, ?, ?)';
+                db.run(request, [quiz.theChapter, quiz.asAnOrder, quiz.quizName], function (err) {
                     if (err) reject(err);
                     else resolve(this.lastID);
                 });
@@ -52,8 +53,8 @@ const QuizDAO = function () {
             const quiz = this.format(obj);
             if (!quiz) reject(new Error('Invalid input quiz!'));
             else {
-                let request = 'UPDATE Quiz SET theChapter = ?, asAnOrder = ? WHERE quizID = ?';
-                db.run(request, [quiz.theChapter, quiz.asAnOrder, quiz.quizID], function (err) {
+                let request = 'UPDATE Quiz SET theChapter = ?, asAnOrder = ?, quizName = ? WHERE quizID = ?';
+                db.run(request, [quiz.theChapter, quiz.asAnOrder, quiz.quizName, quiz.quizID], function (err) {
                     if (err) reject(err);
                     else resolve();
                 });
@@ -123,6 +124,23 @@ const QuizDAO = function () {
         return new Promise((resolve, reject) => {
             let request = 'SELECT * FROM Quiz WHERE quizID = ?';
             db.all(request, [key], function (err, rows) {
+                if (err) reject(err);
+                else resolve(rows[0]);
+            });
+        });
+    };
+
+    /**
+     * Get the quiz with a specific name.
+     *
+     * @param name quiz name
+     * @param db db instance to use
+     * @returns {Promise} A promise that resolve the quiz with this id if it's found
+     */
+    this.findByName = function (name, db = dbD) {
+        return new Promise((resolve, reject) => {
+            let request = 'SELECT * FROM Quiz WHERE quizName = ?';
+            db.all(request, [name], function (err, rows) {
                 if (err) reject(err);
                 else resolve(rows[0]);
             });

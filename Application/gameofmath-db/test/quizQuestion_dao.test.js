@@ -41,12 +41,14 @@ beforeAll(async (done) => {
     await quiz_dao.insert({
         quizID: -1,
         theChapter: 1,
-        asAnOrder: 'true'
+        asAnOrder: 'true',
+        quizName: 'q1'
     });
     await quiz_dao.insert({
         quizID: -1,
         theChapter: 1,
-        asAnOrder: 'true'
+        asAnOrder: 'true',
+        quizName: 'q2'
     });
     done();
 });
@@ -111,6 +113,23 @@ test('get all link between quiz an a question', async (done) => {
 
 test('get all link between question an a quiz', async (done) => {
     const data = await quizQuestion_dao.findAllByQuiz(1).catch(err => {
+        done(err);
+    });
+    expect(data).toContainEqual({
+        theQuestion: 1,
+        theQuiz: 1,
+        qNumber: 1
+    });
+    expect(data).toContainEqual({
+        theQuestion: 2,
+        theQuiz: 1,
+        qNumber: 2
+    });
+    done();
+});
+
+test('get all link between question an a quiz name', async (done) => {
+    const data = await quizQuestion_dao.findAllByQuizName('q1').catch(err => {
         done(err);
     });
     expect(data).toContainEqual({

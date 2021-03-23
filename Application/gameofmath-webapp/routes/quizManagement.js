@@ -179,27 +179,35 @@ router.post('/setChapterName', (req, res, next) => {
  *
  * @param ordered If the quiz question have an order
  * @param chapter The chapter of this quiz
+ * @param quizName The quiz name of this quiz
  * @return
  *  0: quiz: the quiz
  *  1: if the ordered or/and chapter is incorrect
+ *  : if the quizName is incorrect
  */
 router.post('/createQuiz', (req, res, next) => {
     if (!req.session.isLogged && !req.session.isTeacher) return next(new Error('Client must be logged on a Teacher account'))
 
     const isOrder = req.body.ordered
     const chapter = req.body.chapter
+    const quizName = req.body.quizName
 
     if (isOrder == null || chapter == null || ['0', '1', 'true', 'false'].find(o => o === isOrder) == null) return res.send({
         returnState: 1,
         msg: 'The chapter or order is incorrect'
     })
+    if (quizName == null) return res.send({
+        returnState: 2,
+        msg: 'The quizName is incorrect'
+    })
 
     quiz_dao.insert({
         quizID: -1,
         asAnOrder: isOrder,
-        theChapter: chapter
+        theChapter: chapter,
+        quizName: quizName
     }).then(id => {
-        res.send({returnState: 0, quiz: {quizID: id, asAnOrder: isOrder, theChapter: chapter}})
+        res.send({returnState: 0, quiz: {quizID: id, asAnOrder: isOrder, theChapter: chapter, quizName: quizName}})
     }).catch(err => next(err))
 })
 
@@ -294,6 +302,39 @@ router.post('/setOrder', (req, res, next) => {
         if (c == null) res.send({returnState: 1, msg: 'The quiz id is incorrect'})
         else {
             c.asAnOrder = isOrder
+            quiz_dao.update(c).then(() => {
+                res.send({returnState: 0, quiz: c})
+            }).catch(err => next(err))
+        }
+    }).catch(err => next(err))
+})
+
+/**
+ * Change the quiz name
+ *
+ * @param id The id of quiz
+ * @param quizName new quizName
+ * @return
+ *  0: quiz: The quiz
+ *  1: if the quiz id is incorrect
+ *  2: if quizName is incorrect
+ */
+router.post('/setQuizName', (req, res, next) => {
+    if (!req.session.isLogged && !req.session.isTeacher) return next(new Error('Client must be logged on a Teacher account'))
+
+    const id = req.body.id
+    const quizName = req.body.quizName
+
+    if (id == null) return res.send({returnState: 1, msg: 'The quiz id is incorrect'})
+    if (quizName == null ) return res.send({
+        returnState: 2,
+        msg: 'quizName is incorrect'
+    })
+
+    quiz_dao.findByID(id).then(c => {
+        if (c == null) res.send({returnState: 1, msg: 'The quiz id is incorrect'})
+        else {
+            c.quizName = quizName
             quiz_dao.update(c).then(() => {
                 res.send({returnState: 0, quiz: c})
             }).catch(err => next(err))

@@ -4,7 +4,7 @@
   "description": "DataBase interface for the WebApp GameOfMath.",
   "main": "gameofmath-db.js",
   "scripts": {
-    "test": "jest"
+    "test": "jest --runInBand --env node "
   },
   "author": "",
   "license": "ISC",

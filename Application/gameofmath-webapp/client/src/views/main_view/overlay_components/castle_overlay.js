@@ -1,12 +1,12 @@
 import React, { Component } from 'react';
+import '../styles/castle_style.css';
+import '../styles/global_style.css'
+import '../styles/global_variables.css';
 
 export class CastleDetails extends Component{
 
     _isMounted=false
 
-    constructor() {
-        super();
-    }
 
     componentDidMount() {
         this._isMounted=true
@@ -17,15 +17,12 @@ export class CastleDetails extends Component{
     }
     render() {
 
-        return <div className="container-chapter-selection">
+        //TODO Implement castle description when db is done
+        return <div className="container-castle-details">
 
-            <h1 className="chapter-selection-headline">Chapitres</h1>
+            <h1 className="castle-details-headline">Castle N {this.props.castle}</h1>
 
-            {this.state.chapters.map((mapping, i) => (
-                <Chapter text={mapping} key={i} onClick={this.props.onSelection}/>
-            ))}
-
-
+            <button onClick={this.props.clear}>Retour</button>
         </div>
 
     }

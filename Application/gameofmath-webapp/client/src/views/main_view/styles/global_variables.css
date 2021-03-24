@@ -13,5 +13,7 @@
     --input_color : #244049;
     --wood_style_color : #1d1913;
     --wood_style_color-hover: #0f0d0b;
+    --naviguaton-bar-height: 70px;
+    --naviguaton-bar-offset: 20px;
 
 }

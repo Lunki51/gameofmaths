@@ -1,6 +1,5 @@
 import React, {Component} from 'react';
 import * as THREE from 'three'
-import {Color, MeshStandardMaterial} from 'three'
 import {GUI} from "dat.gui";
 import {Water} from "three/examples/jsm/objects/Water";
 import {Sky} from "three/examples/jsm/objects/Sky"
@@ -25,6 +24,7 @@ class MapView extends Component {
         super(props, context);
 
         this.state = {
+            global: false,
             renderer: new THREE.WebGLRenderer(),
             camera: new THREE.PerspectiveCamera(80, window.innerWidth / window.innerHeight, 1, 2000),
             scene: new THREE.Scene(),
@@ -32,14 +32,17 @@ class MapView extends Component {
             sun: new THREE.Vector3(),
             water: new Water(),
             stats: new Stats(),
+            mapDetails: {
+                sizeX: 0,
+                sizeY: 0
+            },
             currentCastle: 0,
-            castles: new Array(),
+            castles: [],
             inputVars: {
                 mousePressed: false,
                 rotateX: 0,
                 rotateY: 0,
-                scrolled: 100,
-                camDistance: 0
+                camDistance: 100,
             }
         };
     }
@@ -62,60 +65,78 @@ class MapView extends Component {
 
         requestAnimationFrame(this.animate);
         this.state.stats.begin();
-        this.state.inputVars.camDistance -= this.state.inputVars.scrolled;
-        this.state.inputVars.camDistance = Math.min(Math.max(30, this.state.inputVars.camDistance), 100)
-        this.state.camera.position.z = this.state.center.z - (this.state.inputVars.camDistance * Math.cos(Math.PI / 4)) * Math.cos(this.state.inputVars.rotateX)
-        this.state.camera.position.x = this.state.center.x - (this.state.inputVars.camDistance * Math.cos(Math.PI / 4)) * Math.sin(this.state.inputVars.rotateX)
-        this.state.camera.position.y = this.state.inputVars.camDistance * Math.sin(Math.PI / 4) + 80
-        this.state.camera.lookAt(this.state.center)
-        this.state.inputVars.scrolled = 0
-        this.state.water.material.uniforms['time'].value += 1.0 / 60.0;
+        if (!this.props.zoomed) {
+            let posX = Math.min(Math.max(-this.state.inputVars.rotateX * 50, -this.state.mapDetails.sizeX, this.state.mapDetails.sizeX));
+            let posY = Math.min(Math.max(-this.state.inputVars.rotateY * 50, -this.state.mapDetails.sizeY, this.state.mapDetails.sizeY));
+            this.state.camera.position.set(0, 500, 0)
+            this.state.camera.lookAt(new THREE.Vector3(0, 80, 0))
+        } else {
+            this.state.camera.position.set(this.state.center.x -
+            (this.state.inputVars.camDistance * Math.cos(Math.PI / 4)) * Math.sin(this.state.inputVars.rotateX),
+                (this.state.inputVars.camDistance * Math.sin(Math.PI / 4) + 80),
+                (this.state.center.z - (this.state.inputVars.camDistance * Math.cos(Math.PI / 4)) *
+                Math.cos(this.state.inputVars.rotateX)))
+            this.state.camera.lookAt(this.state.castles[this.state.currentCastle])
+
+        }
+        this.setState({
+            water: {
+                material: {
+                    uniforms: {
+                        'time': {
+                            value:
+                                this.state.water.material.uniforms['time'].value + 1.0 / 60.0
+                        }
+                    }
+                }
+            }
+        })
         this.state.renderer.render(this.state.scene, this.state.camera);
         this.state.stats.end();
     }
 
     mouseMoveEvent = (event) => {
         if (this.state.inputVars.mousePressed) {
-            this.state.inputVars.rotateX += event.movementX / 100;
-            this.state.inputVars.rotateY += event.movementY / 100;
+            let inputVars = this.state.inputVars;
+            inputVars.rotateX = this.state.inputVars.rotateX + event.movementX / 100;
+            inputVars.rotateY = this.state.inputVars.rotateY + event.movementY / 100;
+            this.setState({
+                inputVars: inputVars
+            })
         }
     }
 
     mouseDownEvent = (event) => {
-        this.state.inputVars.mousePressed = true;
-        //if (event.shiftKey) this.rayCasting((event.clientX / window.innerWidth) * 2 - 1, -(event.clientY / window.innerHeight) * 2 + 1) #ENABLE SHIFT CLICK MOVE THE CAMERA CENTER
+        let inputVars = this.state.inputVars;
+        inputVars.mousePressed = true;
+        this.setState({inputVars: inputVars})
+        if (!this.props.zoomed) this.rayCasting((event.clientX / window.innerWidth) * 2 - 1
+            , -(event.clientY / window.innerHeight) * 2 + 1)
     }
 
 
     mouseUpEvent = (event) => {
-        this.state.inputVars.mousePressed = false;
+        let inputVars = this.state.inputVars;
+        inputVars.mousePressed = false
+        this.setState({inputVars: inputVars})
     }
 
     mouseWheelEvent = (event) => {
-        this.state.inputVars.scrolled -= event.deltaY
+        if (this.props.zoomed) {
+            let inputVars = this.state.inputVars;
+            inputVars.camDistance = Math.min(Math.max(30, this.state.inputVars.camDistance + event.deltaY), 100)
+            this.setState({
+                inputVars: inputVars
+            })
+        }
     }
 
     windowResizeEvent = (event) => {
         this.state.renderer.setSize(window.innerWidth, window.innerHeight);
-        this.state.camera = new THREE.PerspectiveCamera(80, window.innerWidth / window.innerHeight, 1, 20000);
-    }
-
-    keyDownEvent = (event) =>{
-        if(event.key=="ArrowLeft"){
-            if(this.state.currentCastle>0){
-                this.state.currentCastle--;
-            }else{
-                this.state.currentCastle = this.state.castles.length-1;
-            }
-            this.state.center = this.state.castles[this.state.currentCastle];
-        }else if(event.key=="ArrowRight"){
-            if(this.state.currentCastle<this.state.castles.length-1){
-                this.state.currentCastle++;
-            }else{
-                this.state.currentCastle = 0;
-            }
-            this.state.center = this.state.castles[this.state.currentCastle];
-        }
+        this.setState({
+            camera: new THREE.PerspectiveCamera(80, window.innerWidth / window.innerHeight
+                , 1, 20000)
+        })
     }
 
     setupController() {
@@ -124,7 +145,7 @@ class MapView extends Component {
         domElement.addEventListener("mouseup", this.mouseUpEvent, false)
         domElement.addEventListener("mousemove", this.mouseMoveEvent, false)
         domElement.addEventListener("wheel", this.mouseWheelEvent, false)
-        window.addEventListener("keydown",this.keyDownEvent);
+        window.addEventListener("keydown", this.keyDownEvent);
         window.addEventListener("resize", this.windowResizeEvent)
     }
 
@@ -135,14 +156,24 @@ class MapView extends Component {
 
         let intersects = rayCaster.intersectObjects(this.state.scene.children);
 
-        if (intersects[0]) {
-            this.state.center = intersects[0].point;
-        }
+        const regex = new RegExp('^Castle:.$');
+        intersects.forEach(object => {
+            if (regex.test(object.object.name)) {
+                let castleId = object.object.name.split(":")[1];
+                this.props.details(castleId)
+                this.setState({currentCastle: castleId, center: this.state.castles[castleId]})
+            }
+        })
+
     }
 
 
     loadMap = (data) => {
         let map = data.data
+
+        console.log(map)
+
+
         let colors = map.colors;
         for (let color of colors) {
             let meshColor = color[0];
@@ -162,14 +193,23 @@ class MapView extends Component {
                 let positionModel = model.scene.clone(true);
                 let vectorPos = new THREE.Vector3(position[0], position[1], position[2]);
                 this.state.castles.push(vectorPos);
-                this.state.center = vectorPos;
-                this.state.currentCastle++;
                 positionModel.position.set(position[0], position[1], position[2])
+                positionModel.scale.set(0.8, 0.8, 0.8)
 
-                positionModel.scale.set(0.5, 0.5, 0.5)
-
-                let PointLight = new THREE.PointLight(new Color(255, 255, 0), 0.005, 20)
+                let PointLight = new THREE.PointLight(new THREE.Color(255, 255, 0), 0.005, 20)
                 PointLight.position.set(position[0], position[1] + 10, position[2])
+
+
+                const geometry = new THREE.BoxGeometry();
+                const material = new THREE.MeshBasicMaterial({color: 0x00ff00});
+                const cube = new THREE.Mesh(geometry, material);
+                cube.position.set(position[0], position[1], position[2])
+                cube.scale.set(10, 10, 10);
+                cube.name = "Castle:" + this.state.currentCastle;
+                this.setState({currentCastle: this.state.currentCastle + 1})
+                cube.visible = false;
+
+                this.state.scene.add(cube)
                 this.state.scene.add(PointLight)
                 this.state.scene.add(positionModel)
             }
@@ -178,29 +218,31 @@ class MapView extends Component {
             console.error(error);
         })
 
-        this.setupTrees("/mapData/forestTree.glb",map.forestTrees,0.7,map.castlePosition);
-        this.setupTrees("/mapData/savannaTree.glb",map.savannaTrees,0.3,map.castlePosition);
-        this.setupTrees("/mapData/bush.glb",map.plainTrees,0.25,map.castlePosition);
+        this.setupTrees("/mapData/forestTree.glb", map.forestTrees, 0.7, map.castlePosition);
+        this.setupTrees("/mapData/savannaTree.glb", map.savannaTrees, 0.3, map.castlePosition);
+        this.setupTrees("/mapData/bush.glb", map.plainTrees, 0.25, map.castlePosition);
+
+
     }
 
-    setupTrees = (link,map,scale,castles) =>{
+    setupTrees = (link, map, scale, castles) => {
         let gltfLoader = new GLTFLoader();
         gltfLoader.load(link, gltf => {
             let geometries = new Map();
             let GLTFscene = gltf.scene;
 
             for (let i = 0; i < GLTFscene.children.length; i++) {
-                geometries.set(GLTFscene.children[i].material.color, new Array())
+                geometries.set(GLTFscene.children[i].material.color, [])
             }
 
             for (let i = 0; i < map.length; i++) {
                 let valid = true;
                 castles.forEach(castle => {
-                    if((castle[0]-map[i].x<=10 && castle[0]-map[i].x>=-10) && (castle[2]-map[i].z<=10 && castle[2]-map[i].z>=-10)){
+                    if ((castle[0] - map[i].x <= 10 && castle[0] - map[i].x >= -10) && (castle[2] - map[i].z <= 10 && castle[2] - map[i].z >= -10)) {
                         valid = false;
                     }
                 })
-                if(valid){
+                if (valid) {
                     let randRot = Math.random() * Math.PI * 2;
                     for (let j = 0; j < GLTFscene.children.length; j++) {
                         let childObject = GLTFscene.children[j];
@@ -210,7 +252,7 @@ class MapView extends Component {
 
                         let childMat = childObject.material;
 
-                        childGeometry.scale(childObject.scale.x,childObject.scale.y,childObject.scale.z)
+                        childGeometry.scale(childObject.scale.x, childObject.scale.y, childObject.scale.z)
                         childGeometry.rotateX(childObject.rotation.x);
                         childGeometry.rotateY(childObject.rotation.y);
                         childGeometry.rotateZ(childObject.rotation.z);
@@ -227,7 +269,7 @@ class MapView extends Component {
             for (let key of geometries.keys()) {
                 let geometryArray = geometries.get(key);
                 let geometry = BufferGeometryUtils.mergeBufferGeometries(geometryArray, false)
-                let mesh = new THREE.Mesh(geometry, new MeshStandardMaterial({color: key}))
+                let mesh = new THREE.Mesh(geometry, new THREE.MeshStandardMaterial({color: key}))
                 this.state.scene.add(mesh)
             }
 
@@ -239,31 +281,33 @@ class MapView extends Component {
     setupWater = () => {
         let waterGeometry = new THREE.PlaneBufferGeometry(10000, 10000);
 
-        this.state.water = new Water(
-            waterGeometry,
-            {
-                textureWidth: 512,
-                textureHeight: 512,
-                waterNormals: new THREE.TextureLoader().load('mapData/waternormals.jpg', function (texture) {
+        this.setState({
+            water: new Water(
+                waterGeometry,
+                {
+                    textureWidth: 512,
+                    textureHeight: 512,
+                    waterNormals: new THREE.TextureLoader().load('mapData/waternormals.jpg', function (texture) {
 
-                    texture.wrapS = texture.wrapT = THREE.RepeatWrapping;
+                        texture.wrapS = texture.wrapT = THREE.RepeatWrapping;
 
-                }),
-                alpha: 5.0,
-                sunDirection: new THREE.Vector3(0, -1, 0),
-                sunColor: 0xffffff,
-                waterColor: 0x001e0f,
-                distortionScale: 3.7
-            }
-        );
+                    }),
+                    alpha: 5.0,
+                    sunDirection: new THREE.Vector3(0, -1, 0),
+                    sunColor: 0xffffff,
+                    waterColor: 0x001e0f,
+                    distortionScale: 3.7,
+                }
+            )
+        })
 
-        this.state.water.rotation.x = -Math.PI / 2;
-        this.state.water.position.y = 80;
+        this.state.water.rotation.set(-Math.PI / 2, this.state.water.rotation.y, this.state.water.rotation.z)
+        this.state.water.position.set(this.state.water.position.x, 80, this.state.water.position.z)
 
         this.state.scene.add(this.state.water);
     }
     setupSky = () => {
-        this.state.sky = new Sky();
+        this.setState({sky: new Sky()});
         this.state.sky.scale.setScalar(450000);
         this.state.scene.add(this.state.sky);
 
@@ -274,12 +318,13 @@ class MapView extends Component {
         skyUniforms['mieCoefficient'].value = 0.005;
         skyUniforms['mieDirectionalG'].value = 0.8;
 
-        this.state.sunParameters = {
-            inclination: 0,
-            azimuth: 0.205
-        };
-
-        this.state.pmremGenerator = new THREE.PMREMGenerator(this.state.renderer);
+        this.setState({
+            sunParameters: {
+                inclination: 0,
+                azimuth: 0.205
+            },
+            pmremGenerator: new THREE.PMREMGenerator(this.state.renderer)
+        })
 
         this.updateSun();
     }
@@ -288,13 +333,10 @@ class MapView extends Component {
         const theta = Math.PI * (this.state.sunParameters.inclination - 0.5);
         const phi = 2 * Math.PI * (this.state.sunParameters.azimuth - 0.5);
 
-        this.state.sun.x = Math.cos(phi);
-        this.state.sun.y = Math.sin(phi) * Math.sin(theta);
-        this.state.sun.z = Math.sin(phi) * Math.cos(theta);
+        this.state.sun.set(Math.cos(phi), Math.sin(phi) * Math.sin(theta), Math.sin(phi) * Math.cos(theta))
 
         this.state.sky.material.uniforms['sunPosition'].value.copy(this.state.sun);
         this.state.water.material.uniforms['sunDirection'].value.copy(this.state.sun).normalize();
-
         this.state.scene.environment = this.state.pmremGenerator.fromScene(this.state.sky).texture;
 
     }

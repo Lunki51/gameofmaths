@@ -15,7 +15,7 @@ const QuizDAO = function () {
             {t: 'string', ps: ['quizName', 'quizType']}
             ], object);
         if (!quiz) return null;
-        if (['CLASSIC', 'RANDOM', 'ATTACK', 'DAILY'].indexOf(quiz.quizType) >= 0)
+        if (['CLASSIC', 'RANDOM'].indexOf(quiz.quizType) >= 0)
 
         return quiz;
     };

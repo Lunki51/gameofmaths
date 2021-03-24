@@ -65,7 +65,7 @@ CREATE TABLE Quiz(
     asAnOrder TEXT CHECK ( asAnOrder IN ('true', 'false', '0', '1')) NOT NULL,
     theChapter INTEGER,
     quizName TEXT UNIQUE NOT NULL,
-    quizType TEXT NOT NULL CHECK (quizType IN ('CLASSIC', 'RANDOM', 'ATTACK', 'DAILY')),
+    quizType TEXT NOT NULL CHECK (quizType IN ('CLASSIC', 'RANDOM', 'PRIVATE')),
 
     FOREIGN KEY(theChapter) REFERENCES Chapter(chapterID)
 );

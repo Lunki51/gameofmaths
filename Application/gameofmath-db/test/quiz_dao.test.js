@@ -29,7 +29,7 @@ test('insert a quiz', async (done) => {
         theChapter: 1,
         asAnOrder: 'true',
         quizName: 'q2',
-        quizType: 'ATTACK'
+        quizType: 'RANDOM'
     }).catch(err => {done(err)})).toBe(2);
     expect(await quiz_dao.insert({
         quizID: -1,
@@ -57,7 +57,7 @@ test('get all quiz', async (done) => {
         theChapter: 1,
         asAnOrder: '1',
         quizName: 'q2',
-        quizType: 'ATTACK'
+        quizType: 'RANDOM'
     });
     expect(data).toContainEqual({
         quizID: 3,
@@ -78,7 +78,7 @@ test('get a quiz by ID', async (done) => {
         theChapter: 1,
         asAnOrder: '1',
         quizName: 'q2',
-        quizType: 'ATTACK'
+        quizType: 'RANDOM'
     });
     done();
 });
@@ -113,7 +113,7 @@ test('get all quiz in a chapter', async (done) => {
         theChapter: 1,
         asAnOrder: '1',
         quizName: 'q2',
-        quizType: 'ATTACK'
+        quizType: 'RANDOM'
     });
     done();
 });
@@ -184,7 +184,7 @@ test('delete a quiz', async (done) => {
         theChapter: 1,
         asAnOrder: '1',
         quizName: 'q2',
-        quizType: 'ATTACK'
+        quizType: 'RANDOM'
     });
     expect(data).toContainEqual({
         quizID: 3,

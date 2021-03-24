@@ -48,7 +48,8 @@ beforeAll(async (done) => {
     await quiz_dao.insert({
         quizID: -1,
         theChapter: 1,
-        asAnOrder: 'true'
+        asAnOrder: 'true',
+        quizName: 'q1'
     }).catch(done);
     await question_dao.insert({
         questionID: -1,
@@ -110,9 +111,9 @@ beforeEach(async (done) => {
     done()
 })
 
-describe('Test the getChapter path', () => {
+describe('Test the getChapters path', () => {
     test('A student should be able to get the chapter list', async (done) => {
-        const rep = await postC(res, '/api/quiz/getChapter').send().catch(done);
+        const rep = await postC(res, '/api/quiz/getChapters').send().catch(done);
         expect(rep.body).toEqual({
             returnState: 0,
             chapters: ['chap1', 'chap2']
@@ -137,7 +138,8 @@ describe('Test the startQuiz path', () => {
         const rep = await postC(res, '/api/quiz/startQuiz').send({chapter: 'chap1'}).catch(done);
         expect(rep.body).toEqual({
             returnState: 0,
-            nbQuestion: 2
+            nbQuestion: 2,
+            quizName: 'q1'
         })
         await postC(res, '/api/quiz/quit').send().catch(done);
         done();
@@ -174,7 +176,8 @@ describe('Test the getQuestion path', () => {
                 qNumber: 1,
                 theChapter: 1,
                 theQuiz: 1,
-                asAnOrder: "1"
+                asAnOrder: "1",
+                "quizName": "q1"
             }
         })
         await postC(res, '/api/quiz/postAnswer').send({questionNb: 0, questionID: 2, answer: "t3"}).catch(done);
@@ -196,6 +199,7 @@ describe('Test the getQuestion path', () => {
                 theChapter: 1,
                 theQuiz: 1,
                 asAnOrder: "1",
+                "quizName": "q1"
             }
         })
 
@@ -220,7 +224,8 @@ describe('Test the getQuestion path', () => {
                 qNumber: 1,
                 theChapter: 1,
                 theQuiz: 1,
-                asAnOrder: "1"
+                asAnOrder: "1",
+                "quizName": "q1"
             }
         })
 
@@ -232,7 +237,11 @@ describe('Test the getQuestion path', () => {
 describe('Test the postAnswer path', () => {
     test('A student should be able to post an answer', async (done) => {
         await postC(res, '/api/quiz/startQuiz').send({chapter: 'chap1'}).catch(done);
-        const rep = await postC(res, '/api/quiz/postAnswer').send({questionNb: 0, questionID: 2, answer: "t3"}).catch(done);
+        const rep = await postC(res, '/api/quiz/postAnswer').send({
+            questionNb: 0,
+            questionID: 2,
+            answer: "t3"
+        }).catch(done);
 
         expect(rep.body).toEqual({
             returnState: 0
@@ -245,7 +254,11 @@ describe('Test the postAnswer path', () => {
     test('When a student answer to the last question, he should get is score', async (done) => {
         await postC(res, '/api/quiz/startQuiz').send({chapter: 'chap1'}).catch(done);
         await postC(res, '/api/quiz/postAnswer').send({questionNb: 0, questionID: 2, answer: "t3"}).catch(done);
-        const rep = await postC(res, '/api/quiz/postAnswer').send({questionNb: 1, questionID: 1, answers: [1]}).catch(done);
+        const rep = await postC(res, '/api/quiz/postAnswer').send({
+            questionNb: 1,
+            questionID: 1,
+            answers: [1]
+        }).catch(done);
 
         expect(rep.body).toEqual({
             returnState: 0,
@@ -257,7 +270,7 @@ describe('Test the postAnswer path', () => {
         })
 
         expect((await postC(res, '/api/quiz/isInQuiz').send().catch(done)).body).toEqual({
-            returnState:0,
+            returnState: 0,
             isInQuiz: false
         })
         done();
@@ -280,7 +293,7 @@ describe('Test the quit path', () => {
         })
 
         expect((await postC(res, '/api/quiz/isInQuiz').send().catch(done)).body).toEqual({
-            returnState:0,
+            returnState: 0,
             isInQuiz: false
         })
         done();
@@ -292,20 +305,22 @@ describe('Test the getState path', () => {
         await postC(res, '/api/quiz/startQuiz').send({chapter: 'chap1'}).catch(done);
 
         expect((await postC(res, '/api/quiz/getState').send().catch(done)).body).toEqual({
-            returnState:0,
+            returnState: 0,
             state: {
                 questionNb: 2,
-                lastQuestion: 0
+                lastQuestion: 0,
+                quizName: 'q1'
             }
         })
 
         await postC(res, '/api/quiz/postAnswer').send({questionNb: 0, questionID: 2, answer: "t3"}).catch(done);
 
         expect((await postC(res, '/api/quiz/getState').send().catch(done)).body).toEqual({
-            returnState:0,
+            returnState: 0,
             state: {
                 questionNb: 2,
-                lastQuestion: 1
+                lastQuestion: 1,
+                quizName: 'q1'
             }
         })
 

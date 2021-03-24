@@ -55,6 +55,7 @@ class DeleteSelectStep extends Component{
     CLASS_TEXT = "Une classe"
     CHAPTER_TEXT = "Un Chapitre"
     QUESTION_TEXT = "Une Question"
+    QUIZ_TEXT = "Un Quiz"
 
     constructor() {
         super();
@@ -87,6 +88,10 @@ class DeleteSelectStep extends Component{
                 this.props.next(<DeleteChapterStep openPopup={this.props.openPopup} closePopup={this.props.closePopup}  next={this.props.next} previous={this.props.previous} />)
                 break
             case this.QUESTION_TEXT:
+
+
+                break
+            case this.QUIZ_TEXT:
 
 
                 break
@@ -142,6 +147,7 @@ class DeleteSelectStep extends Component{
                 <SelectionChoice id="class" onClick={this.handleSelectChoice} title={this.CLASS_TEXT} />
                 <SelectionChoice id="chapter" onClick={this.handleSelectChoice} title={this.CHAPTER_TEXT} />
                 <SelectionChoice id="question" onClick={this.handleSelectChoice} title={this.QUESTION_TEXT} />
+                <SelectionChoice id="quiz" onClick={this.handleSelectChoice} title={this.QUIZ_TEXT} />
 
             </div>
 
@@ -171,7 +177,6 @@ class SelectionChoice extends Component{
 }
 
 ///////////////////////| DELETE STUDENT |/////////////////////////
-
 
 export class DeleteStudentStep extends Component {
 
@@ -216,28 +221,24 @@ export class DeleteStudentStep extends Component {
 
     handleValidate = (event) => {
 
-        deleteTheStudents(this.state.currentStudent.studentId,this.state.currentClass).then(res => {
+        deleteTheStudents(this.state.currentStudent.userID,parseInt(this.state.currentClass)).then(res => {
 
-            getAllStudents(this.state.currentClass).then(res => {
+            /*getAllStudents(this.state.currentClass).then(res => {
 
                 this.setState({
                     studentList: res.data.students
                 })
 
-            })
+            })*/
 
         })
-
-
 
     }
 
     handleDisplayOverView = (theStudent) => {
-
         this.setState({
             currentStudent: theStudent
         })
-
     }
 
     handleUpdateList = (event) => {
@@ -259,7 +260,9 @@ export class DeleteStudentStep extends Component {
         })
     }
 
-
+    handlePrevious = () => {
+        this.props.previous(<DeleteSelectStep previous={this.props.previous} next={this.props.next} />)
+    }
 
     render() {
         return <div className="teacher-default-dashboard-container">
@@ -276,12 +279,16 @@ export class DeleteStudentStep extends Component {
                     return <StudentRow onClick={this.handleSelect} value={theStudent} key={index}/>
                 }):<h1 className="teacher-student-list-none">Aucun Elève</h1>}
 
-
+                <br/>
+                <br/>
+                <br/>
+                <br/>
+                <br/>
 
             </div>
             <button className="teacher-student-valid-delete-btn" onClick={this.handleValidate} >Supprimer</button>
 
-            <button onClick={this.handlePrevious} className="teacher-previous-btn" >Précedent</button>
+            <button onClick={this.handlePrevious} className="teacher-previous-btn" >Précédent</button>
         </div>
     }
 
@@ -394,7 +401,7 @@ class DeleteClassStep extends Component{
 
 
 
-            <button onClick={this.handlePrevious} className="teacher-previous-btn" >Précedent</button>
+            <button onClick={this.handlePrevious} className="teacher-previous-btn" >Précédent</button>
         </div>
     }
 
@@ -506,7 +513,7 @@ class DeleteChapterStep extends Component{
 
 
 
-            <button onClick={this.handlePrevious} className="teacher-previous-btn" >Précedent</button>
+            <button onClick={this.handlePrevious} className="teacher-previous-btn" >Précédent</button>
         </div>
     }
 
@@ -529,3 +536,132 @@ class ChaptersRow extends Component{
     }
 
 }
+
+///////////////////////| DELETE QUESTION |/////////////////////////
+/*
+
+export class DeleteQuestionStep extends Component {
+
+    constructor() {
+        super();
+
+        this.state = {
+            currentQuestion: null,
+            questionList: [],
+            currentChapter: 0,
+            chapterList: []
+        }
+    }
+
+    componentDidMount() {
+
+
+        getAllChapter().then(res => {
+            this.setState({
+                chapterList: res.data.chapters
+            })
+
+            getAllQuestions(res.data.classes[0].classID).then(res => {
+
+                if (this.props.formCreate) {
+                    this.setState({
+                        studentList: res.data.students,
+                        currentClass: this.props.formCreate.theClass.classID,
+                        currentStudent: this.props.formCreate.theStudent
+                    })
+                } else {
+                    this.setState({
+                        studentList: res.data.students
+                    })
+                }
+
+
+            })
+        })
+
+    }
+
+    handleValidate = (event) => {
+
+        deleteTheStudents(this.state.currentStudent.userID,parseInt(this.state.currentClass)).then(res => {
+
+            getAllStudents(this.state.currentClass).then(res => {
+
+                this.setState({
+                    studentList: res.data.students
+                })
+
+            })
+
+        })
+
+    }
+
+    handleDisplayOverView = (theStudent) => {
+        this.setState({
+            currentStudent: theStudent
+        })
+    }
+
+    handleUpdateList = (event) => {
+
+        getAllStudents(event.target.value).then(res => {
+
+            this.setState({
+                studentList: res.data.students,
+                currentClass: event.target.value
+            })
+
+        })
+
+    }
+
+    handleSelect = (event, student) =>{
+        this.setState({
+            currentStudent: student
+        })
+    }
+
+
+
+    render() {
+        return <div className="teacher-default-dashboard-container">
+
+            <div className="teacher-students-list-overview">
+
+                <select onChange={this.handleUpdateList} className="teacher-student-creation-input" id="selected-class">
+                    {this.state.classesList.map((theClass, index) => {
+                        return <option key={index} value={theClass.classID}>{theClass.name}</option>
+                    })}
+                </select>
+
+                {(this.state.studentList.length > 0)?this.state.studentList.map( (theStudent, index) => {
+                    return <StudentRow onClick={this.handleSelect} value={theStudent} key={index}/>
+                }):<h1 className="teacher-student-list-none">Aucun Elève</h1>}
+
+
+
+            </div>
+            <button className="teacher-student-valid-delete-btn" onClick={this.handleValidate} >Supprimer</button>
+
+            <button onClick={this.handlePrevious} className="teacher-previous-btn" >Précédent</button>
+        </div>
+    }
+
+}
+
+class QuestionRow extends Component {
+
+
+    handleClick = (event) => {
+        this.props.onClick(event,this.props.value)
+    }
+
+
+    render() {
+        return <div onClick={this.handleClick} className="teacher-student-row">
+            <h1 className="teacher-student-row-title">{this.props.value.lastname}</h1>
+        </div>
+    }
+
+}*/

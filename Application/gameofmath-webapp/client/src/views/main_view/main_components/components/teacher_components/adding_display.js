@@ -64,6 +64,7 @@ class AddSelectStep extends Component{
     CLASS_TEXT = "Une classe"
     CHAPTER_TEXT = "Un Chapitre"
     QUESTION_TEXT = "Une Question"
+    QUIZ_TEXT = "Un Quiz"
 
     constructor() {
         super();
@@ -98,6 +99,10 @@ class AddSelectStep extends Component{
                                                 previous={this.props.previous}/>)
                 break
             case this.QUESTION_TEXT:
+
+
+                break
+            case this.QUIZ_TEXT:
 
 
                 break
@@ -153,6 +158,7 @@ class AddSelectStep extends Component{
                 <SelectionChoice id="class" onClick={this.handleSelectChoice} title={this.CLASS_TEXT} />
                 <SelectionChoice id="chapter" onClick={this.handleSelectChoice} title={this.CHAPTER_TEXT} />
                 <SelectionChoice id="question" onClick={this.handleSelectChoice} title={this.QUESTION_TEXT} />
+                <SelectionChoice id="quiz" onClick={this.handleSelectChoice} title={this.QUIZ_TEXT} />
 
             </div>
 
@@ -182,7 +188,6 @@ class SelectionChoice extends Component{
 
 
 ////////////////////////| ADDING STUDENT |//////////////////////////
-
 
 class AddStudentStep extends Component{
 
@@ -290,9 +295,7 @@ class AddStudentStep extends Component{
 
 }
 
-
 //////////////////////////////////| ADDING CLASSES |////////////////////////////////////
-
 
 class AddClassStep extends Component{
 

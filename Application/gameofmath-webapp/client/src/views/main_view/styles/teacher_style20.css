@@ -154,6 +154,7 @@
     left: var(--teacher_nav-width);
     animation-name: openDisplay;
     animation-duration: 600ms;
+    z-index: 0;
 
 }
 
@@ -608,6 +609,27 @@
     outline-style: none;
 }
 
+.teacher-student-edit-input:first-child{
+    margin-top: 20px;
+}
+
+.teacher-student-edit-input{
+    position: relative;
+    margin-bottom: 20px;
+    height: 60px;
+    width: 90%;
+    transform: translateX(-50%);
+    left: 50%;
+    background-color: var(--primary_color);
+    border: none;
+    border-radius: 20px;
+    font-size: 25px;
+    padding-left: 20px;
+    color: white;
+    outline-style: none;
+    z-index: 20;
+}
+
 .teacher-student-creation-option{
 
     background-color: var(--primary_color);
@@ -824,6 +846,75 @@
     width: 205px;
     height: 53px;
 }
+
+/*////////////////////////////| EDIT DISPLAY |//////////////////////////////*/
+
+/*----------| classes |------------*/
+
+.teacher-regenerate-btn{
+    position: relative;
+    margin-bottom: 20px;
+    height: 60px;
+    width: 90%;
+    transform: translateX(-50%);
+    left: 50%;
+    background-color: var(--button-regenerate);
+    border: none;
+    border-radius: 20px;
+    font-size: 25px;
+    padding-left: 20px;
+    color: white;
+    outline-style: none;
+
+}
+
+/*----------| student |------------*/
+
+.teacher-previous-editStudent-btn{
+    position: absolute;
+    bottom: -20px;
+    left: 50px;
+    background-color: var(--primary_color-shadow);
+    width: 200px;
+    height: 70px;
+    border: none;
+    border-radius: 20px;
+    color: white;
+    font-family: sans-serif;
+    font-size: 30px;
+    transition-duration: 200ms;
+    transform: translate(-50%,-50%);
+    cursor: pointer;
+}
+
+.teacher-class-list-editStudent-overview{
+    width: 400px;
+    background-color: var(--primary_color-shadow);
+    height: 80%;
+    transform: translateY(-50%);
+    top: 45%;
+    position: relative;
+    left: 40px;
+    border-radius: 20px;
+    overflow: auto;
+    padding: 10px;
+    box-shadow:  0 0 10px 5px  var(--primary_color-shadow) inset;
+}
+
+.teacher-class-editStudent-overview{
+    width: 70%;
+    position: absolute;
+    height: 83%;
+    right: 20px;
+    transform: translateY(-50%);
+    top: 45%;
+    background-color: var(--primary_color-shadow);
+    border-radius: 20px;
+    z-index: -1;
+
+}
+
+
 /*////////////////////////////| SEARCH DISPLAY |//////////////////////////////*/
 
 .teacher-search-input{

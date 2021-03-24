@@ -7,6 +7,7 @@ import {SearchDisplay} from "./components/teacher_components/search_display";
 import {StudentDisplay} from "./components/teacher_components/student_display";
 import {AddingDisplay} from "./components/teacher_components/adding_display";
 import {DeleteDisplay} from "./components/teacher_components/delete_display";
+import {EditDisplay} from "./components/teacher_components/edit_display";
 
 
 export class TeacherDisplay20 extends Component{
@@ -44,6 +45,10 @@ export class TeacherDisplay20 extends Component{
 
     handleGotoDelete = () => {
         this.setState({currentDisplay: <DeleteDisplay redirect={this.handleRedirectTo} openPopup={this.handleCreatePopup} closePopup={this.handleDismissPopup}/>})
+    }
+
+    handleGotoEdit = () => {
+        this.setState({currentDisplay: <EditDisplay redirect={this.handleRedirectTo} openPopup={this.handleCreatePopup} closePopup={this.handleDismissPopup}/>})
     }
 
     handleRedirectTo(goalElement){
@@ -85,13 +90,13 @@ export class TeacherDisplay20 extends Component{
             <nav className="teacher-nav-container">
 
                 <NavElement typeClass="teacher-nav-element-stack-top" iconURL="https://img.icons8.com/ios/55/ffffff/dashboard.png" title="Dashboard" onClick={this.handleGotoDefault}/>
-                <NavElement typeClass="teacher-nav-element-stack-top" iconURL="https://img.icons8.com/dotty/55/ffffff/class.png" title="classes" onClick={this.handleGotoClasses}/>
-                <NavElement typeClass="teacher-nav-element-stack-top" iconURL="https://img.icons8.com/ios/55/ffffff/student-male--v1.png" title="élèves" onClick={this.handleGotoStudents}/>
-                <NavElement typeClass="teacher-nav-element-stack-top" iconURL="https://img.icons8.com/ios/55/ffffff/question-mark--v1.png" title="questions"/>
-                <NavElement typeClass="teacher-nav-element-stack-top" iconURL="https://img.icons8.com/ios/55/ffffff/add-column.png" title="ajouter" onClick={this.handleGotoAdding}/>
-                <NavElement typeClass="teacher-nav-element-stack-top" iconURL="https://img.icons8.com/ios/55/ffffff/add-trash.png" title="supprimer" onClick={this.handleGotoDelete}/>
-                <NavElement typeClass="teacher-nav-element-stack-top" iconURL="https://img.icons8.com/ios/55/ffffff/edit--v1.png" title="editer"/>
-                <NavElement typeClass="teacher-nav-element-stack-top" iconURL="https://img.icons8.com/ios/55/ffffff/search--v1.png" title="rechercher" onClick={this.handleOpenSearch}/>
+                <NavElement typeClass="teacher-nav-element-stack-top" iconURL="https://img.icons8.com/dotty/55/ffffff/class.png" title="Classes" onClick={this.handleGotoClasses}/>
+                <NavElement typeClass="teacher-nav-element-stack-top" iconURL="https://img.icons8.com/ios/55/ffffff/student-male--v1.png" title="Élèves" onClick={this.handleGotoStudents}/>
+                <NavElement typeClass="teacher-nav-element-stack-top" iconURL="https://img.icons8.com/ios/55/ffffff/question-mark--v1.png" title="Questions"/>
+                <NavElement typeClass="teacher-nav-element-stack-top" iconURL="https://img.icons8.com/ios/55/ffffff/add-column.png" title="Ajouter" onClick={this.handleGotoAdding}/>
+                <NavElement typeClass="teacher-nav-element-stack-top" iconURL="https://img.icons8.com/ios/55/ffffff/add-trash.png" title="Supprimer" onClick={this.handleGotoDelete}/>
+                <NavElement typeClass="teacher-nav-element-stack-top" iconURL="https://img.icons8.com/ios/55/ffffff/edit--v1.png" title="Éditer" onClick={this.handleGotoEdit}/>
+                <NavElement typeClass="teacher-nav-element-stack-top" iconURL="https://img.icons8.com/ios/55/ffffff/search--v1.png" title="Rechercher" onClick={this.handleOpenSearch}/>
 
                 <NavElement typeClass="teacher-nav-element-stack-bottom" iconURL="https://img.icons8.com/fluent-systems-regular/55/ffffff/settings.png" title="Paramètres"/>
                 <NavElement typeClass="teacher-nav-element-stack-bottom" iconURL="https://img.icons8.com/fluent-systems-regular/55/ffffff/logout-rounded-left.png" title="Déconnexion" onClick={this.props.logout}/>

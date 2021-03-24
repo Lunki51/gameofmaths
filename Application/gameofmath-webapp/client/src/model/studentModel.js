@@ -20,11 +20,30 @@ export function getAllTheStudents(){
 
 export function deleteTheStudents(studentId,classId){
 
-    return Axios.post('/api/classManagement/deleteStudent', {studentId:studentId, classId:classId} )
+    console.log(classId,studentId)
+    return Axios.post('/api/classManagement/deleteStudent', {classId,studentId} )
+}
 
+export function regeneratePassword(classId,login,lastname,firstname){
+
+    return Axios.post('/api/classManagement/regeneratePassword', {classID:classId, login:login, lastname:lastname, firstname:firstname} )
 
 }
 
+export function updateStudentlogin(classId,studentId,newLogin){
+
+    return Axios.post('/api/classManagement/setLogin', {studentId:studentId, classId:classId,login:newLogin} )
+}
+
+export function updateStudentlastName(classId,studentId,newLastName){
+
+    return Axios.post('/api/classManagement/setLogin', {studentId:studentId, classId:classId,lastname:newLastName} )
+}
+
+export function updateStudentFirstName(classId,studentId,newFirstName){
+
+    return Axios.post('/api/classManagement/setLogin', {studentId:studentId, classId:classId,firstname:newFirstName} )
+}
 
 /**
  * create a student

@@ -8,7 +8,7 @@ let sizeX = 1000;
 let sizeY = 1000
 
 beforeAll(async (done) => {
-    aMap = new gameMap(sizeX,sizeY,10000);
+    aMap = new gameMap(sizeX,sizeY,10000,8);
     done();
 });
 

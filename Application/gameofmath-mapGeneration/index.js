@@ -25,7 +25,7 @@ function GraphicsManager(){
      * @returns {number} the indices of the map to retrieve it later
      */
     this.createMap = function(sizeX,sizeY,nbPoints){
-        return new gameMap(sizeX,sizeY,nbPoints)
+        return new gameMap(sizeX,sizeY,nbPoints,8)
      }
 
 }

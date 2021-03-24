@@ -53,7 +53,7 @@
 
         position: absolute;
         right: 0px;
-        height: 70px;
+        height: var(--naviguaton-bar-height);
         bottom: 0px;
         left:0px;
 
@@ -123,6 +123,31 @@
         transform: translate(-50%,-50%);
         left: 50%;
         top: 50%;
+
+        /*set size*/
+        width: 90%;
+        height: 60%;
+
+        /*set appearence*/
+        background-color: var(--wood_style_color);
+        border-radius: 20px;
+        border: 2px solid var(--border_color);
+
+        /*set children*/
+        display: grid;
+        align-content: center;
+        padding-top: 80px;
+        overflow: auto;
+
+    }
+
+    .container-castle-details{
+
+        /*set position*/
+        position: absolute;
+        transform: translateX(-1%);
+        left: 1%;
+        top: calc(var(--naviguaton-bar-height) + 10px + var(--naviguaton-bar-offset));
 
         /*set size*/
         width: 90%;
@@ -230,6 +255,32 @@
 
     }
 
+    .container-castle-details{
+
+        /*set position*/
+        position: absolute;
+        transform: translateX(-1%);
+        left: 1%;
+        top: calc(var(--naviguaton-bar-height) + 10px + var(--naviguaton-bar-offset));
+
+        /*set size*/
+        width: 25%;
+        height: 500px;
+
+        /*set appearence*/
+        background-color: var(--wood_style_color);
+        border-radius: 20px;
+        border: 2px solid var(--border_color);
+
+        /*set children*/
+        display: grid;
+        grid-template-columns: repeat(4, 2fr);
+        padding-top: 80px;
+
+
+        overflow: auto;
+
+    }
     /*container component*/
 
 
@@ -245,9 +296,9 @@
 
     .navbar_container{
 
-        margin-top: 20px;
+        margin-top: var(--naviguaton-bar-offset);
         position: absolute;
-        height: 70px;
+        height: var(--naviguaton-bar-height);
         left: 10px;
         right: 10px;
 
@@ -292,7 +343,7 @@
         top: 50%;
         left: 50%;
         transform: translate(-50%,-50%);
-        height: 70px;
+        height: var(--naviguaton-bar-height);
 
     }
 

@@ -9,6 +9,7 @@ import MapView from "./main_components/Map_display";
 import Axios from "axios";
 import {Quiz} from "./overlay_components/chapters_overlay";
 import {TeacherDisplay} from "./main_components/teacher_display";
+import {CastleDetails} from "./overlay_components/castle_overlay"
 import {quitQuiz} from "../../model/quizModel";
 
 /**
@@ -39,7 +40,8 @@ class MainView extends Component {
             mapAccess: true,
             who: "",
             username: "",
-
+            zoomed : false,
+            details : null,
         }
 
 
@@ -163,7 +165,16 @@ class MainView extends Component {
 
     }
 
+    handleCastleDetails = (castle) => {
+        this.setState({details : <CastleDetails castle = {castle} clear = {this.handleClearDetails}/>,zoomed:true})
+        console.log("Added details")
+    }
 
+
+    handleClearDetails = () => {
+        this.setState({details : null,zoomed:false})
+        console.log("Removed details")
+    }
 
 
     componentWillUnmount() {
@@ -183,7 +194,8 @@ class MainView extends Component {
 
                     <MobileHeader/>{/*appear only when mobile*/}
                     <NavigationBar quiz={this.handleQuizDisplay} logout={this.handleLogout}/>
-                    <MapView/>
+                    <MapView details={this.handleCastleDetails} zoomed = {this.state.zoomed}/>
+                    {this.state.details}
                     {this.state.overlayComponent}
                 </>
 

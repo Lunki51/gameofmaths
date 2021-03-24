@@ -13,7 +13,7 @@
         display: grid;
     }
 
-    .container-chapter{
+    .container-castle{
 
 
 
@@ -90,7 +90,7 @@
         border: 2px solid var(--border_color);
     }
 
-    .container-chapter{
+    .container-castle{
 
 
 
@@ -112,7 +112,7 @@
 
     }
 
-    .container-chapter:hover{
+    .container-castle:hover{
         background-color: var(--wood_style_color-hover);
     }
 
@@ -140,7 +140,7 @@
 
     }
 
-    .chapter-selection-headline{
+    .castle-details-headline{
 
 
         display: inline;
@@ -165,7 +165,7 @@
 }
 
 
-.container-chapter:hover{
+.container-castle:hover{
     background-color: var(--wood_style_color-hover);
 }
 
@@ -203,7 +203,7 @@
 
 }
 
-.chapter-selection-headline{
+.castle-details-headline{
 
     position: absolute;
 

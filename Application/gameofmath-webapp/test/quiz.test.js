@@ -49,7 +49,15 @@ beforeAll(async (done) => {
         quizID: -1,
         theChapter: 1,
         asAnOrder: 'true',
-        quizName: 'q1'
+        quizName: 'q1',
+        quizType: 'CLASSIC'
+    }).catch(done);
+    await quiz_dao.insert({
+        quizID: -1,
+        theChapter: 1,
+        asAnOrder: 'true',
+        quizName: 'q2',
+        quizType: 'RANDOM'
     }).catch(done);
     await question_dao.insert({
         questionID: -1,

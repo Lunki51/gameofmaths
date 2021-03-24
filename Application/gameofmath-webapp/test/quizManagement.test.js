@@ -160,13 +160,15 @@ describe('Test the deleteChapter path', () => {
             quizID: -1,
             asAnOrder: 'true',
             theChapter: 4,
-            quizName: 'q1'
+            quizName: 'q1',
+            quizType: 'CLASSIC'
         }).catch(done);
         await quiz_dao.insert({
             quizID: -1,
             asAnOrder: 'false',
             theChapter: 4,
-            quizName: 'q2'
+            quizName: 'q2',
+            quizType: 'CLASSIC'
         }).catch(done);
         await question_dao.insert({
             questionID: -1,
@@ -276,7 +278,8 @@ describe('Test the getQuizList path', () => {
             quizID: -1,
             asAnOrder: 'false',
             theChapter: 1,
-            quizName: 'q3'
+            quizName: 'q3',
+            quizType: 'CLASSIC'
         }).catch(done);
 
         const rep = await postC(res, '/api/quizManagement/getQuizList').send().catch(done);
@@ -288,7 +291,8 @@ describe('Test the getQuizList path', () => {
                     quizID: 3,
                     asAnOrder: '0',
                     theChapter: 1,
-                    quizName: 'q3'
+                    quizName: 'q3',
+                    quizType: 'CLASSIC'
                 }
             ]
         })
@@ -309,7 +313,8 @@ describe('Test the createQuiz path', () => {
                 quizID: 4,
                 asAnOrder: 'true',
                 theChapter: 2,
-                quizName: 'q4'
+                quizName: 'q4',
+                quizType: 'CLASSIC'
             }
         })
 
@@ -322,12 +327,14 @@ describe('Test the createQuiz path', () => {
                     quizID: 3,
                     asAnOrder: '0',
                     theChapter: 1,
-                    quizName: 'q3'
+                    quizName: 'q3',
+                    quizType: 'CLASSIC'
                 }, {
                     quizID: 4,
                     asAnOrder: '1',
                     theChapter: 2,
-                    quizName: 'q4'
+                    quizName: 'q4',
+                    quizType: 'CLASSIC'
                 }
             ]
         })
@@ -353,7 +360,8 @@ describe('Test the deleteQuiz path', () => {
                     quizID: 3,
                     asAnOrder: '0',
                     theChapter: 1,
-                    quizName: 'q3'
+                    quizName: 'q3',
+                    quizType: 'CLASSIC'
                 }
             ]
         })
@@ -365,7 +373,8 @@ describe('Test the deleteQuiz path', () => {
             quizID: -1,
             asAnOrder: 'true',
             theChapter: 2,
-            quizName: 'q5'
+            quizName: 'q5',
+            quizType: 'CLASSIC'
         }).catch(done);
         await question_dao.insert({
             questionID: -1,
@@ -406,7 +415,8 @@ describe('Test the deleteQuiz path', () => {
                     quizID: 3,
                     asAnOrder: '0',
                     theChapter: 1,
-                    quizName: 'q3'
+                    quizName: 'q3',
+                    quizType: 'CLASSIC'
                 }
             ]
         })
@@ -439,7 +449,8 @@ describe('Test the setOrder path', () => {
                 quizID: 3,
                 asAnOrder: 'true',
                 theChapter: 1,
-                quizName: 'q3'
+                quizName: 'q3',
+                quizType: 'CLASSIC'
             }
         })
 
@@ -452,7 +463,8 @@ describe('Test the setOrder path', () => {
                     quizID: 3,
                     asAnOrder: '1',
                     theChapter: 1,
-                    quizName: 'q3'
+                    quizName: 'q3',
+                    quizType: 'CLASSIC'
                 }
             ]
         })
@@ -471,7 +483,8 @@ describe('Test the getQuizListWithChapterId path', () => {
                     quizID: 3,
                     asAnOrder: '1',
                     theChapter: 1,
-                    quizName: 'q3'
+                    quizName: 'q3',
+                    quizType: 'CLASSIC'
                 }
             ]
         })
@@ -490,7 +503,8 @@ describe('Test the getQuiz path', () => {
                 quizID: 3,
                 asAnOrder: '1',
                 theChapter: 1,
-                quizName: 'q3'
+                quizName: 'q3',
+                quizType: 'CLASSIC'
             }
         })
         done();
@@ -508,7 +522,8 @@ describe('Test the getQuizByName path', () => {
                 quizID: 3,
                 asAnOrder: '1',
                 theChapter: 1,
-                quizName: 'q3'
+                quizName: 'q3',
+                quizType: 'CLASSIC'
             }
         })
         done();

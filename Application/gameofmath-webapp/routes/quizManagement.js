@@ -226,9 +226,10 @@ router.post('/createQuiz', (req, res, next) => {
         quizID: -1,
         asAnOrder: isOrder,
         theChapter: chapter,
-        quizName: quizName
+        quizName: quizName,
+        quizType: 'CLASSIC'
     }).then(id => {
-        res.send({returnState: 0, quiz: {quizID: id, asAnOrder: isOrder, theChapter: chapter, quizName: quizName}})
+        res.send({returnState: 0, quiz: {quizID: id, asAnOrder: isOrder, theChapter: chapter, quizName: quizName, quizType: 'CLASSIC'}})
     }).catch(err => next(err))
 })
 
@@ -372,7 +373,7 @@ router.post('/setQuizName', (req, res, next) => {
 router.post('/getQuizList', (req, res, next) => {
     if (!req.session.isLogged && !req.session.isTeacher) return next(new Error('Client must be logged on a Teacher account'))
 
-    quiz_dao.findAll().then(q => {
+    quiz_dao.findAllOfType('CLASSIC').then(q => {
         res.send({returnState: 0, quizzes: q})
     }).catch(err => next(err))
 })
@@ -392,7 +393,7 @@ router.post('/getQuizListWithChapterId', (req, res, next) => {
 
     if (id == null) return res.send({returnState: 1, msg: 'The chapter id is incorrect'})
 
-    quiz_dao.findAllInChapter(id).then(q => {
+    quiz_dao.findAllOfTypeInChapter('CLASSIC', id).then(q => {
         res.send({returnState: 0, quizzes: q})
     }).catch(err => next(err))
 })

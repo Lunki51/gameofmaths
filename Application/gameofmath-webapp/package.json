@@ -2,19 +2,18 @@
   "name": "gameofmath-webapp",
   "version": "0.1.0",
   "description": "Web server of the WebApp GameOfMath.",
-  "main": "app.js",
+  "main": "server.js",
   "scripts": {
-    "test": "concurrently \" npm run test-backend\" \"npm run test-frontend\"",
-    "test-backend": "nodemon app.js dev",
-    "test-frontend": "npm start --prefix ./client",
-    "start-backend": "node app.js",
+    "test": "jest --runInBand --env node ",
+    "start-backend": "node server.js",
     "start-frontend": "npm start --prefix ./client",
-    "start": "concurrently \" npm run start-backend\" \"npm run start-frontend\"",
-    "dev": "node app.js dev"
+    "start": "concurrently \"npm run start-backend\" \"npm run start-frontend\"",
+    "dev": "concurrently \"node server.js dev\" \"npm start --prefix ./client\""
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@types/dat.gui": "^0.7.6",
     "concurrently": "^5.3.0",
     "connect-redis": "^5.0.0",
     "connect-sqlite3": "^0.9.11",
@@ -28,12 +27,15 @@
     "gameofmath-mapGeneration": "file:../gameofmath-mapGeneration",
     "multer": "^1.4.2",
     "nodemon": "^2.0.6",
+    "poisson-disk-sampling": "^2.2.2",
     "pug": "^3.0.0",
     "redis": "^3.0.2",
     "sqlite3": "^5.0.0",
     "three": "^0.124.0"
   },
   "devDependencies": {
-    "@babel/plugin-proposal-class-properties": "^7.12.1"
+    "@babel/plugin-proposal-class-properties": "^7.12.1",
+    "jest": "~26.6.0",
+    "supertest": "^6.0.1"
   }
 }

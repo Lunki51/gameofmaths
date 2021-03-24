@@ -40,7 +40,7 @@ router.post('/changeLastname', (req, res, next) => {
 
     const newName = req.body.newName;
 
-    if (newName != null && newName.size > 0) {
+    if (newName != null && newName.length > 0) {
 
         req.session.user.lastname = newName
         teacher_dao.update(req.session.user).then(() => {
@@ -64,7 +64,7 @@ router.post('/changeFirstname', (req, res, next) => {
 
     const newName = req.body.newName;
 
-    if (newName != null && newName.size > 0) {
+    if (newName != null && newName.length > 0) {
 
         req.session.user.firstname = newName
         teacher_dao.update(req.session.user).then(() => {

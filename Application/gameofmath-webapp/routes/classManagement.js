@@ -271,7 +271,7 @@ router.post('/getStudents', (req, res, next) => {
             delete o.classID
             delete o.name
         })
-        res.send({returnState: 0, id: id, students: students})
+        res.send({returnState: 0, class: id, students: students})
     }).catch(err => next(err))
 })
 
@@ -532,22 +532,22 @@ router.post('/deleteStudent', (req, res, next) => {
         else {
             db.beginTransaction(function (err, t) {
 
-                t.run('DELETE FROM QuizDone WHERE theGain IN (SELECT mpGainID FROM mpGain, Student WHERE theStudent = theUser AND theUser = ?)' [studentId], function (err) {
+                t.run('DELETE FROM QuizDone WHERE theGain IN (SELECT mpGainID FROM mpGain, Student WHERE theStudent = theUser AND theUser = ?)', [studentId], function (err) {
                     if (err) {
                         t.rollback()
                         next(err)
                     } else {
-                        t.run('DELETE FROM MPGain WHERE theStudent IN (SELECT theUser FROM Student WHERE theUser = ?)' [studentId], function (err) {
+                        t.run('DELETE FROM MPGain WHERE theStudent IN (SELECT theUser FROM Student WHERE theUser = ?)', [studentId], function (err) {
                             if (err) {
                                 t.rollback()
                                 next(err)
                             } else {
-                                t.run('DELETE FROM User WHERE userID IN (SELECT theUser FROM Student WHERE theUser = ?)' [studentId], function (err) {
+                                t.run('DELETE FROM Student WHERE theUser = ?', [studentId], function (err) {
                                     if (err) {
                                         t.rollback()
                                         next(err)
                                     } else {
-                                        t.run('DELETE FROM Student WHERE theUser = ?)' [studentId], function (err) {
+                                        t.run('DELETE FROM User WHERE userID = ?', [studentId], function (err) {
                                             if (err) {
                                                 t.rollback()
                                                 next(err)

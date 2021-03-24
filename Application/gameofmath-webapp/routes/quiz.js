@@ -14,7 +14,7 @@ const db = require('gameofmath-db').db
  *  0: the chapter name in an array (chapters)
  */
 router.post('/getChapter', (req, res, next) => {
-    if (!req.session.isLogged) next(-1, 'The client must be logged')
+    if (!req.session.isLogged) next(new Error('The client must be logged'))
 
     chapter_dao.findAll().then(rep => {
         res.send({returnState: 0, chapters: rep.map(c => c.name)})
@@ -44,7 +44,7 @@ router.post('/startQuiz', (req, res, next) => {
                 else {
                     const quiz = quizs[Math.floor(Math.random() * quizs.length)]
 
-                    db.all('SELECT questionID, upperText, lowerText, image, type, level, theChapter, answerID, text, isValid, theQuiz, qNumber FROM Question, Answer A, QuizQuestion Q WHERE questionID = A.theQuestion AND questionID = Q.theQuestion AND theQuiz = ?', [quiz.quizID], function (err, questions) {
+                    db.all('SELECT questionID, upperText, lowerText, image, type, level, U.theChapter, answerID, text, isValid, theQuiz, qNumber, asAnOrder FROM Question U, Answer A, QuizQuestion Q, Quiz Z WHERE questionID = A.theQuestion AND questionID = Q.theQuestion AND theQuiz = quizID AND quizID = ?', [quiz.quizID], function (err, questions) {
                         if (err) next(err)
                         else if (questions.length === 0) next(new Error('The quiz don\'t have any question'))
                         else {
@@ -64,7 +64,7 @@ router.post('/startQuiz', (req, res, next) => {
                                     const obj = {...cur}
                                     obj.answers = [answer]
 
-                                    delete obj.answers.answerID
+                                    delete obj.answerID
                                     delete obj.text
                                     delete obj.isValid
 
@@ -84,7 +84,7 @@ router.post('/startQuiz', (req, res, next) => {
                                 }
                             })
 
-                            if (['true', '0'].find(o => o === quiz.asAnOrder) != null) { //Order question
+                            if (['true', '1'].find(o => o === quiz.asAnOrder) != null) { //Order question
                                 req.session.currentQuiz.questions.sort((a, b) => a.qNumber - b.qNumber)
                             } else { //Shuffle question
                                 for (let i = 0; i < req.session.currentQuiz.questions.length; i++) {

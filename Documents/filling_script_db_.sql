@@ -15,8 +15,8 @@ INSERT INTO STUDENT VALUES(2,1,0);
 INSERT INTO CHAPTER VALUES(1,'Géometrie');
 INSERT INTO CHAPTER VALUES(2,'Multiplication');
 
-INSERT INTO QUIZ VALUES(1,'true',1, 'Quiz 1');
-INSERT INTO QUIZ VALUES(2,'false',2, 'Quiz 2');
+INSERT INTO QUIZ VALUES(1,'true',1, 'Quiz 1', 'CLASSIC');
+INSERT INTO QUIZ VALUES(2,'false',2, 'Quiz 2', 'CLASSIC');
 
 INSERT INTO QUESTION VALUES(1,'Ci dessous un carré','Quelle est la valeur de b ?','/questionImages/i1.png','OPEN',1,1);
 

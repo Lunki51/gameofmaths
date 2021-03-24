@@ -21,19 +21,22 @@ test('insert a quiz', async (done) => {
         quizID: -1,
         theChapter: 1,
         asAnOrder: 'true',
-        quizName: 'q1'
+        quizName: 'q1',
+        quizType: 'CLASSIC'
     }).catch(err => {done(err)})).toBe(1);
     expect(await quiz_dao.insert({
         quizID: -1,
         theChapter: 1,
         asAnOrder: 'true',
-        quizName: 'q2'
+        quizName: 'q2',
+        quizType: 'ATTACK'
     }).catch(err => {done(err)})).toBe(2);
     expect(await quiz_dao.insert({
         quizID: -1,
         theChapter: 2,
         asAnOrder: 'false',
-        quizName: 'q3'
+        quizName: 'q3',
+        quizType: 'RANDOM'
     }).catch(err => {done(err)})).toBe(3);
     done();
 });
@@ -46,19 +49,22 @@ test('get all quiz', async (done) => {
         quizID: 1,
         theChapter: 1,
         asAnOrder: '1',
-        quizName: 'q1'
+        quizName: 'q1',
+        quizType: 'CLASSIC'
     });
     expect(data).toContainEqual({
         quizID: 2,
         theChapter: 1,
         asAnOrder: '1',
-        quizName: 'q2'
+        quizName: 'q2',
+        quizType: 'ATTACK'
     });
     expect(data).toContainEqual({
         quizID: 3,
         theChapter: 2,
         asAnOrder: '0',
-        quizName: 'q3'
+        quizName: 'q3',
+        quizType: 'RANDOM'
     });
     done();
 });
@@ -71,7 +77,8 @@ test('get a quiz by ID', async (done) => {
         quizID: 2,
         theChapter: 1,
         asAnOrder: '1',
-        quizName: 'q2'
+        quizName: 'q2',
+        quizType: 'ATTACK'
     });
     done();
 });
@@ -84,7 +91,8 @@ test('get a quiz by name', async (done) => {
         quizID: 3,
         theChapter: 2,
         asAnOrder: '0',
-        quizName: 'q3'
+        quizName: 'q3',
+        quizType: 'RANDOM'
     });
     done();
 });
@@ -97,14 +105,44 @@ test('get all quiz in a chapter', async (done) => {
         quizID: 1,
         theChapter: 1,
         asAnOrder: '1',
-        quizName: 'q1'
+        quizName: 'q1',
+        quizType: 'CLASSIC'
     });
     expect(data).toContainEqual({
         quizID: 2,
         theChapter: 1,
         asAnOrder: '1',
-        quizName: 'q2'
+        quizName: 'q2',
+        quizType: 'ATTACK'
     });
+    done();
+});
+
+test('get all quiz of type', async (done) => {
+    const data = await quiz_dao.findAllOfType('CLASSIC').catch(err => {
+        done(err);
+    });
+    expect(data).toEqual([{
+        quizID: 1,
+        theChapter: 1,
+        asAnOrder: '1',
+        quizName: 'q1',
+        quizType: 'CLASSIC'
+    }]);
+    done();
+});
+
+test('get all quiz of type in chapter', async (done) => {
+    const data = await quiz_dao.findAllOfTypeInChapter('RANDOM', 2).catch(err => {
+        done(err);
+    });
+    expect(data).toEqual([{
+        quizID: 3,
+        theChapter: 2,
+        asAnOrder: '0',
+        quizName: 'q3',
+        quizType: 'RANDOM'
+    }]);
     done();
 });
 
@@ -113,7 +151,8 @@ test('update a quiz', async (done) => {
         quizID: 1,
         theChapter: 2,
         asAnOrder: '1',
-        quizName: 'q1b'
+        quizName: 'q1b',
+        quizType: 'CLASSIC'
     }).catch(err => {
         done(err);
     })
@@ -122,7 +161,8 @@ test('update a quiz', async (done) => {
         quizID: 1,
         theChapter: 2,
         asAnOrder: '1',
-        quizName: 'q1b'
+        quizName: 'q1b',
+        quizType: 'CLASSIC'
     });
     done();
 });
@@ -136,19 +176,22 @@ test('delete a quiz', async (done) => {
         quizID: 1,
         theChapter: 2,
         asAnOrder: '1',
-        quizName: 'q1b'
+        quizName: 'q1b',
+        quizType: 'CLASSIC'
     });
     expect(data).not.toContainEqual({
         quizID: 2,
         theChapter: 1,
         asAnOrder: '1',
-        quizName: 'q2'
+        quizName: 'q2',
+        quizType: 'ATTACK'
     });
     expect(data).toContainEqual({
         quizID: 3,
         theChapter: 2,
         asAnOrder: '0',
-        quizName: 'q3'
+        quizName: 'q3',
+        quizType: 'RANDOM'
     });
     done();
 });

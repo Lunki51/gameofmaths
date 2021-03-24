@@ -63,8 +63,9 @@ CREATE TABLE Chapter(
 CREATE TABLE Quiz(
     quizID INTEGER PRIMARY KEY AUTOINCREMENT,
     asAnOrder TEXT CHECK ( asAnOrder IN ('true', 'false', '0', '1')) NOT NULL,
-    theChapter INTEGER NOT NULL,
-    quizName TEST UNIQUE NOT NULL,
+    theChapter INTEGER,
+    quizName TEXT UNIQUE NOT NULL,
+    quizType TEXT NOT NULL CHECK (quizType IN ('CLASSIC', 'RANDOM', 'ATTACK', 'DAILY')),
 
     FOREIGN KEY(theChapter) REFERENCES Chapter(chapterID)
 );

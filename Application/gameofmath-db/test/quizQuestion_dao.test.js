@@ -42,13 +42,15 @@ beforeAll(async (done) => {
         quizID: -1,
         theChapter: 1,
         asAnOrder: 'true',
-        quizName: 'q1'
+        quizName: 'q1',
+        quizType: 'CLASSIC'
     });
     await quiz_dao.insert({
         quizID: -1,
         theChapter: 1,
         asAnOrder: 'true',
-        quizName: 'q2'
+        quizName: 'q2',
+        quizType: 'CLASSIC'
     });
     done();
 });

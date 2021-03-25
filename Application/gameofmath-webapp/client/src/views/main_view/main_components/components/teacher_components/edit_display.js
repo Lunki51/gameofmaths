@@ -1,4 +1,4 @@
-import {Component} from "react";
+import React, {Component} from "react";
 import {PopupMessage} from "../../teacher_display_2.0";
 import {getAllClasses, regenerateMap, updateTheClass} from "../../../../../model/classModel";
 import {
@@ -193,7 +193,6 @@ export class EditStudentStep extends Component {
 
     componentDidMount() {
 
-
         getAllClasses().then(res => {
             this.setState({
                 classesList: res.data.classes
@@ -217,29 +216,25 @@ export class EditStudentStep extends Component {
             })
         })
 
-
     }
 
     handleDisplayOverView = (theStudent) => {
-        this.handleUpdateList()
         this.setState({
             currentStudent: theStudent
         })
-
 
     }
 
     handleUpdateList = (event) => {
 
-        getAllStudents((event) ? event.target.value:this.state.currentClass).then(res => {
+        getAllStudents((event) ? event.target.value : this.state.currentClass).then(res => {
 
             this.setState({
                 studentList: res.data.students,
-                currentClass: (event) ? event.target.value:this.state.currentClass
+                currentClass: (event) ? event.target.value : this.state.currentClass
             })
 
         })
-
 
     }
 
@@ -277,20 +272,23 @@ export class EditStudentStep extends Component {
 
 
         if (valid) {
-            updateStudentlogin(selectedClass, (event) ? event.target.value : this.state.currentClass, login).then((response) => {
+            if(this.props.theStudent.login !== this.state.login) updateStudentlogin(selectedClass, (event) ? event.target.value : this.state.currentClass, login).then((response) => {
 
                 console.log(response)
 
             })
-            updateStudentlastName(selectedClass, (event) ? event.target.value : this.state.currentClass, name).then((response) => {
+            if(this.props.theStudent.lastname !== this.state.lastname) updateStudentlastName(selectedClass, (event) ? event.target.value : this.state.currentClass, name).then((response) => {
 
                 console.log(response)
 
             })
-            updateStudentFirstName(selectedClass, (event) ? event.target.value : this.state.currentClass, firstname).then((response) => {
+            if(this.props.theStudent.firstname !== this.state.firstname) updateStudentFirstName(selectedClass, (event) ? event.target.value : this.state.currentClass, firstname).then((response) => {
                 console.log(response)
             })
         }
+
+        //no reload
+        event.preventDefault();
     }
 
     handleRegenerate = (event) => {
@@ -314,6 +312,7 @@ export class EditStudentStep extends Component {
                 </select>
 
                 {(this.state.studentList.length > 0) ? this.state.studentList.map((theStudent, index) => {
+                    console.log(theStudent)
                     return <StudentRow onClick={this.handleDisplayOverView} value={theStudent}
                                        callbackOverView={this.handleDisplayOverView} key={index}/>
                 }) : <h1 className="teacher-student-list-none">Aucun Elève</h1>}
@@ -322,12 +321,12 @@ export class EditStudentStep extends Component {
 
             <div className="teacher-class-editStudent-overview">
 
-                {(this.state.currentStudent) ? <StudentOverview theStudent={this.state.currentStudent}/> :
+                {(this.state.currentStudent) ? <StudentEditOverview theStudent={this.state.currentStudent}/> :
                     <h1 className="teacher-no-class">Aucun élève selectionné</h1>}
 
             </div>
 
-            <button onClick={this.handlePrevious} className="teacher-previous-editStudent-btn">Précedent</button>
+            <button onClick={this.handlePrevious} className="teacher-previous-editStudent-btn">Précédent</button>
         </div>
     }
 
@@ -351,18 +350,24 @@ class StudentRow extends Component {
 
 }
 
-class StudentOverview extends Component {
+class StudentEditOverview extends Component {
 
     constructor() {
         super();
 
-
-
         this.state = {
-            login: this.props.login,
-            lastname: this.props.lastname,
-            firstname: this.props.firstname
+            login: "",
+            lastname: "",
+            firstname: ""
         }
+    }
+
+    componentDidMount() {
+        this.setState({
+            login: this.props.theStudent.login,
+            lastname: this.props.theStudent.lastname,
+            firstname: this.props.theStudent.firstname
+        })
     }
 
     handleOnChangeLogin = (event) => {
@@ -371,18 +376,44 @@ class StudentOverview extends Component {
         })
     }
 
+    handleOnChangeName = (event) => {
+        this.setState({
+            lastname: event.target.value
+        })
+    }
+
+    handleOnChangeFirstname = (event) => {
+        this.setState({
+            firstname: event.target.value
+        })
+    }
+
+    componentWillReceiveProps(nextProps) {
+
+        this.setState({
+            login: nextProps.theStudent.login,
+            lastname: nextProps.theStudent.lastname,
+            firstname: nextProps.theStudent.firstname
+        })
+
+    }
+
     render() {
         return <div className="teacher-edit-student-step">
 
             <form className="teacher-edit-creation-container" onSubmit={this.handleValidate}>
-                <input onChange={this.handleOnChangeLogin} className="teacher-student-edit-input" id="select-login" placeholder="Login" type="text"
+                <input onChange={this.handleOnChangeLogin} className="teacher-student-edit-input" id="select-login"
+                       placeholder="Login" type="text"
                        value={this.state.login}/>
-                <input className="teacher-student-edit-input" id="select-name" placeholder="Nom" type="text"
-                       value={this.props.theStudent.firstname}/>
-                <input className="teacher-student-edit-input" id="select-firstname" placeholder="Prénom" type="text"
-                       value={this.props.theStudent.lastname}/>
+                <input onChange={this.handleOnChangeName} className="teacher-student-edit-input" id="select-name"
+                       placeholder="Nom" type="text"
+                       value={this.state.lastname}/>
+                <input onChange={this.handleOnChangeFirstname} className="teacher-student-edit-input"
+                       id="select-firstname" placeholder="Prénom" type="text"
+                       value={this.state.firstname}/>
                 <button onClick={this.handleRegenerate} className="teacher-regenerate-btn">Regénérer la mot de passe
                 </button>
+
                 <input className="teacher-student-creation-valid" type="submit" value="Valider"/>
             </form>
 
@@ -406,10 +437,6 @@ class EditClassStep extends Component {
         this.handleUpdateList()
     }
 
-    componentDidMount() {
-
-    }
-
     handleValidate = (event) => {
 
         let valid = true;
@@ -431,6 +458,7 @@ class EditClassStep extends Component {
 
 
         if (valid) {
+            console.log(this.state.currentClass,name,grade)
             updateTheClass(this.state.currentClass, name, grade).then((res) => {
                 console.log(res)
             })
@@ -459,10 +487,12 @@ class EditClassStep extends Component {
             if (theClass.classID === event.target.value) {
                 console.log("allo")
                 this.setState({
-                    currentClass: theClass
+                    currentClass:{name: theClass.name, grade:theClass.grade}
                 })
             }
         })
+        //no reload
+        event.preventDefault();
     }
 
     handleUpdateList = () => {
@@ -472,6 +502,26 @@ class EditClassStep extends Component {
                 classesList: res.data.classes,
                 currentClass: res.data.classes[0]
             })
+        })
+
+    }
+
+    handleOnChangeName = (event) => {
+        this.setState({
+            currentClass:{name: event.target.value}
+        })
+    }
+
+    handleOnChangeGrade = (event) => {
+        this.setState({
+            currentClass:{grade: event.target.value}
+        })
+    }
+
+    componentWillReceiveProps(nextProps) {
+
+        this.setState({
+            currentClass:{name: nextProps.currentClass.name,grade: nextProps.currentClass.grade}
         })
 
     }
@@ -487,9 +537,9 @@ class EditClassStep extends Component {
                     })}
                 </select>
 
-                <input className="teacher-student-creation-input" id="select-name" placeholder="Nom"  readOnly={false} type="text"
+                <input onChange={this.handleOnChangeName} className="teacher-student-creation-input" id="select-name" placeholder="Nom" type="text"
                        value={this.state.currentClass.name}/>
-                <input className="teacher-student-creation-input" id="select-grade" placeholder="Niveau" type="text"
+                <input onChange={this.handleOnChangeGrade} className="teacher-student-creation-input" id="select-grade" placeholder="Niveau" type="text"
                        value={this.state.currentClass.grade}/>
                 <input onClick={this.handleValidate} className="teacher-student-creation-valid" type="submit"
                        value="Valider"/>
@@ -497,7 +547,7 @@ class EditClassStep extends Component {
             </form>
 
 
-            <button onClick={this.handlePrevious} className="teacher-previous-btn">Précedent</button>
+            <button onClick={this.handlePrevious} className="teacher-previous-btn">Précédent</button>
         </div>
     }
 

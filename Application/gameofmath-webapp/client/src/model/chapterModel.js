@@ -3,7 +3,7 @@ import Axios from "axios";
 
 export function getAllChapter(){
 
-    return Axios.post('/api/quizManagement/getChapter')
+    return Axios.post('/api/quizManagement/getChapters')
 
 }
 

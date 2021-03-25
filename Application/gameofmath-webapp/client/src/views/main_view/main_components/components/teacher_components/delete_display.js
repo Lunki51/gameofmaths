@@ -223,13 +223,13 @@ export class DeleteStudentStep extends Component {
 
         deleteTheStudents(this.state.currentStudent.userID,parseInt(this.state.currentClass)).then(res => {
 
-            /*getAllStudents(this.state.currentClass).then(res => {
+            getAllStudents(this.state.currentClass).then(res => {
 
                 this.setState({
                     studentList: res.data.students
                 })
 
-            })*/
+            })
 
         })
 
@@ -441,13 +441,12 @@ class DeleteChapterStep extends Component{
 
         getAllChapter().then((response) => {
 
+            console.log(response)
             this.setState({
                 chaptersList:response.data.chapters
             })
 
         })
-
-
 
     }
 

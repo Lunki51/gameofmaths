@@ -7,6 +7,18 @@ export function getQuestion(questionNb) {
 
 }
 
+export function addQuestion(){
+
+}
+
+export function getQuizList(chapterId){
+    return Axios.post('/api/quiz/getQuizList', )
+}
+
+export function createQuiz(name,chapterId,isOrder){
+    return Axios.post('/api/quizManagement/createQuiz',{ordered:isOrder,chapter:chapterId,quizName:name} )
+}
+
 export function getState() {
 
     return Axios.post('/api/quiz/getState')

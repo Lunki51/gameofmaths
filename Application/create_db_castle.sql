@@ -16,7 +16,7 @@ DROP TABLE IF EXISTS Notification;
 CREATE TABLE Notification(
     notifID INTEGER PRIMARY KEY AUTOINCREMENT,
     notifType TEXT NOT NULL,
-    notifData NUMERIC NOT NULL,
+    notifData TEXT NOT NULL,
     notifDate NUMERIC NOT NULL,
     notifStudent INTEGER NOT NULL,
 
@@ -95,5 +95,6 @@ CREATE TABLE Soldier(
     soldierStudent INTEGER NOT NULL,
 
     FOREIGN KEY(soldierAttack) REFERENCES Attack(attackID),
-    FOREIGN KEY(soldierStudent) REFERENCES Student(theUser)
+    FOREIGN KEY(soldierStudent) REFERENCES Student(theUser),
+    PRIMARY KEY (soldierAttack, soldierStudent),
 );

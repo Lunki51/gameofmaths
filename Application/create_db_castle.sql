@@ -18,9 +18,9 @@ CREATE TABLE Notification(
     notifType TEXT NOT NULL,
     notifData TEXT NOT NULL,
     notifDate NUMERIC NOT NULL,
-    notifStudent INTEGER NOT NULL,
+    notifUser INTEGER NOT NULL,
 
-    FOREIGN KEY(notifStudent) REFERENCES Student(theUser)
+    FOREIGN KEY(notifUser) REFERENCES User(userID)
 );
 
 -- Castle

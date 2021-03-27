@@ -11,7 +11,7 @@ const NotificationDAO = function () {
     this.format = function (object) {
         const notification = object_helper.formatPropertiesWithType([{
             t: 'number',
-            ps: ['notifID', 'notifStudent']
+            ps: ['notifID', 'notifUser']
         }, {t: 'string', ps: ['notifType', 'notifData']},
             {t: 'date', ps: ['notifDate']}], object);
         if (!notification) return null;
@@ -31,8 +31,8 @@ const NotificationDAO = function () {
             const notification = this.format(obj);
             if (!notification) reject(new Error('Invalid input notification!'));
             else {
-                let request = 'INSERT INTO Notification (notifType, notifData, notifDate, notifStudent) VALUES (?, ?, ?, ?)';
-                db.run(request, [notification.notifType, notification.notifData, notification.notifDate, notification.notifStudent], function (err) {
+                let request = 'INSERT INTO Notification (notifType, notifData, notifDate, notifUser) VALUES (?, ?, ?, ?)';
+                db.run(request, [notification.notifType, notification.notifData, notification.notifDate, notification.notifUser], function (err) {
                     if (err) reject(err);
                     else resolve(this.lastID);
                 });
@@ -53,8 +53,8 @@ const NotificationDAO = function () {
             const notification = this.format(obj);
             if (!notification) reject(new Error('Invalid input notification!'));
             else {
-                let request = 'UPDATE Notification SET notifType = ?, notifData = ? , notifDate = ? , notifStudent = ? WHERE notifID = ?';
-                db.run(request, [notification.notifType, notification.notifData, notification.notifDate, notification.notifStudent, notification.notifID], function (err) {
+                let request = 'UPDATE Notification SET notifType = ?, notifData = ? , notifDate = ? , notifUser = ? WHERE notifID = ?';
+                db.run(request, [notification.notifType, notification.notifData, notification.notifDate, notification.notifUser, notification.notifID], function (err) {
                     if (err) reject(err);
                     else resolve();
                 });
@@ -97,16 +97,16 @@ const NotificationDAO = function () {
     };
 
     /**
-     * Get all the notification at destination of a specific student.
+     * Get all the notification at destination of a specific user.
      *
-     * @param studendID id of the student
+     * @param userID id of the user
      * @param db db instance to use
      * @returns {Promise<Array>} A promise that resolve all the rows
      */
-    this.findAllForStudent = function (studendID, db = dbD) {
+    this.findAllForStudent = function (userID, db = dbD) {
         return new Promise((resolve, reject) => {
-            let request = 'SELECT * FROM Notification WHERE notifStudent = ?';
-            db.all(request, [studendID], function (err, rows) {
+            let request = 'SELECT * FROM Notification WHERE notifUser = ?';
+            db.all(request, [userID], function (err, rows) {
                 if (err) reject(err);
                 else resolve(rows);
             });

@@ -9,7 +9,7 @@ const QuizHelper = function () {
      * @param numberOfQuestion the number of question
      * @param chapter the topic chapter (null by default)
      * @param db db instance to use
-     * @returns {Promise} A promise that resolve the castle with this id if it's found
+     * @returns {Promise} A promise that resolve the quiz id
      */
     this.makeRandomQuiz = function (numberOfQuestion, chapter = null, db = dbD) {
         return new Promise((resolve, reject) => {
@@ -64,6 +64,13 @@ const QuizHelper = function () {
                                         reject(err)
                                     })
 
+                                }
+
+                                if (good) {
+                                    t.commit(err => {
+                                        if (err) reject(err)
+                                        else resolve(id)
+                                    })
                                 }
 
                             })

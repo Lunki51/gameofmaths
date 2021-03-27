@@ -2,7 +2,7 @@ const dbD = require('gameofmath-db').db
 const quiz_dao = require('gameofmath-db').quiz_dao
 const quizQuestion_dao = require('gameofmath-db').quizQuestion_dao
 
-const CastleDAO = function () {
+const QuizHelper = function () {
    /**
      * Make a ramdom quiz.
      *
@@ -80,5 +80,5 @@ const CastleDAO = function () {
     }
 }
 
-var dao = new CastleDAO()
-module.exports = dao
+var helper = new QuizHelper()
+module.exports = helper

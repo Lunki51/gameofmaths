@@ -48,30 +48,29 @@ const QuizHelper = function () {
                             quizName: 'randomQuiz',
                             quizType: 'RANDOM'
                         }, t)
-                            .then(async id => {
+                            .then(id => {
 
-                                let i = 0
-                                let good = true
-                                while (good && i < numberOfQuestion) {
-
-                                    await quizQuestion_dao.insert({
-                                        theQuestion: questions[i],
+                                let promises = []
+                                questions.forEach((item, index) => {
+                                    promises.push(quizQuestion_dao.insert({
+                                        theQuestion: item,
                                         theQuiz: id,
-                                        qNumber: i+1
-                                    }, t).catch(err => {
-                                        good = false
+                                        qNumber: index+1
+                                    }, t))
+                                })
+
+                                Promise.allSettled(promises).then(results => {
+                                    let resError = results.find(e => e.status === 'rejected')
+                                    if (resError) {
                                         t.rollback()
                                         reject(err)
-                                    })
-
-                                }
-
-                                if (good) {
-                                    t.commit(err => {
-                                        if (err) reject(err)
-                                        else resolve(id)
-                                    })
-                                }
+                                    } else {
+                                        t.commit(err => {
+                                            if (err) reject(err)
+                                            else resolve(id)
+                                        })
+                                    }
+                                })
 
                             })
                             .catch(err => {

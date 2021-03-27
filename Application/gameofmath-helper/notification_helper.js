@@ -48,31 +48,29 @@ const NotificationHelper = function () {
                 student_dao.findAllInClass(classID, t)
                     .then(students => {
 
-                        let i = 0
-                        let good = true
-                        while (good && i < students.length) {
-
-                            notification_dao.insert({
+                        let promises = []
+                        students.forEach((item, index) => {
+                            promises.push(notification_dao.insert({
                                 notifID: -1,
                                 notifType: type,
                                 notifData: data,
                                 notifDate: new Date(),
-                                notifUser: students[i].theUser
-                            }, db)
-                                .catch(err => {
-                                    good = false
-                                    t.rollback()
-                                    reject(err)
+                                notifUser: item.theUser
+                            }, db))
+                        })
+
+                        Promise.allSettled(promises).then(results => {
+                            let resError = results.find(e => e.status === 'rejected')
+                            if (resError) {
+                                t.rollback()
+                                reject(err)
+                            } else {
+                                t.commit(err => {
+                                    if (err) reject(err)
+                                    else resolve(id)
                                 })
-
-                        }
-
-                        if (good) {
-                            t.commit(err => {
-                                if (err) reject(err)
-                                else resolve()
-                            })
-                        }
+                            }
+                        })
 
                     })
                     .catch(err => {
@@ -101,31 +99,29 @@ const NotificationHelper = function () {
                 student_dao.findAll(t)
                     .then(students => {
 
-                        let i = 0
-                        let good = true
-                        while (good && i < students.length) {
-
-                            notification_dao.insert({
+                        let promises = []
+                        students.forEach((item, index) => {
+                            promises.push(notification_dao.insert({
                                 notifID: -1,
                                 notifType: type,
                                 notifData: data,
                                 notifDate: new Date(),
-                                notifUser: students[i].theUser
-                            }, db)
-                                .catch(err => {
-                                    good = false
-                                    t.rollback()
-                                    reject(err)
+                                notifUser: item.theUser
+                            }, db))
+                        })
+
+                        Promise.allSettled(promises).then(results => {
+                            let resError = results.find(e => e.status === 'rejected')
+                            if (resError) {
+                                t.rollback()
+                                reject(err)
+                            } else {
+                                t.commit(err => {
+                                    if (err) reject(err)
+                                    else resolve(id)
                                 })
-
-                        }
-
-                        if (good) {
-                            t.commit(err => {
-                                if (err) reject(err)
-                                else resolve()
-                            })
-                        }
+                            }
+                        })
 
                     })
                     .catch(err => {
@@ -154,31 +150,29 @@ const NotificationHelper = function () {
                 teacher_dao.findAll(t)
                     .then(teachers => {
 
-                        let i = 0
-                        let good = true
-                        while (good && i < teachers.length) {
-
-                            notification_dao.insert({
+                        let promises = []
+                        teachers.forEach((item, index) => {
+                            promises.push(notification_dao.insert({
                                 notifID: -1,
                                 notifType: type,
                                 notifData: data,
                                 notifDate: new Date(),
-                                notifUser: teachers[i].theUser
-                            }, db)
-                                .catch(err => {
-                                    good = false
-                                    t.rollback()
-                                    reject(err)
+                                notifUser: item.theUser
+                            }, db))
+                        })
+
+                        Promise.allSettled(promises).then(results => {
+                            let resError = results.find(e => e.status === 'rejected')
+                            if (resError) {
+                                t.rollback()
+                                reject(err)
+                            } else {
+                                t.commit(err => {
+                                    if (err) reject(err)
+                                    else resolve(id)
                                 })
-
-                        }
-
-                        if (good) {
-                            t.commit(err => {
-                                if (err) reject(err)
-                                else resolve()
-                            })
-                        }
+                            }
+                        })
 
                     })
                     .catch(err => {
@@ -207,31 +201,29 @@ const NotificationHelper = function () {
                 user_dao.findAll(t)
                     .then(users => {
 
-                        let i = 0
-                        let good = true
-                        while (good && i < users.length) {
-
-                            notification_dao.insert({
+                        let promises = []
+                        users.forEach((item, index) => {
+                            promises.push(notification_dao.insert({
                                 notifID: -1,
                                 notifType: type,
                                 notifData: data,
                                 notifDate: new Date(),
-                                notifUser: users[i].userID
-                            }, db)
-                                .catch(err => {
-                                    good = false
-                                    t.rollback()
-                                    reject(err)
+                                notifUser: item.userID
+                            }, db))
+                        })
+
+                        Promise.allSettled(promises).then(results => {
+                            let resError = results.find(e => e.status === 'rejected')
+                            if (resError) {
+                                t.rollback()
+                                reject(err)
+                            } else {
+                                t.commit(err => {
+                                    if (err) reject(err)
+                                    else resolve(id)
                                 })
-
-                        }
-
-                        if (good) {
-                            t.commit(err => {
-                                if (err) reject(err)
-                                else resolve()
-                            })
-                        }
+                            }
+                        })
 
                     })
                     .catch(err => {

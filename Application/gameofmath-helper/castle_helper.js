@@ -229,7 +229,7 @@ const CastleHelper = function () {
                                         // Notifie master
                                         .then(_ => notification_helper.sendTo(item.knightRequestMaster, 'knightRequestTooLate', {
                                             newMaster: request.knightRequestMaster,
-                                            knightRequestID : request.knightRequestID,
+                                            knightRequestID : knightRequestID,
                                             date: currentDate
                                         }, t))
                                 }))
@@ -239,6 +239,44 @@ const CastleHelper = function () {
                                 let resError = results.find(e => e.status === 'rejected')
                                 if (resError) throw resError
                             })
+
+                    })
+                    .catch(err => {
+                        t.rollback()
+                        reject(err)
+                    })
+
+            })
+
+        })
+    }
+
+    /**
+     * Refuse a knight request
+     *
+     * @param knightRequestID knight request id
+     * @param db db instance to use
+     * @returns {Promise} A promise that resolve the knightRequest ID
+     */
+    this.refuseKnight = function (knightRequestID, db = dbD) {
+        return new Promise((resolve, reject) => {
+            let currentDate = new Date()
+
+            db.beginTransaction(function (err, t) {
+
+                // Get the knight request
+                knightRequest_dao.findByID(knightRequestID, t)
+                    .then(request => {
+
+                        request.knightRequestResult = -1
+                        // Update the request
+                        return knightRequest_dao.update(request, t)
+                            // Notifie
+                            .then(_ => notification_helper.sendTo(request.knightRequestStudent, 'knightRequestRefused', {
+                                masterID: request.knightRequestMaster,
+                                knightRequestID: knightRequestID,
+                                date : currentDate
+                            }, t))
 
                     })
                     .catch(err => {

@@ -47,3 +47,10 @@ When a knight as been accepted with a new master so the old request don't old. <
 * newMaster : masterID of the master
 * knightRequestID : knightRequestID of the request
 * date : date of the notification
+
+
+## knightRequestRefused
+When a knight request is refuse. <br/>
+* masterID : masterID of the master
+* knightRequestID : knight request ID
+* date : date of the notification

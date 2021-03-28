@@ -314,7 +314,7 @@ let GameMap = function (sizeX, sizeY, nbPoints,castleNumber) {
         let t1 = new THREE.Vector2(points[triangles[i] * 2], points[triangles[i] * 2 + 1])
         let t2 = new THREE.Vector2(points[triangles[i + 1] * 2],  points[triangles[i + 1] * 2 + 1])
         let t3 = new THREE.Vector2(points[triangles[i + 2] * 2] , points[triangles[i + 2] * 2 + 1])
-        this.recuTriangle(t1, t2, t3, sizeX, sizeY, 2,colors)
+        this.recuTriangle(t1, t2, t3, sizeX, sizeY, 0,colors)
     }
 
     this.colors = Array.from(colors);

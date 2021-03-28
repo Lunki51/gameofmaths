@@ -5,6 +5,7 @@ import {Water} from "three/examples/jsm/objects/Water";
 import {Sky} from "three/examples/jsm/objects/Sky"
 import {GLTFLoader} from 'three/examples/jsm/loaders/GLTFLoader';
 import {BufferGeometryUtils} from 'three/examples/jsm/utils/BufferGeometryUtils';
+import '../styles/map_style.css'
 import Axios from "axios";
 import Stats from "stats.js"
 
@@ -27,19 +28,25 @@ class MapView extends Component {
             global: false,
             renderer: new THREE.WebGLRenderer(),
             camera: new THREE.PerspectiveCamera(80, window.innerWidth / window.innerHeight, 1, 2000),
-            scene: new THREE.Scene(),
+            HResScene: new THREE.Scene(),
+            LResScene: new THREE.Scene(),
             center: new THREE.Vector3(0, 80, 0),
             sun: new THREE.Vector3(),
             water: new Water(),
             stats: new Stats(),
+            able: true,
+            avgFPS: 0,
+            nbFrames: 0,
             mapDetails: {
-                sizeX: 0,
-                sizeY: 0
+                sizeX: 500,
+                sizeY: 500
             },
             currentCastle: 0,
             castles: [],
             inputVars: {
                 mousePressed: false,
+                oldTouchX: 0,
+                oldTouchY: 0,
                 rotateX: 0,
                 rotateY: 0,
                 camDistance: 100,
@@ -63,35 +70,48 @@ class MapView extends Component {
 
     animate = () => {
 
+        let time = Date.now();
+
         requestAnimationFrame(this.animate);
         this.state.stats.begin();
         if (!this.props.zoomed) {
-            let posX = Math.min(Math.max(-this.state.inputVars.rotateX * 50, -this.state.mapDetails.sizeX, this.state.mapDetails.sizeX));
-            let posY = Math.min(Math.max(-this.state.inputVars.rotateY * 50, -this.state.mapDetails.sizeY, this.state.mapDetails.sizeY));
-            this.state.camera.position.set(0, 500, 0)
-            this.state.camera.lookAt(new THREE.Vector3(0, 80, 0))
+            let posX = Math.min(Math.max(-this.state.inputVars.rotateX * 50, -this.state.mapDetails.sizeX), this.state.mapDetails.sizeX);
+            let posY = Math.min(Math.max(-this.state.inputVars.rotateY * 50, -this.state.mapDetails.sizeY), this.state.mapDetails.sizeY);
+            this.state.camera.position.set(posX, 500, posY)
+            this.state.camera.lookAt(new THREE.Vector3(posX, 80, posY))
         } else {
             this.state.camera.position.set(this.state.center.x -
-            (this.state.inputVars.camDistance * Math.cos(Math.PI / 4)) * Math.sin(this.state.inputVars.rotateX),
+                (this.state.inputVars.camDistance * Math.cos(Math.PI / 4)) * Math.sin(this.state.inputVars.rotateX),
                 (this.state.inputVars.camDistance * Math.sin(Math.PI / 4) + 80),
                 (this.state.center.z - (this.state.inputVars.camDistance * Math.cos(Math.PI / 4)) *
-                Math.cos(this.state.inputVars.rotateX)))
+                    Math.cos(this.state.inputVars.rotateX)))
             this.state.camera.lookAt(this.state.castles[this.state.currentCastle])
 
         }
-        this.setState({
-            water: {
-                material: {
-                    uniforms: {
-                        'time': {
-                            value:
-                                this.state.water.material.uniforms['time'].value + 1.0 / 60.0
-                        }
-                    }
+        this.state.water.material.uniforms['time'].value += 1.0 / 60.0;
+
+
+        if (this.state.able) {
+            this.state.renderer.render(this.state.HResScene, this.state.camera);
+
+            let length = Date.now() - time;
+            if(this.state.nbFrames>10){
+                console.log(this.state.avgFPS)
+                if(this.state.avgFPS>35){
+                    console.log("Can't run highRes trying low res")
+                    this.setState({able: false})
+                }
+            }else{
+                if(this.state.avgFPS==0){
+                    this.setState({avgFPS:length})
+                }else{
+                    this.setState({avgFPS:(this.state.avgFPS+length)/2})
                 }
             }
-        })
-        this.state.renderer.render(this.state.scene, this.state.camera);
+        } else {
+            this.state.renderer.render(this.state.LResScene, this.state.camera);
+        }
+        this.setState({nbFrames: this.state.nbFrames+1})
         this.state.stats.end();
     }
 
@@ -108,10 +128,9 @@ class MapView extends Component {
 
     mouseDownEvent = (event) => {
         let inputVars = this.state.inputVars;
-        inputVars.mousePressed = true;
+        inputVars.mousePressed = true
         this.setState({inputVars: inputVars})
-        if (!this.props.zoomed) this.rayCasting((event.clientX / window.innerWidth) * 2 - 1
-            , -(event.clientY / window.innerHeight) * 2 + 1)
+
     }
 
 
@@ -119,6 +138,10 @@ class MapView extends Component {
         let inputVars = this.state.inputVars;
         inputVars.mousePressed = false
         this.setState({inputVars: inputVars})
+        if (!this.props.zoomed) {
+            this.rayCasting((event.clientX / window.innerWidth) * 2 - 1
+                , -(event.clientY / window.innerHeight) * 2 + 1)
+        }
     }
 
     mouseWheelEvent = (event) => {
@@ -130,6 +153,27 @@ class MapView extends Component {
             })
         }
     }
+
+    onTouchMove = (event) => {
+        let inputVars = this.state.inputVars;
+        inputVars.rotateX = this.state.inputVars.rotateX - (this.state.inputVars.oldTouchX - event.touches[0].clientX) / 100;
+        inputVars.rotateY = this.state.inputVars.rotateY - (this.state.inputVars.oldTouchY - event.touches[0].clientY) / 100;
+        inputVars.oldTouchX = event.touches[0].clientX;
+        inputVars.oldTouchY = event.touches[0].clientY;
+        this.setState({
+            inputVars: inputVars
+        })
+    }
+
+    onTouchStart = (event) => {
+        let inputVars = this.state.inputVars;
+        inputVars.oldTouchX = event.touches[0].clientX;
+        inputVars.oldTouchY = event.touches[0].clientY;
+        this.setState({
+            inputVars: inputVars
+        })
+    }
+
 
     windowResizeEvent = (event) => {
         this.state.renderer.setSize(window.innerWidth, window.innerHeight);
@@ -145,7 +189,6 @@ class MapView extends Component {
         domElement.addEventListener("mouseup", this.mouseUpEvent, false)
         domElement.addEventListener("mousemove", this.mouseMoveEvent, false)
         domElement.addEventListener("wheel", this.mouseWheelEvent, false)
-        window.addEventListener("keydown", this.keyDownEvent);
         window.addEventListener("resize", this.windowResizeEvent)
     }
 
@@ -154,7 +197,12 @@ class MapView extends Component {
         let rayCaster = new THREE.Raycaster();
         rayCaster.setFromCamera(new THREE.Vector2(mouseX, mouseY), this.state.camera);
 
-        let intersects = rayCaster.intersectObjects(this.state.scene.children);
+        let intersects;
+        if (this.state.able) {
+            intersects = rayCaster.intersectObjects(this.state.HResScene.children);
+        } else {
+            intersects = rayCaster.intersectObjects(this.state.LResScene.children);
+        }
 
         const regex = new RegExp('^Castle:.$');
         intersects.forEach(object => {
@@ -168,12 +216,8 @@ class MapView extends Component {
     }
 
 
-    loadMap = (data) => {
+    loadMap = (data, hightRes) => {
         let map = data.data
-
-        console.log(map)
-
-
         let colors = map.colors;
         for (let color of colors) {
             let meshColor = color[0];
@@ -182,9 +226,14 @@ class MapView extends Component {
             geometry.setAttribute('position', new THREE.BufferAttribute(Float32Array.from(meshArrays[0]), 3))
             geometry.setAttribute('normal', new THREE.BufferAttribute(Float32Array.from(meshArrays[1]), 3));
             geometry.computeBoundingSphere()
-            let material = new THREE.MeshStandardMaterial({color: new THREE.Color(meshColor)});
-            let mesh = new THREE.Mesh(geometry, material);
-            this.state.scene.add(mesh);
+            let material;
+            if (hightRes) {
+                material = new THREE.MeshStandardMaterial({color: new THREE.Color(meshColor)});
+            } else {
+                material = new THREE.MeshBasicMaterial({color: new THREE.Color(meshColor)});
+            }
+            this.state.HResScene.add(new THREE.Mesh(geometry, new THREE.MeshStandardMaterial({color: new THREE.Color(meshColor)})))
+            this.state.LResScene.add(new THREE.Mesh(geometry, new THREE.MeshBasicMaterial({color: new THREE.Color(meshColor)})))
         }
         let gltfLoader = new GLTFLoader();
         gltfLoader.load("mapData/castle.glb", model => {
@@ -195,23 +244,32 @@ class MapView extends Component {
                 this.state.castles.push(vectorPos);
                 positionModel.position.set(position[0], position[1], position[2])
                 positionModel.scale.set(0.8, 0.8, 0.8)
+                positionModel.name = "Castle"
 
                 let PointLight = new THREE.PointLight(new THREE.Color(255, 255, 0), 0.005, 20)
                 PointLight.position.set(position[0], position[1] + 10, position[2])
 
 
                 const geometry = new THREE.BoxGeometry();
-                const material = new THREE.MeshBasicMaterial({color: 0x00ff00});
+                let material;
+                if (hightRes) {
+                    material = new THREE.MeshStandardMaterial({color: 0x00ff00});
+                } else {
+                    material = new THREE.MeshBasicMaterial({color: 0x00ff00});
+                }
                 const cube = new THREE.Mesh(geometry, material);
+                cube.name = "HelperCube"
                 cube.position.set(position[0], position[1], position[2])
                 cube.scale.set(10, 10, 10);
                 cube.name = "Castle:" + this.state.currentCastle;
                 this.setState({currentCastle: this.state.currentCastle + 1})
                 cube.visible = false;
 
-                this.state.scene.add(cube)
-                this.state.scene.add(PointLight)
-                this.state.scene.add(positionModel)
+                this.state.HResScene.add(cube.clone())
+                this.state.LResScene.add(cube.clone())
+                this.state.HResScene.add(PointLight)
+                this.state.HResScene.add(positionModel.clone());
+                this.state.LResScene.add(positionModel.clone());
             }
         }, undefined, function (error) {
 
@@ -225,7 +283,7 @@ class MapView extends Component {
 
     }
 
-    setupTrees = (link, map, scale, castles) => {
+    setupTrees = (link, map, scale, castles, highRes) => {
         let gltfLoader = new GLTFLoader();
         gltfLoader.load(link, gltf => {
             let geometries = new Map();
@@ -269,8 +327,9 @@ class MapView extends Component {
             for (let key of geometries.keys()) {
                 let geometryArray = geometries.get(key);
                 let geometry = BufferGeometryUtils.mergeBufferGeometries(geometryArray, false)
-                let mesh = new THREE.Mesh(geometry, new THREE.MeshStandardMaterial({color: key}))
-                this.state.scene.add(mesh)
+                let material;
+                this.state.LResScene.add( new THREE.Mesh(geometry, new THREE.MeshBasicMaterial({color: key})));
+                this.state.HResScene.add( new THREE.Mesh(geometry, new THREE.MeshStandardMaterial({color: key})));
             }
 
         }, undefined, error => {
@@ -301,15 +360,38 @@ class MapView extends Component {
             )
         })
 
+        let water = new Water(
+            waterGeometry,
+            {
+                textureWidth: 512,
+                textureHeight: 512,
+                waterNormals: new THREE.TextureLoader().load('mapData/waternormals.jpg', function (texture) {
+
+                    texture.wrapS = texture.wrapT = THREE.RepeatWrapping;
+
+                }),
+                alpha: 5.0,
+                sunDirection: new THREE.Vector3(0, -1, 0),
+                sunColor: 0xffffff,
+                waterColor: 0x001e0f,
+                distortionScale: 3.7,
+            }
+        )
+
+        water.rotation.set(-Math.PI / 2, this.state.water.rotation.y, this.state.water.rotation.z)
+        water.position.set(this.state.water.position.x, 80, this.state.water.position.z)
+
         this.state.water.rotation.set(-Math.PI / 2, this.state.water.rotation.y, this.state.water.rotation.z)
         this.state.water.position.set(this.state.water.position.x, 80, this.state.water.position.z)
 
-        this.state.scene.add(this.state.water);
+        this.state.HResScene.add(this.state.water);
+        this.state.LResScene.add(water);
     }
     setupSky = () => {
         this.setState({sky: new Sky()});
         this.state.sky.scale.setScalar(450000);
-        this.state.scene.add(this.state.sky);
+        this.state.HResScene.add(this.state.sky.clone());
+        this.state.LResScene.add(this.state.sky.clone());
 
         const skyUniforms = this.state.sky.material.uniforms;
 
@@ -337,8 +419,8 @@ class MapView extends Component {
 
         this.state.sky.material.uniforms['sunPosition'].value.copy(this.state.sun);
         this.state.water.material.uniforms['sunDirection'].value.copy(this.state.sun).normalize();
-        this.state.scene.environment = this.state.pmremGenerator.fromScene(this.state.sky).texture;
-
+        this.state.HResScene.environment = this.state.pmremGenerator.fromScene(this.state.sky).texture;
+        this.state.LResScene.environment = this.state.pmremGenerator.fromScene(this.state.sky).texture;
     }
 
     setupGui = () => {
@@ -360,9 +442,9 @@ class MapView extends Component {
 
     reloadScene = () => {
         Axios.get("api/graphics/map").then(response => {
-            this.state.scene.clear();
-
-            this.loadMap(response);
+            this.state.HResScene.clear();
+            this.state.LResScene.clear();
+            this.loadMap(response, this.state.able);
 
 
             this.setupWater();
@@ -372,6 +454,7 @@ class MapView extends Component {
             this.mount.appendChild(this.state.renderer.domElement);
             this.mount.appendChild(this.state.stats.dom)
             this.state.stats.showPanel(0);
+
 
             this.animate();
         })
@@ -398,8 +481,8 @@ class MapView extends Component {
     }
 
     render() {
-
-        return <div ref={ref => (this.mount = ref)}/>
+        return <div class={"mapView"} onTouchMove={this.onTouchMove} onTouchStart={this.onTouchStart}
+                    ref={ref => (this.mount = ref)}/>
 
     }
 

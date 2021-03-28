@@ -163,6 +163,23 @@ const KnightDAO = function () {
     };
 
     /**
+     * Get the current knight of a student.
+     *
+     * @param studentID id of the student
+     * @param db db instance to use
+     * @returns {Promise<Array>} A promise that resolve the row
+     */
+    this.findCurrentOfStudent = function (studentID, db = dbD) {
+        return new Promise((resolve, reject) => {
+            let request = 'SELECT * FROM Knight m1 WHERE m1.knightEnd = NULL AND knightStudent = ?';
+            db.all(request, [studentID], function (err, rows) {
+                if (err) reject(err);
+                else resolve(rows[0]);
+            });
+        });
+    };
+
+    /**
      * Get the knight with a specific id.
      *
      * @param key knight id

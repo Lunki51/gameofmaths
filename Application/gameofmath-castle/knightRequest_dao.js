@@ -197,6 +197,23 @@ const KnightRequestDAO = function () {
     };
 
     /**
+     * Get all the current knightRequest for a master.
+     *
+     * @param masterID id of the master
+     * @param db db instance to use
+     * @returns {Promise<Array>} A promise that resolve all the rows
+     */
+    this.findAllCurrentForMaster = function (masterID, db = dbD) {
+        return new Promise((resolve, reject) => {
+            let request = 'SELECT * FROM KnightRequest WHERE knightRequestResult = 0 AND knightRequestMaster = ?';
+            db.all(request, [masterID], function (err, rows) {
+                if (err) reject(err);
+                else resolve(rows);
+            });
+        });
+    };
+
+    /**
      * Get the knightRequest with a specific id.
      *
      * @param key knightRequest id

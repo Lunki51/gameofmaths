@@ -55,7 +55,7 @@ CREATE TABLE Master(
 CREATE TABLE Knight(
     knightID INTEGER PRIMARY KEY AUTOINCREMENT,
     knightStart NUMERIC NOT NULL,
-    knightEnd NUMERIC NOT NULL,
+    knightEnd NUMERIC,
     knightMaster INTEGER NOT NULL,
     knightStudent INTEGER NOT NULL,
 

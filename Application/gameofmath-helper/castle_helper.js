@@ -67,7 +67,7 @@ const CastleHelper = function () {
                                             if (resError) throw resError
                                         })
                                         // Get the knight request of the old master
-                                        .then(_ => knightRequest_dao.findAllForMaster(oldMaster, t))
+                                        .then(_ => knightRequest_dao.findAllCurrentForMaster(oldMaster, t))
                                         // Reject and notifie
                                         .then(oldRequests => {
 
@@ -75,7 +75,7 @@ const CastleHelper = function () {
                                             return Promise.allSettled(oldRequests.map(oldRequest => {
                                                 oldRequest.knightRequestResult = -1
 
-                                                return notification_helper.sendTo(oldRequest.knightRequestStudent, 'knightRequestRefuseNewMaster', {
+                                                return notification_helper.sendTo(oldRequest.knightRequestStudent, 'knightRequestRefusedNewMaster', {
                                                     oldMasterStudentID: oldMaster.masterStudent,
                                                     newMasterStudentID: studentID,
                                                     castleID: castleID,
@@ -153,6 +153,91 @@ const CastleHelper = function () {
                                     if (err) throw err
                                     else resolve(requestID)
                                 })
+                            })
+
+                    })
+                    .catch(err => {
+                        t.rollback()
+                        reject(err)
+                    })
+
+            })
+
+        })
+    }
+
+    /**
+     * Accept a knight request
+     *
+     * @param knightRequestID knight request id
+     * @param db db instance to use
+     * @returns {Promise} A promise that resolve the knightRequest ID
+     */
+    this.acceptKnight = function (knightRequestID, db = dbD) {
+        return new Promise((resolve, reject) => {
+            let currentDate = new Date()
+
+            db.beginTransaction(function (err, t) {
+
+                // Get the knight request
+                knightRequest_dao.findByID(knightRequestID, t)
+                    .then(request => {
+
+                        // Check if he was already a knight
+                        return knight_dao.findCurrentOfStudent(request.knightRequestStudent, t)
+                            // If there is an old knight, update and notifie old master
+                            .then(oldKnight => {
+                                if (oldKnight) {
+                                    // Update
+                                    oldKnight.knightEnd = currentDate
+                                    return knight_dao.update(oldKnight, t)
+                                        // Notifie old master
+                                        .then(_ => notification_helper.sendTo(oldKnight.knightMaster, 'knightLeaveForOther', {
+                                            knightStudentID : request.knightRequestStudent,
+                                            newMasterID : request.knightRequestMaster,
+                                            date : currentDate
+                                        }, t))
+                                }
+                            })
+                            // Insert the knight
+                            .then(_ => knight_dao.insert({
+                                knightID: -1,
+                                knightStart: currentDate,
+                                knightEnd: null,
+                                knightMaster: request.knightRequestMaster,
+                                knightStudent: request.knightRequestStudent
+                            }, t))
+                            // Notifie new knight
+                            .then(_ => notification_helper.sendTo(request.knightRequestStudent, 'knightRequestAccepted', {
+                                newMaster: request.knightRequestMaster,
+                                knightRequestID : request.knightRequestID,
+                                date: currentDate
+                            }, t))
+                            // Update knightRequest
+                            .then(_ => {
+                                request.knightRequestResult = 1
+                                return knightRequest_dao.update(request, t)
+                            })
+                            // Look for other knight request from the same student
+                            .then(_ => knightRequest_dao.findAllCurrentForStudent(request.knightRequestStudent, t))
+                            // Refuse them and notifie the various master
+                            .then(othersRequests => {
+                                return Promise.allSettled(othersRequests.map(item => {
+                                    item.knightRequestResult = -1
+                                    // Update
+                                    return knightRequest_dao.update(item, t)
+                                        // Notifie master
+                                        .then(_ => notification_helper.sendTo(item.knightRequestMaster, 'knightRequestTooLate', {
+                                            newMaster: request.knightRequestMaster,
+                                            knightRequestID : request.knightRequestID,
+                                            date: currentDate
+                                        }, t))
+                                }))
+                            })
+                            // Check that all the other request have be settled
+                            .then(results => {
+                                let resError = results.find(e => e.status === 'rejected')
+                                if (resError) throw resError
                             })
 
                     })

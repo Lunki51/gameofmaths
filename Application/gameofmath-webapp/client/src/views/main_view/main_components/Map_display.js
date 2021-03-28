@@ -35,6 +35,8 @@ class MapView extends Component {
             water: new Water(),
             stats: new Stats(),
             able: true,
+            avgFPS: 0,
+            nbFrames: 0,
             mapDetails: {
                 sizeX: 500,
                 sizeY: 500
@@ -90,16 +92,26 @@ class MapView extends Component {
 
 
         if (this.state.able) {
-            let length = Date.now() - time;
-            if (length > 17) {
-                console.log("Can't run highRes trying low res")
-                this.setState({able: false})
-            }
             this.state.renderer.render(this.state.HResScene, this.state.camera);
+
+            let length = Date.now() - time;
+            if(this.state.nbFrames>10){
+                console.log(this.state.avgFPS)
+                if(this.state.avgFPS>35){
+                    console.log("Can't run highRes trying low res")
+                    this.setState({able: false})
+                }
+            }else{
+                if(this.state.avgFPS==0){
+                    this.setState({avgFPS:length})
+                }else{
+                    this.setState({avgFPS:(this.state.avgFPS+length)/2})
+                }
+            }
         } else {
             this.state.renderer.render(this.state.LResScene, this.state.camera);
         }
-
+        this.setState({nbFrames: this.state.nbFrames+1})
         this.state.stats.end();
     }
 
@@ -348,11 +360,32 @@ class MapView extends Component {
             )
         })
 
+        let water = new Water(
+            waterGeometry,
+            {
+                textureWidth: 512,
+                textureHeight: 512,
+                waterNormals: new THREE.TextureLoader().load('mapData/waternormals.jpg', function (texture) {
+
+                    texture.wrapS = texture.wrapT = THREE.RepeatWrapping;
+
+                }),
+                alpha: 5.0,
+                sunDirection: new THREE.Vector3(0, -1, 0),
+                sunColor: 0xffffff,
+                waterColor: 0x001e0f,
+                distortionScale: 3.7,
+            }
+        )
+
+        water.rotation.set(-Math.PI / 2, this.state.water.rotation.y, this.state.water.rotation.z)
+        water.position.set(this.state.water.position.x, 80, this.state.water.position.z)
+
         this.state.water.rotation.set(-Math.PI / 2, this.state.water.rotation.y, this.state.water.rotation.z)
         this.state.water.position.set(this.state.water.position.x, 80, this.state.water.position.z)
 
         this.state.HResScene.add(this.state.water);
-        //this.state.LResScene.add(this.state.water.clone());
+        this.state.LResScene.add(water);
     }
     setupSky = () => {
         this.setState({sky: new Sky()});

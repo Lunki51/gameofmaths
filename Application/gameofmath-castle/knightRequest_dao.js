@@ -163,6 +163,23 @@ const KnightRequestDAO = function () {
     };
 
     /**
+     * Get all the knightRequest for a master.
+     *
+     * @param masterID id of the master
+     * @param db db instance to use
+     * @returns {Promise<Array>} A promise that resolve all the rows
+     */
+    this.findAllForMaster = function (masterID, db = dbD) {
+        return new Promise((resolve, reject) => {
+            let request = 'SELECT * FROM KnightRequest WHERE knightRequestMaster = ?';
+            db.all(request, [masterID], function (err, rows) {
+                if (err) reject(err);
+                else resolve(rows);
+            });
+        });
+    };
+
+    /**
      * Get all the current knightRequest of a student.
      *
      * @param studentID id of the student

@@ -14,6 +14,7 @@ const QuizHelper = function () {
     this.makeRandomQuiz = function (numberOfQuestion, chapter = null, db = dbD) {
         return new Promise((resolve, reject) => {
 
+            // Get all the question
             let request = 'SELECT * FROM QUESTION WHERE questionID NOT IN (SELECT theQuestion FROM Quiz, QuizQuestion WHERE theQuiz = quizID AND (asAnOrder = \'1\' OR asAnOrder = \'true\'))'
             let params = []
 
@@ -24,12 +25,12 @@ const QuizHelper = function () {
 
             db.all(request, params, function (err, rows) {
                 if (err) reject(err)
-                else if(rows.length < numberOfQuestion) reject(new Error('Not enough question in the DB'))
                 else {
+                    if(rows.length < numberOfQuestion) throw new Error('Not enough question in the DB')
 
                     let questions = []
 
-                    // select the question
+                    // Select the question
                     while (questions.length < numberOfQuestion) {
                         let index = -1
                         while (index == -1 || questions.indexOf(index) >= 0)
@@ -38,9 +39,10 @@ const QuizHelper = function () {
                         questions.push(rows.id)
                     }
 
-                    // add to the db
+                    // Add to the db
                     db.beginTransaction(function (err, t) {
 
+                        // Insert the quiz
                         quiz_dao.insert({
                             quizID: -1,
                             asAnOrder: false,
@@ -48,35 +50,34 @@ const QuizHelper = function () {
                             quizName: 'randomQuiz',
                             quizType: 'RANDOM'
                         }, t)
+                            // Insert the quizQuestion
                             .then(id => {
 
-                                let promises = []
-                                questions.forEach((item, index) => {
-                                    promises.push(quizQuestion_dao.insert({
+                                return Promise.allSettled(questions.map(item => {
+                                    return promises.push(quizQuestion_dao.insert({
                                         theQuestion: item,
                                         theQuiz: id,
                                         qNumber: index+1
                                     }, t))
-                                })
-
-                                Promise.allSettled(promises).then(results => {
-                                    let resError = results.find(e => e.status === 'rejected')
-                                    if (resError) {
-                                        t.rollback()
-                                        reject(err)
-                                    } else {
-                                        t.commit(err => {
-                                            if (err) reject(err)
-                                            else resolve(id)
-                                        })
-                                    }
-                                })
+                                }))
 
                             })
+                            // Commit
+                            .then(results => {
+                                let resError = results.find(e => e.status === 'rejected')
+                                if (resError) throw resError
+                                else {
+                                    t.commit(err => {
+                                        if (err) throw err
+                                        else resolve(id)
+                                    })
+                                }
+                            })
+                            // Catch
                             .catch(err => {
-                            t.rollback()
-                            reject(err)
-                        })
+                                t.rollback()
+                                reject(err)
+                            })
 
                     })
                 }

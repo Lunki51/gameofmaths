@@ -73,7 +73,7 @@ class MapView extends Component {
         let time = Date.now();
 
         requestAnimationFrame(this.animate);
-        this.state.stats.begin();
+        //this.state.stats.begin();
         if (!this.props.zoomed) {
             let posX = Math.min(Math.max(-this.state.inputVars.rotateX * 50, -this.state.mapDetails.sizeX), this.state.mapDetails.sizeX);
             let posY = Math.min(Math.max(-this.state.inputVars.rotateY * 50, -this.state.mapDetails.sizeY), this.state.mapDetails.sizeY);
@@ -96,9 +96,7 @@ class MapView extends Component {
 
             let length = Date.now() - time;
             if(this.state.nbFrames>10){
-                console.log(this.state.avgFPS)
                 if(this.state.avgFPS>35){
-                    console.log("Can't run highRes trying low res")
                     this.setState({able: false})
                 }
             }else{
@@ -112,7 +110,7 @@ class MapView extends Component {
             this.state.renderer.render(this.state.LResScene, this.state.camera);
         }
         this.setState({nbFrames: this.state.nbFrames+1})
-        this.state.stats.end();
+        //this.state.stats.end();
     }
 
     mouseMoveEvent = (event) => {
@@ -449,11 +447,11 @@ class MapView extends Component {
 
             this.setupWater();
             this.setupSky();
-            this.setupGui();
+            //this.setupGui();
 
             this.mount.appendChild(this.state.renderer.domElement);
-            this.mount.appendChild(this.state.stats.dom)
-            this.state.stats.showPanel(0);
+            //this.mount.appendChild(this.state.stats.dom)
+            //this.state.stats.showPanel(0);
 
 
             this.animate();

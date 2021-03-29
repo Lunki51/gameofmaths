@@ -41,16 +41,24 @@ When a knight as been accepted with a new master. <br/>
 * newMasterID : masterID of the new master
 * date : date of the notification
 
-
 ## knightRequestTooLate
 When a knight as been accepted with a new master so the old request don't old. <br/>
 * newMaster : masterID of the master
 * knightRequestID : knightRequestID of the request
 * date : date of the notification
 
-
 ## knightRequestRefused
 When a knight request is refuse. <br/>
 * masterID : masterID of the master
 * knightRequestID : knight request ID
+* date : date of the notification
+
+## knightRemove
+When a knight lose is title (fired). <br/>
+* masterID : masterID of the old master
+* date : date of the notification
+
+## knightQuit
+When a knight quit is master. <br/>
+* knightID : knightID of the old knight
 * date : date of the notification

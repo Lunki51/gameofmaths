@@ -111,6 +111,29 @@ const DailyQuizDAO = function () {
             });
         });
     };
+
+    /**
+     * Get the dailyQuiz with of a specific day.
+     *
+     * @param date date
+     * @param db db instance to use
+     * @returns {Promise} A promise that resolve the dailyQuiz with this id if it's found
+     */
+    this.findAllByDate = function (date, db = dbD) {
+        return new Promise((resolve, reject) => {
+            var start = new Date(date);
+            start.setHours(0,0,0,0);
+
+            var end = new Date(date);
+            end.setHours(23,59,59,999);
+
+            let request = 'SELECT * FROM DailyQuiz WHERE dailyQuizDate BETWEEN ? AND ? ORDER BY dailyQuizDate DESC';
+            db.all(request, [start, end], function (err, rows) {
+                if (err) reject(err);
+                else resolve(rows);
+            });
+        });
+    };
 }
 
 var dao = new DailyQuizDAO();

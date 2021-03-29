@@ -1,8 +1,13 @@
 const dbD = require('gameofmath-db').db
+const mpGain_dao = require('gameofmath-db').mpGain_dao
+const quizDone_dao = require('gameofmath-db').quizDone_dao
+const quiz_dao = require('gameofmath-db').quiz_dao
 const notification_helper = require('notification_helper')
 const knight_dao = require('gameofmath-castle').knight_dao
 const master_dao = require('gameofmath-castle').master_dao
 const knightRequest_dao = require('gameofmath-castle').knightRequest_dao
+const dailyQuiz_dao = require('gameofmath-castle').dailyQuiz_dao
+const quiz_helper = require('gameofmath-helper').quiz_helper
 
 const CastleHelper = function () {
 
@@ -144,7 +149,7 @@ const CastleHelper = function () {
                     .then(requestID => {
 
                         // Notifie the master
-                        notification_helper.sendTo(masterID, 'knightRequestReceive', {
+                        return notification_helper.sendTo(masterID, 'knightRequestReceive', {
                             studentID: studentID,
                             date: currentDate
                         }, t)
@@ -171,7 +176,7 @@ const CastleHelper = function () {
      *
      * @param knightRequestID knight request id
      * @param db db instance to use
-     * @returns {Promise} A promise that resolve the knightRequest ID
+     * @returns {Promise} A promise
      */
     this.acceptKnight = function (knightRequestID, db = dbD) {
         return new Promise((resolve, reject) => {
@@ -241,6 +246,12 @@ const CastleHelper = function () {
                             })
 
                     })
+                    .then(_ => {
+                        t.commit(err => {
+                            if (err) throw err
+                            else resolve()
+                        })
+                    })
                     .catch(err => {
                         t.rollback()
                         reject(err)
@@ -252,11 +263,11 @@ const CastleHelper = function () {
     }
 
     /**
-     * Refuse a knight request
+     * Refuse a knight request.
      *
      * @param knightRequestID knight request id
      * @param db db instance to use
-     * @returns {Promise} A promise that resolve the knightRequest ID
+     * @returns {Promise} A promise
      */
     this.refuseKnight = function (knightRequestID, db = dbD) {
         return new Promise((resolve, reject) => {
@@ -278,6 +289,270 @@ const CastleHelper = function () {
                                 date : currentDate
                             }, t))
 
+                    })
+                    .then(_ => {
+                        t.commit(err => {
+                            if (err) throw err
+                            else resolve()
+                        })
+                    })
+                    .catch(err => {
+                        t.rollback()
+                        reject(err)
+                    })
+
+            })
+
+        })
+    }
+
+    /**
+     * Remove a knight from a castle.
+     *
+     * @param knightID knight id
+     * @param db db instance to use
+     * @returns {Promise} A promise
+     */
+    this.refuseKnight = function (knightID, db = dbD) {
+        return new Promise((resolve, reject) => {
+            let currentDate = new Date()
+
+            db.beginTransaction(function (err, t) {
+
+                //Get the knight
+                knight_dao.findByID(knightID, t)
+                    .then(knight => {
+
+                        //Update the knight
+                        knight.knightEnd = currentDate
+                        return knight_dao.update(knight, t)
+                            // Notifie
+                            .then(_ => notification_helper.sendTo(knight.knightStudent, 'knightRemove', {
+                                masterID: knight.knightMaster,
+                                date: currentDate
+                            }, t))
+
+                    })
+                    .then(_ => {
+                        t.commit(err => {
+                            if (err) throw err
+                            else resolve()
+                        })
+                    })
+                    .catch(err => {
+                        t.rollback()
+                        reject(err)
+                    })
+
+            })
+
+        })
+    }
+
+    /**
+     * Make a knight quit is master.
+     *
+     * @param knightID knight id
+     * @param db db instance to use
+     * @returns {Promise} A promise
+     */
+    this.quitKnight = function (knightID, db = dbD) {
+        return new Promise((resolve, reject) => {
+            let currentDate = new Date()
+
+            db.beginTransaction(function (err, t) {
+
+                //Get the knight
+                knight_dao.findByID(knightID, t)
+                    .then(knight => {
+
+                        //Update the knight
+                        knight.knightEnd = currentDate
+                        return knight_dao.update(knight, t)
+                            // Notifie
+                            .then(_ => notification_helper.sendTo(knight.knightStudent, 'knightQuit', {
+                                knightID: knightID,
+                                date: currentDate
+                            }, t))
+
+                    })
+                    .then(_ => {
+                        t.commit(err => {
+                            if (err) throw err
+                            else resolve()
+                        })
+                    })
+                    .catch(err => {
+                        t.rollback()
+                        reject(err)
+                    })
+
+            })
+
+        })
+    }
+
+    /**
+     * Make the daily quiz of the day.
+     *
+     * @param db db instance to use
+     * @returns {Promise} A promise that resolve the dailyQuizID
+     */
+    this.makeDailyQuiz = function (db = dbD) {
+        return new Promise((resolve, reject) => {
+            let currentDate = new Date()
+
+            db.beginTransaction(function (err, t) {
+
+                // Make random quiz
+                quiz_helper.makeRandomQuiz(5, null, t)
+                    // Add the quiz to the DailyQuiz
+                    .then(quizID => dailyQuiz_dao.insert({
+                        dailyQuizID: -1,
+                        dailyQuizDate: currentDate,
+                        dailyQuizQuiz: quizID
+                    }, t))
+                    .then(dailyQuizID => {
+                        t.commit(err => {
+                            if (err) throw err
+                            else resolve(dailyQuizID)
+                        })
+                    })
+                    .catch(err => {
+                        t.rollback()
+                        reject(err)
+                    })
+
+            })
+
+        })
+    }
+
+    /**
+     * return the quizID of the dailyQuiz of the day.
+     *
+     * @param db db instance to use
+     * @returns {Promise} A promise that resolve the QuizID
+     */
+    this.getDailyQuiz = function (db = dbD) {
+        return new Promise((resolve, reject) => {
+            let currentDate = new Date()
+
+            // Get today dailyQuiz
+            dailyQuiz_dao.findAllByDate(new Date(), t)
+                .then(dailyQuizzes => {
+                    if (dailyQuizzes.length > 0) resolve(dailyQuizzes[0])
+                    else return this.makeDailyQuiz()
+                        .then(id => resolve(id))
+                })
+                .catch(err => {
+                    reject(err)
+                })
+
+        })
+    }
+
+    /**
+     * Mark quiz as done and distribute the MP.
+     *
+     * @param masterID id of the master
+     * @param score score of the master on the quiz
+     * @param dailyQuizID id of the daily quiz
+     * @param db db instance to use
+     * @returns {Promise} A promise
+     */
+    this.dailyQuizDone = function (masterID, score, dailyQuizID, db = dbD) {
+        return new Promise((resolve, reject) => {
+            let currentDate = new Date()
+
+            db.beginTransaction(function (err, t) {
+
+                // Get daily quiz
+                dailyQuiz_dao.findByID(dailyQuizID)
+                    .then(dailyQuiz => {
+
+                        // Get master
+                        return master_dao.findByID(masterID, t)
+                            .then(master => {
+
+                                // Get knight
+                                return knight_dao.findCurrentOfMaster(masterID, t)
+                                    .then(knights => {
+                                        let pointByKnights = score*10*(1-master.masterTaxe)/knights.length
+                                        let masterPoint = score*10 - knights.length*pointByKnights
+
+                                        // Insert QuizDone and master MPGain
+                                        return quizDone_dao.insertMPGain({
+                                            mpGainID: -1,
+                                            amount: masterPoint,
+                                            type: 'DAILYQUIZ',
+                                            date: currentDate,
+                                            theStudent: master.masterStudent,
+                                            theQuiz: dailyQuiz.dailyQuizQuiz,
+                                            score: score
+                                        }, t)
+                                            // Insert Knights MPGain
+                                            .then(_ => Promise.allSettled(knights.map(item => {
+                                                return mpGain_dao.insert({
+                                                    mpGainID: -1,
+                                                    amount: pointByKnights,
+                                                    type: 'DAILYQUIZ',
+                                                    date: currentDate,
+                                                    theStudent: item.knightStudent
+                                                }, t)
+                                            })))
+                                            // Check
+                                            .then(results => {
+                                                let resError = results.find(e => e.status === 'rejected')
+                                                if (resError) throw resError
+                                            })
+                                    })
+
+                            })
+
+                    })
+                    .then(dailyQuizID => {
+                        t.commit(err => {
+                            if (err) throw err
+                            else resolve(dailyQuizID)
+                        })
+                    })
+                    .catch(err => {
+                        t.rollback()
+                        reject(err)
+                    })
+
+            })
+
+        })
+    }
+
+    /**
+     * Change the taxe of the master
+     *
+     * @param masterID id of the master
+     * @param taxe new taxe
+     * @param db db instance to use
+     * @returns {Promise} A promise
+     */
+    this.setMasterTaxe = function (masterID, taxe, db = dbD) {
+        return new Promise((resolve, reject) => {
+
+            db.beginTransaction(function (err, t) {
+
+                // Get master
+                master_dao.findByID(masterID, t)
+                    .then(master => {
+
+                        master.masterTaxe = taxe
+                        return master_dao.update(master, t)
+
+                    })
+                    .then(dailyQuizID => {
+                        t.commit(err => {
+                            if (err) throw err
+                            else resolve(dailyQuizID)
+                        })
                     })
                     .catch(err => {
                         t.rollback()

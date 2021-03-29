@@ -66,7 +66,7 @@ CREATE TABLE Knight(
 CREATE TABLE KnightRequest(
     knightRequestID INTEGER PRIMARY KEY AUTOINCREMENT,
     knightRequestDate NUMERIC NOT NULL,
-    knightRequestResult INTEGER NOT NULL CHECK (knightRequestResult BETWEEN -1 AND 1),
+    n INTEGER NOT NULL CHECK (knightRequestResult BETWEEN -1 AND 1),
     knightRequestMaster INTEGER NOT NULL,
     knightRequestStudent INTEGER NOT NULL,
 

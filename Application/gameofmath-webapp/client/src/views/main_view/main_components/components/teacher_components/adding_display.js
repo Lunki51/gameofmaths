@@ -1,10 +1,10 @@
 import {Component} from "react";
 import {createClass, getAllClasses} from "../../../../../model/classModel";
-import {createStudent, getAllTheStudents} from "../../../../../model/studentModel";
+import {createStudent, getAllStudents, getAllTheStudents} from "../../../../../model/studentModel";
 import {PopupMessage} from "../../teacher_display_2.0";
 import {StudentDisplay} from "./student_display";
 import {createChapter,getAllChapter} from "../../../../../model/chapterModel";
-import {createQuiz,getQuizList} from "../../../../../model/quizModel";
+import {addQuestion, createAnswer, createQuiz, deleteQuestion, getQuizList} from "../../../../../model/quizModel";
 
 export class AddingDisplay extends Component{
 
@@ -192,7 +192,6 @@ class SelectionChoice extends Component{
 
 
 }
-
 
 ////////////////////////| ADDING STUDENT |//////////////////////////
 
@@ -421,99 +420,147 @@ class AddChapterStep extends Component {
 
 class AddQuestionStep extends Component{
 
+    //TODO - Régler problème suppression réponse
+
     constructor() {
         super();
 
         this.state = {
-            currentChapter: 0,
+            currentChapter: 1,
             chaptersList: [],
             quizList: [],
-            currentQuiz: null
+            currentQuiz: null,
+            answerList: [],
+            isValid: false,
+            selectedFile: null
         }
     }
 
     componentDidMount() {
-        this.getChapter()
-    }
 
-    getChapter = () =>{
-        getAllChapter().then((response) => {
-
-            console.log(response)
+        getAllChapter().then(res => {
             this.setState({
-                chaptersList:response.data.chapters
+                chaptersList: res.data.chapters,
             })
 
+            getQuizList(res.data.chapters[0].chapterID).then(result => {
+                this.setState({
+                    quizList: result.data.quizzes
+                })
+
+            })
+        })
+
+    }
+
+    handleUpdateList = (event) => {
+
+        getAllChapter().then(res => {
+            this.setState({
+                chapterList: res.data.chapters,
+                currentChapter: event.target.value,
+            })
+
+            getQuizList(event.target.value).then(result => {
+                this.setState({
+                    quizList: result.data.quizzes
+                })
+
+            })
         })
     }
 
-    getQuiz = () =>{
-        getQuizList(this.state.currentChapter).then((response) => {
-
-            console.log(response)
-            this.setState({
-                quizList:response.data.quizzes
-            })
-
+    handleUpdateQuizList = (event) => {
+        this.setState({
+            currentQuiz: event.target.value
         })
+    }
+
+    handleSwitch = () => {
+        let isValid = document.getElementById("toggle-switch")
+
+        if(isValid && isValid.style.backgroundColor === "var(--secondary_color)"){
+            isValid.style.backgroundColor = "var(--primary_color)"
+            this.setState({
+                isValid: true
+            })
+        }else{
+            isValid.style.backgroundColor = "var(--secondary_color)"
+            this.setState({
+                isValid: false
+            })
+        }
+    }
+
+    handleAddAnswer = () => {
+        let answerText = document.getElementById("select-textAnswer").value
+        let isValid = !this.state.isValid
+        let tab = this.state.answerList
+
+        tab.push({answerText: answerText, isValid: isValid})
+        this.setState({
+            answerList: tab
+        })
+
+        console.log(this.state.answerList)
+    }
+
+    handleDeleteAnswer = (event,theAnswer) => {
+
+        this.setState({
+            answerList: this.state.answerList.filter(function(aAnswer, index, arr){
+                return aAnswer !== theAnswer;
+            })
+        })
+
     }
 
     handleValidate = (event) => {
 
         let valid = true;
-        let selectedClass = document.getElementById("selected-class")
-        let login = document.getElementById("select-login")
-        let name = document.getElementById("select-name")
-        let firstname = document.getElementById("select-firstname")
-        if(selectedClass.value === "empty"){
-            valid = false
-            //TODO custom message error
-            alert("Aucunne classe selectionné")
-        }
+        let upperText = document.getElementById("select-upperText").value
+        let lowerText = document.getElementById("select-lowerText").value
+        let image = document.getElementById("select-image").value
+        let level = document.getElementById("select-level").value
+        let qNumber = document.getElementById("select-qNumber").value
 
-        if(login.value.length < 4){
-            valid = false
-            //TODO custom message error
-            alert("Login - taille minimum de 4")
-        }
+        let type = 'OPEN'
 
-        if(name.value === ""){
-            valid = false
-            //TODO custom message error
-            alert("Nom - obligatoire")
+        if(this.state.answerList.length > 1) {
+            let nbValidAnswer = 0
+            type = 'QCU'
+            this.state.answerList.forEach(answer => {
+                if(answer.isValid){
+                    nbValidAnswer++
+                }
+            })
+            console.log(nbValidAnswer)
+            if(nbValidAnswer > 1){
+                type = 'QCM'
+            }
         }
-
-        if(firstname.value === ""){
-            valid = false
-            //TODO custom message error
-            alert("Prénom - obligatoire")
-        }
-
 
         if(valid){
-            createStudent(selectedClass.value, login.value, name.value, firstname.value).then((response) => {
-
-                if(response.data.returnState === 0){
-
-                    alert("Elève inserer")
-                    alert("mot de passe: " + response.data.password)
-
-                    login.value = "";
-                    name.value = "";
-                    firstname.value = "";
-
-                    console.log(response)
-                    //  this.props.redirect(<StudentDisplay formCreate={{studentID:response.data.student.userID, classID:response.data.student.theClass}}/>);
-                } else {
-                    //TODO error msg
-                    alert(response.data.msg)
-                }
-
+            addQuestion(this.state.currentChapter,qNumber,this.state.currentQuiz,upperText,lowerText,type,level).then((response) => {
+                console.log(response)
+                this.state.answerList.forEach(answer => {
+                    createAnswer(this.state.currentQuiz, response, answer.answerText, answer.isValid).then(r  =>{
+                        console.log(r)
+                    })
+                })
             })
+
         }
 
         //no reload
         event.preventDefault();
+    }
+
+    handleFileSelected = (event) => {
+        console.log(event.target.files[0]);
+        this.setState({
+            selectedFile: event.target.files[0]
+        })
     }
 
     handlePrevious = () => {
@@ -524,27 +571,68 @@ class AddQuestionStep extends Component{
         return <div className="teacher-add-student-step">
 
             <form className="teacher-student-creation-container" onSubmit={this.handleValidate}>
-                <select className="teacher-student-creation-input" id="selected-class">
+                <select onChange={this.handleUpdateList} className="teacher-student-creation-input" id="selected-theChapter">
                     <option className="teacher-student-creation-option" value="empty">Choix du Chapitre</option>
                     {this.state.chaptersList.map((theChapter, index) => {
                         return <option key={index} value={theChapter.chapterID}>{theChapter.name}</option>
                     })}
                 </select>
-                <select className="teacher-student-creation-input" id="selected-quiz">
+                <select onChange={this.handleUpdateQuizList} className="teacher-student-creation-input" id="selected-theQuiz">
                     <option className="teacher-student-creation-option" value="empty">Choix du Quiz</option>
+                    <option className="teacher-student-creation-option" value="noQuiz">Aucun Quiz</option>
                     {this.state.quizList.map((theQuiz, index) => {
-                        return <option key={index} value={theQuiz.quizID}>{theQuiz.name}</option>
+                        return <option key={index} value={theQuiz.quizID}>{theQuiz.quizName}</option>
                     })}
                 </select>
 
-                <input className="teacher-student-creation-input" id="select-login" placeholder="Login" type="text"/>
-                <input className="teacher-student-creation-input" id="select-name" placeholder="Nom" type="text"/>
-                <input className="teacher-student-creation-input" id="select-firstname" placeholder="Prénom" type="text"/>
+                <h1 className="teacher-question-creation-text">Création Question</h1>
+
+                <input className="teacher-student-creation-input" id="select-qNumber" placeholder="Numéro de question" type="text"/>
+                <input className="teacher-student-creation-input" id="select-upperText" placeholder="Texte du haut" type="text"/>
+                <input onChange={this.handleFileSelected} className="teacher-student-creation-input" id="select-image" placeholder="Image" type="file"/>
+                <input className="teacher-student-creation-input" id="select-lowerText" placeholder="Texte du bas" type="text"/>
+                <input className="teacher-student-creation-input" id="select-level" placeholder="Difficulté" type="text"/>
+
+                <h1 className="teacher-question-creation-text">Création Réponse</h1>
+
+                <div className="teacher-question-creation-answer">
+                    <input className="teacher-student-creation-input-answer" id="select-textAnswer" placeholder="Réponse" type="text"/>
+                    <div className="teacher-question-creation-answer-valid" id="toggle-switch" onClick={this.handleSwitch}>
+                        <h2 className="teacher-question-creation-answer-is-valid-text" id="select-isValidAnswer">Vrai</h2>
+                    </div>
+                    <input onClick={this.handleAddAnswer} className="teacher-question-creation-answer-addButton" type="button" value="+"/>
+
+                </div>
+
+                <div className="teacher-question-creation-answer-list">
+                    {this.state.answerList.map( (theAnswer, index) => {
+                        return <AnswersRow id={theAnswer.answerID} value={theAnswer} onClick={this.handleDeleteAnswer} key={index} theAnswer={theAnswer}/>
+                 })}
+                </div>
+
+                <br/>
+                <br/>
+
                 <input className="teacher-student-creation-valid" type="submit" value="Valider"/>
             </form>
 
 
+
             <button onClick={this.handlePrevious} className="teacher-previous-btn" >Précédent</button>
+        </div>
+    }
+
+}
+
+class AnswersRow extends Component{
+
+    handleClick = (event) => {
+        this.props.onClick(event,this.props.theAnswer)
+    }
+
+    render() {
+        return <div onClick={this.handleClick} id={this.props.id} className="teacher-chapter-row">
+            <h1 className="teacher-chapter-row-title">{this.props.theAnswer.answerText}</h1>
         </div>
     }
 
@@ -559,7 +647,8 @@ class AddQuizStep extends Component{
 
         this.state = {
             currentChapter: 0,
-            chaptersList: []
+            chaptersList: [],
+            isOrder: false
         }
     }
 
@@ -577,11 +666,27 @@ class AddQuizStep extends Component{
         })
     }
 
+    handleSwitch = () => {
+        let isOrder = document.getElementById("toggle-switch")
+
+        if(isOrder && isOrder.style.backgroundColor === "var(--secondary_color)"){
+            isOrder.style.backgroundColor = "var(--primary_color)"
+            this.setState({
+                isOrder: true
+            })
+        }else{
+            isOrder.style.backgroundColor = "var(--secondary_color)"
+            this.setState({
+                isOrder: false
+            })
+        }
+    }
+
     handleValidate = (event) => {
 
         let valid = true;
         let name = document.getElementById("select-name").value
-        let isOrder = 1;
+        let isOrder = '1';
 
 
         if(name === ""){
@@ -590,14 +695,21 @@ class AddQuizStep extends Component{
             alert("Nom - obligatoire!")
         }
 
+        if(this.state.isOrder){
+            isOrder = '1'
+        }else if(!this.state.isOrder){
+            isOrder = '0'
+        }else{
+            valid = false;
+        }
+
         if(this.state.currentChapter === null){
             valid = false;
             //TODO custom message error
             alert("Chapitre - obligatoire!")
         }
 
-        console.log(this.state.currentChapter)
-
+        console.log(name,this.state.currentChapter,isOrder)
         if(valid){
             createQuiz(name,this.state.currentChapter,isOrder).then((res) => {
                 console.log(res)
@@ -606,6 +718,19 @@ class AddQuizStep extends Component{
 
         //no reload
         event.preventDefault();
+    }
+
+    handleUpdateList = (event) => {
+
+        getAllChapter((event) ? event.target.value : this.state.currentChapter).then(res => {
+
+            this.setState({
+                chaptersList: res.data.chapters,
+                currentChapter: (event) ? event.target.value : this.state.currentChapter
+            })
+
+        })
+
     }
 
     handlePrevious = () => {
@@ -619,12 +744,18 @@ class AddQuizStep extends Component{
 
                 <input className="teacher-student-creation-input" id="select-name" placeholder="Nom" type="text"/>
 
-                <select className="teacher-student-creation-input" id="selected-class">
+                <select onChange={this.handleUpdateList} className="teacher-student-creation-input" id="selected-class">
                     <option className="teacher-student-creation-option" value="empty">Choix du Chapitre</option>
                     {this.state.chaptersList.map((theChapter, index) => {
                         return <option key={index} value={theChapter.chapterID}>{theChapter.name}</option>
                     })}
                 </select>
+                <div className="teacher-question-creation-quiz-order" id="toggle-switch" onClick={this.handleSwitch}>
+                    <h2 className="teacher-question-creation-answer-is-valid-text" id="select-isValidAnswer">Est Ordonné</h2>
+                </div>
+
+                <br/>
+                <br/>
 
                 <input className="teacher-student-creation-valid" type="submit" value="Valider"/>
             </form>

@@ -588,6 +588,7 @@
     top: 50%;
     left: 50%;
     position: absolute;
+    overflow: auto;
 }
 
 .teacher-student-creation-input:first-child{
@@ -641,7 +642,8 @@
 }
 
 .teacher-student-creation-valid{
-    position: absolute;
+    position: relative;
+    margin-top: 10px;
     height: 60px;
     width: 50%;
     transform: translateX(-50%);
@@ -722,6 +724,97 @@
 .teacher-chapter-creation-valid:hover {
     background-color: var(--secondary_color);
 }
+
+.teacher-question-creation-text {
+    position: relative;
+    text-align: center;
+    font-family: sans-serif;
+    color: white;
+    margin-bottom: 10px;
+    font-size: 30px;
+}
+
+.teacher-question-creation-answer {
+    position: relative;
+    display: flex;
+    width: 100%;
+}
+
+.teacher-student-creation-input-answer {
+    position: relative;
+    margin-bottom: 20px;
+    height: 60px;
+    width: available;
+    background-color: var(--primary_color);
+    border: none;
+    border-radius: 20px;
+    font-size: 25px;
+    padding-left: 20px;
+    margin-left: 10px;
+    color: white;
+    outline-style: none;
+}
+
+.teacher-question-creation-answer-addButton {
+    height: 60px;
+    width: 60px;
+    background-color: var(--primary_color);
+    border: none;
+    font-family: sans-serif;
+    font-size: 35px;
+    margin-left: 10px;
+    margin-right: 10px;
+    color: white;
+    border-radius: 20px;
+    transition-duration: 200ms;
+}
+
+.teacher-question-creation-answer-is-valid-text {
+    transform: translateY(-50%);
+    top: 50%;
+    position: relative;
+    text-align: center;
+    font-family: sans-serif;
+    color: white;
+    font-size: 25px;
+}
+
+.teacher-question-creation-answer-valid {
+    text-align: center;
+    height: 60px;
+    width: 25%;
+    background-color: var(--primary_color);
+    border: none;
+    font-family: sans-serif;
+    margin-left: 10px;
+    color: white;
+    border-radius: 20px;
+    transition-duration: 200ms;
+}
+
+
+.teacher-question-creation-answer-list {
+    position: relative;
+    width: 95%;
+    transform: translateX(-50%);
+    left: 50%;
+
+}
+
+.teacher-question-creation-quiz-order {
+    text-align: center;
+    height: 60px;
+    width: 95%;
+    background-color: var(--primary_color);
+    border: none;
+    font-family: sans-serif;
+    margin-left: 10px;
+    color: white;
+    border-radius: 20px;
+    transition-duration: 200ms;
+}
+
+
 
 /*////////////////////////////| DELETE DISPLAY |//////////////////////////////*/
 

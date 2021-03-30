@@ -423,6 +423,8 @@ class StudentEditOverview extends Component {
 
 ////////////////////////| EDIT CHAPTER |//////////////////////////
 
+
+
 ////////////////////////| EDIT CLASS |//////////////////////////
 
 class EditClassStep extends Component {

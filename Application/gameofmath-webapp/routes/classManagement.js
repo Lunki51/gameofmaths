@@ -302,32 +302,23 @@ router.post('/getStudent', (req, res, next) => {
 /**
  * Allow to change the lastname of a student
  *
- * @param classId id of the class
  * @param userId id of the student
  * @param newName new lastname of the student
  * @return
  *  0: student: the student
- *  1: if the the class id is incorrect
- *  2: if the the student id is incorrect
- *  3: if the the student is not in the class
- *  4: if the the new name is incorrect
+ *  1: if the the student id is incorrect
+ *  2: if the the new name is incorrect
  */
 router.post('/setLastname', (req, res, next) => {
     if (!req.session.isLogged & !req.session.isTeacher) return next(new Error('Client must be logged on a Teacher account'))
 
-    const classId = req.body.classId
     const userId = req.body.userId
     const newName = req.body.newName
-    if (classId == null) return res.send({returnState: 1, msg: 'The class id is incorrect'})
-    if (userId == null) return res.send({returnState: 2, msg: 'The student id is incorrect'})
-    if (newName == null) return res.send({returnState: 4, msg: 'The student new name is incorrect'})
+    if (userId == null) return res.send({returnState: 1, msg: 'The student id is incorrect'})
+    if (newName == null) return res.send({returnState: 2, msg: 'The student new name is incorrect'})
 
     student_dao.findUserByID(userId).then(student => {
-        if (student == null) res.send({returnState: 2, msg: 'The student id is incorrect'})
-        else if (student.theClass !== Number(classId)) res.send({
-            returnState: 3,
-            msg: 'The student is not in the class'
-        })
+        if (student == null) res.send({returnState: 1, msg: 'The student id is incorrect'})
         else {
 
             student.lastname = newName
@@ -344,32 +335,23 @@ router.post('/setLastname', (req, res, next) => {
 /**
  * Allow to change the firstname of a student
  *
- * @param classId id of the class
  * @param userId id of the student
  * @param newName new firstname of the student
  * @return
  *  0: student: the student
- *  1: if the the class id is incorrect
- *  2: if the the student id is incorrect
- *  3: if the the student is not in the class
- *  4: if the the new name is incorrect
+ *  1: if the the student id is incorrect
+ *  2: if the the new name is incorrect
  */
 router.post('/setFirstname', (req, res, next) => {
     if (!req.session.isLogged & !req.session.isTeacher) return next(new Error('Client must be logged on a Teacher account'))
 
-    const classId = req.body.classId
     const userId = req.body.userId
     const newName = req.body.newName
-    if (classId == null) return res.send({returnState: 1, msg: 'The class id is incorrect'})
-    if (userId == null) return res.send({returnState: 2, msg: 'The student id is incorrect'})
-    if (newName == null) return res.send({returnState: 4, msg: 'The student new name is incorrect'})
+    if (userId == null) return res.send({returnState: 1, msg: 'The student id is incorrect'})
+    if (newName == null) return res.send({returnState: 2, msg: 'The student new name is incorrect'})
 
     student_dao.findUserByID(userId).then(student => {
-        if (student == null) res.send({returnState: 2, msg: 'The student id is incorrect'})
-        else if (student.theClass !== Number(classId)) res.send({
-            returnState: 3,
-            msg: 'The student is not in the class'
-        })
+        if (student == null) res.send({returnState: 1, msg: 'The student id is incorrect'})
         else {
 
             student.firstname = newName
@@ -386,32 +368,23 @@ router.post('/setFirstname', (req, res, next) => {
 /**
  * Allow to change the login of a student
  *
- * @param classId id of the class
  * @param userId id of the student
  * @param newLogin new login of the student
  * @return
  *  0: student: the student
- *  1: if the the class id is incorrect
- *  2: if the the student id is incorrect
- *  3: if the the student is not in the class
- *  4: if the the new login is incorrect
+ *  1: if the the student id is incorrect
+ *  2: if the the new login is incorrect
  */
 router.post('/setLogin', (req, res, next) => {
     if (!req.session.isLogged & !req.session.isTeacher) return next(new Error('Client must be logged on a Teacher account'))
 
-    const classId = req.body.classId
     const userId = req.body.userId
     const newLogin = req.body.newLogin
-    if (classId == null) return res.send({returnState: 1, msg: 'The class id is incorrect'})
-    if (userId == null) return res.send({returnState: 2, msg: 'The student id is incorrect'})
-    if (newLogin == null) return res.send({returnState: 4, msg: 'The student new login is incorrect'})
+    if (userId == null) return res.send({returnState: 1, msg: 'The student id is incorrect'})
+    if (newLogin == null) return res.send({returnState: 2, msg: 'The student new login is incorrect'})
 
     student_dao.findUserByID(userId).then(student => {
-        if (student == null) res.send({returnState: 2, msg: 'The student id is incorrect'})
-        else if (student.theClass !== Number(classId)) res.send({
-            returnState: 3,
-            msg: 'The student is not in the class'
-        })
+        if (student == null) res.send({returnState: 1, msg: 'The student id is incorrect'})
         else {
 
             student.login = newLogin
@@ -428,28 +401,19 @@ router.post('/setLogin', (req, res, next) => {
 /**
  * Allow to regenerate the password of a student
  *
- * @param classId id of the class
  * @param userId id of the student
  * @return
  *  0: password: the new password
- *  1: if the the class id is incorrect
- *  2: if the the student id is incorrect
- *  3: if the the student is not in the class
+ *  1: if the the student id is incorrect
  */
 router.post('/regeneratePassword', (req, res, next) => {
     if (!req.session.isLogged & !req.session.isTeacher) return next(new Error('Client must be logged on a Teacher account'))
 
-    const classId = req.body.classId
     const userId = req.body.userId
-    if (classId == null) return res.send({returnState: 1, msg: 'The class id is incorrect'})
-    if (userId == null) return res.send({returnState: 2, msg: 'The student id is incorrect'})
+    if (userId == null) return res.send({returnState: 1, msg: 'The student id is incorrect'})
 
     student_dao.findUserByID(userId).then(student => {
-        if (student == null) res.send({returnState: 2, msg: 'The student id is incorrect'})
-        else if (student.theClass !== Number(classId)) res.send({
-            returnState: 3,
-            msg: 'The student is not in the class'
-        })
+        if (student == null) res.send({returnState: 1, msg: 'The student id is incorrect'})
         else {
 
             const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789'
@@ -527,28 +491,19 @@ router.post('/createStudent', (req, res, next) => {
 /**
  * Allow to delete a new student
  *
- * @param classId id of the class
  * @param studentId id of the student
  * @return
  *  0:
  *  1: the student od is incorrect
- *  2: the class id is incorrect
- *  3: if the the student is not in the class
  */
 router.post('/deleteStudent', (req, res, next) => {
     if (!req.session.isLogged & !req.session.isTeacher) return next(new Error('Client must be logged on a Teacher account'))
 
-    const classId = req.body.classId
     const studentId = req.body.studentId
-    if (classId == null) return res.send({returnState: 2, msg: 'The class id is incorrect'})
     if (studentId == null) return res.send({returnState: 1, msg: 'The student id is incorrect'})
 
     student_dao.findByID(studentId).then(student => {
         if (student == null) res.send({returnState: 1, msg: 'The student id is incorrect'})
-        else if (student.theClass !== Number(classId)) res.send({
-            returnState: 3,
-            msg: 'The student is not in the class'
-        })
         else {
             db.beginTransaction(function (err, t) {
 
@@ -593,28 +548,19 @@ router.post('/deleteStudent', (req, res, next) => {
 /**
  * Get the MP of a student.
  *
- * @param classId id of the class
  * @param studentId id of the student
  * @return
  *  0: mp: the number of MP of the student
- *  1: the student od is incorrect
- *  2: the class id is incorrect
- *  3: if the the student is not in the class
+ *  1: the student id is incorrect
  */
 router.post('/getMP', (req, res, next) => {
     if (!req.session.isLogged & !req.session.isStudent) return next(new Error('Client must be logged on a student account'))
 
-    const classId = req.body.classId
     const studentId = req.body.studentId
-    if (classId == null) return res.send({returnState: 2, msg: 'The class id is incorrect'})
     if (studentId == null) return res.send({returnState: 1, msg: 'The student id is incorrect'})
 
     student_dao.findByID(studentId).then(student => {
         if (student == null) res.send({returnState: 1, msg: 'The student id is incorrect'})
-        else if (student.theClass !== Number(classId)) res.send({
-            returnState: 3,
-            msg: 'The student is not in the class'
-        })
         else {
             res.send({returnState: 0, mp: student.mp})
         }
@@ -624,28 +570,19 @@ router.post('/getMP', (req, res, next) => {
 /**
  * Get the MP of a student in function of time.
  *
- * @param classId id of the class
  * @param studentId id of the student
  * @return
  *  0: mp: the gain of the student with his timestamp
  *  1: the student od is incorrect
- *  2: the class id is incorrect
- *  3: if the the student is not in the class
  */
 router.post('/getMPArray', (req, res, next) => {
     if (!req.session.isLogged & !req.session.isStudent) return next(new Error('Client must be logged on a student account'))
 
-    const classId = req.body.classId
     const studentId = req.body.studentId
-    if (classId == null) return res.send({returnState: 2, msg: 'The class id is incorrect'})
     if (studentId == null) return res.send({returnState: 1, msg: 'The student id is incorrect'})
 
     student_dao.findByID(studentId).then(student => {
         if (student == null) res.send({returnState: 1, msg: 'The student id is incorrect'})
-        else if (student.theClass !== Number(classId)) res.send({
-            returnState: 3,
-            msg: 'The student is not in the class'
-        })
         else {
 
             mpGain_dao.findAllByStudent(studentId).then(gains => {

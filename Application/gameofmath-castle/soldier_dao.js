@@ -114,6 +114,23 @@ const SoldierDAO = function () {
     };
 
     /**
+     * Get all the soldier in an attack with the student info.
+     *
+     * @param attackID attack id
+     * @param db db instance to use
+     * @returns {Promise<Array>} A promise that resolve all the rows
+     */
+    this.findAllOfAttackWithStudent = function (attackID, db = dbD) {
+        return new Promise((resolve, reject) => {
+            let request = 'SELECT * FROM Soldier, Student WHERE soldierStudent = theUser AND soldierAttack = ?';
+            db.all(request, [attackID], function (err, rows) {
+                if (err) reject(err);
+                else resolve(rows);
+            });
+        });
+    };
+
+    /**
      * Get all the soldier in an student.
      *
      * @param studentID student id

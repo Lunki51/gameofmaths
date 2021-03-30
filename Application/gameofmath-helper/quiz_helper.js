@@ -85,6 +85,26 @@ const QuizHelper = function () {
 
         })
     }
+
+   /**
+     * Get the max score of a quiz.
+     *
+     * @param quizID quiz id
+     * @param db db instance to use
+     * @returns {Promise} A promise that resolve the max score
+     */
+    this.getQuizMaxScore = function (quizID, db = dbD) {
+        return new Promise((resolve, reject) => {
+
+            // Get all the question
+            let request = 'SELECT SUM(level) AS sum FROM Quiz, QuizQuestion, Question WHERE theQuiz = quizID AND theQuestion = questionID AND quizID = ?'
+            db.all(request, [quizID], function (err, rows) {
+                if (err) reject(err)
+                else resolve(rows[0].sum)
+            })
+
+        })
+    }
 }
 
 var helper = new QuizHelper()

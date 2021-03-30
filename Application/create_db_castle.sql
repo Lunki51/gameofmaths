@@ -86,7 +86,7 @@ CREATE TABLE Attack(
 
     FOREIGN KEY(attackQuiz) REFERENCES Quiz(quizID),
     FOREIGN KEY(attackOrigin) REFERENCES Student(theUser),
-    FOREIGN KEY(attackTarget) REFERENCES Student(theUser)
+    FOREIGN KEY(attackTarget) REFERENCES Master(masterID)
 );
 
 CREATE TABLE Soldier(

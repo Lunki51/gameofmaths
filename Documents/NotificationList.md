@@ -62,3 +62,20 @@ When a knight lose is title (fired). <br/>
 When a knight quit is master. <br/>
 * knightID : knightID of the old knight
 * date : date of the notification
+
+## castleUnderAttack
+When an attack start on a castle. <br/>
+* castleID : castleID of the castle under attack
+* originStudentID : userID of the student that launch the attack
+* battleDate : date of the futur battle
+* date : date of the notification
+
+## BattleWin
+When a team win a battle. <br/>
+* castleID : castleID of the castle under attack
+* date : date of the notification
+
+## BattleLost
+When a team lost a battle. <br/>
+* castleID : castleID of the castle under attack
+* date : date of the notification

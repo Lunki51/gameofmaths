@@ -87,7 +87,7 @@ router.post('/changeFirstname', (req, res, next) => {
 router.post('/search', (req, res, next) => {
     if (!req.session.isLogged && !req.session.isTeacher) return next(new Error('Client must be logged on a teacher account'))
 
-    const key = req.body.key.trim();
+    const key = req.body.key.trim().toUpperCase()
 
     if (key != null && key.length > 0) {
 
@@ -106,7 +106,7 @@ router.post('/search', (req, res, next) => {
 
                 attributes.forEach((item, index) => {
                     if (index !== 0) request += ' OR '
-                    request += item+' LIKE ?'
+                    request += 'UPPER('+item+') LIKE ?'
                     params.push('%'+key+'%')
                 })
                 if (jointure.length !== 0) request += ')'

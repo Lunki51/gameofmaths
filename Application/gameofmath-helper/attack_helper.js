@@ -2,6 +2,7 @@ const dbD = require('gameofmath-db').db
 const mpGain_dao = require('gameofmath-db').mpGain_dao
 const notification_helper = require('notification_helper')
 const quiz_helper = require('quiz_helper')
+const castle_helper = require('castle_helper')
 const knight_dao = require('gameofmath-castle').knight_dao
 const master_dao = require('gameofmath-castle').master_dao
 const attack_dao = require('gameofmath-castle').attack_dao
@@ -300,24 +301,7 @@ const AttackHelper = function () {
                                                             .then(_ => {
 
                                                                 // Insert new master
-                                                                if (result === 1) return master_dao.insert({
-                                                                    masterID: -1,
-                                                                    masterStart: currentDate,
-                                                                    masterTaxe: 0.5,
-                                                                    masterCastle: master.masterCastle,
-                                                                    masterStudent: attack.attackOrigin
-                                                                }, t)
-                                                                    // remove the knight
-                                                                    .then(newMasterID => Promise.allSettled(knights.map(item => {
-                                                                        item.knightEnd = currentDate
-                                                                        return knight_dao.update(item, t)
-                                                                    })))
-                                                                    // Check
-                                                                    .then(results => {
-                                                                        let resError = results.find(e => e.status === 'rejected')
-                                                                        if (resError) throw resError
-                                                                    })
-
+                                                                if (result === 1) return castle_helper.setNewMaster(master.masterCastle, attack.attackOrigin, t)
                                                                 else return 1
 
                                                             })

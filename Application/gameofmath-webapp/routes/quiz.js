@@ -39,7 +39,7 @@ router.post('/startQuiz', (req, res, next) => {
     chapter_dao.findByName(req.body.chapter).then(chapter => {
         if (chapter) {
 
-            quiz_dao.findAllInChapter(chapter.chapterID).then(quizs => {
+            quiz_dao.findAllOfTypeInChapter('CLASSIC', chapter.chapterID).then(quizs => {
                 if (quizs.length === 0) res.send({returnState: 1, msg: 'Pas de quizz disponible pour ce chapitre.'})
                 else {
                     const quiz = quizs[Math.floor(Math.random() * quizs.length)]

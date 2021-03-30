@@ -142,7 +142,8 @@ describe('Test the search path', () => {
             quizID: -1,
             theChapter: 1,
             asAnOrder: 'true',
-            quizName: 'un aval, des avols'
+            quizName: 'un aval, des avols',
+            quizType: 'CLASSIC'
         }).catch(done);
         await question_dao.insert({
             questionID: -1,
@@ -194,7 +195,8 @@ describe('Test the search path', () => {
                         quizID: 1,
                         theChapter: 1,
                         asAnOrder: '1',
-                        quizName: 'un aval, des avols'
+                        quizName: 'un aval, des avols',
+                        quizType: 'CLASSIC'
                     }
                 },
                 {

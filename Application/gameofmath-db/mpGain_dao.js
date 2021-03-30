@@ -16,7 +16,7 @@ const MPGainDAO = function () {
             {t: 'date', ps: ['date']}], object);
         if (!mpGain) return null;
 
-        if (['QUIZ'].indexOf(mpGain.type) >= 0) return mpGain;
+        if (['QUIZ', 'DAILYQUIZ', 'BATTLELOST'].indexOf(mpGain.type) >= 0) return mpGain;
         return null;
     };
 

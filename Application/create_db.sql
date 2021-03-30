@@ -48,7 +48,7 @@ CREATE TABLE Student(
 CREATE TABLE MPGain(
     mpGainID INTEGER PRIMARY KEY AUTOINCREMENT,
     amount INTEGER NOT NULL,
-    type TEXT CHECK (type IN ('QUIZ')) NOT NULL,
+    type TEXT CHECK (type IN ('QUIZ', 'DAILYQUIZ', 'BATTLELOST')) NOT NULL,
     date NUMERIC NOT NULL,
     theStudent INTEGER NOT NULL,
 
@@ -63,8 +63,9 @@ CREATE TABLE Chapter(
 CREATE TABLE Quiz(
     quizID INTEGER PRIMARY KEY AUTOINCREMENT,
     asAnOrder TEXT CHECK ( asAnOrder IN ('true', 'false', '0', '1')) NOT NULL,
-    theChapter INTEGER NOT NULL,
-    quizName TEST UNIQUE NOT NULL,
+    theChapter INTEGER,
+    quizName TEXT NOT NULL,
+    quizType TEXT NOT NULL CHECK (quizType IN ('CLASSIC', 'RANDOM', 'PRIVATE')),
 
     FOREIGN KEY(theChapter) REFERENCES Chapter(chapterID)
 );

@@ -167,7 +167,7 @@ class MainView extends Component {
 
     handleProfilDisplay = () => {
         if (this.state.whatOnOverlay === "quiz") {
-            this.handleProfilDisplay();
+            this.handleQuizDisplay();
         }
         if (this.state.whatOnOverlay === "profil") {
             this.setState({

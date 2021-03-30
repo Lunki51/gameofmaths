@@ -4,7 +4,7 @@ import { FBXLoader } from '../../../../node_modules/three/examples/jsm/loaders/F
 import { TGALoader } from '../../../../node_modules/three/examples/jsm/loaders/TGALoader';
 import { OrbitControls } from '../../../../node_modules/three/examples/jsm/controls/OrbitControls.js';
 import '../styles/global_style.css'
-import auth, {getType, getUsername, isAuth} from "../../../model/authentification";
+import auth, {getInfo, getType, getUsername, isAuth} from "../../../model/authentification";
 import '../styles/global_variables.css';
 
 export class ProfilDetails extends Component{
@@ -15,7 +15,7 @@ export class ProfilDetails extends Component{
     constructor(props: P, context: any) {
         super(props, context);
         this.state = {
-            player: {username: ""},
+            player: {firstname:"", lastname:"", className:"", classGrade:"", classID:0, mp:0},
             scene: new THREE.Scene(),
             renderer: new THREE.WebGLRenderer(),
             mixer: null,
@@ -23,8 +23,9 @@ export class ProfilDetails extends Component{
             clock: new THREE.Clock(),
             controls: null
         }
-        getUsername().then(response =>{
+        getInfo().then(response =>{
             this.setState({player : response.data})
+            console.log(this.state.player)
         })
     }
 
@@ -118,7 +119,9 @@ export class ProfilDetails extends Component{
         //TODO Implement player description
         return <div className="container-chapter-selection">
 
-            <h1 className="profil-details-headline">Joueur {this.state.player.username}</h1>
+            <h1 className="profil-details-headline">Joueur : {this.state.player.firstname} {this.state.player.lastname}</h1>
+            <h1>Classe: {this.state.player.className}</h1>
+            <h1>Points de math : {this.state.player.mp}</h1>
 
         </div>
 

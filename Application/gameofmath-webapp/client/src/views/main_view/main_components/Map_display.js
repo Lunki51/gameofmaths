@@ -63,7 +63,6 @@ class MapView extends Component {
         this.state.renderer.setSize(window.innerWidth, window.innerHeight);
         this.state.renderer.setPixelRatio(window.devicePixelRatio);
 
-
         this.renderMap(null)
     }
 
@@ -235,11 +234,14 @@ class MapView extends Component {
         }
         let gltfLoader = new GLTFLoader();
         gltfLoader.load("mapData/castle.glb", model => {
+            console.log(model.scene)
             let castlesPosition = map.castlePosition;
             for (let position of castlesPosition) {
                 let positionModel = model.scene.clone(true);
                 let vectorPos = new THREE.Vector3(position[0], position[1], position[2]);
                 this.state.castles.push(vectorPos);
+                positionModel.children[0].material.roughness = 0.6
+                positionModel.children[0].material.metalness = 1
                 positionModel.position.set(position[0], position[1], position[2])
                 positionModel.scale.set(0.8, 0.8, 0.8)
                 positionModel.name = "Castle"
@@ -265,7 +267,10 @@ class MapView extends Component {
 
                 this.state.HResScene.add(cube.clone())
                 this.state.LResScene.add(cube.clone())
-                this.state.HResScene.add(PointLight)
+                let date = new Date(Date.now()).getHours();
+                if(date<8 ||date>20){
+                    this.state.HResScene.add(PointLight)
+                }
                 this.state.HResScene.add(positionModel.clone());
                 this.state.LResScene.add(positionModel.clone());
             }
@@ -292,6 +297,7 @@ class MapView extends Component {
             }
 
             for (let i = 0; i < map.length; i++) {
+                if(map[i].y<=this.state.water.position.y+1)continue;
                 let valid = true;
                 castles.forEach(castle => {
                     if ((castle[0] - map[i].x <= 10 && castle[0] - map[i].x >= -10) && (castle[2] - map[i].z <= 10 && castle[2] - map[i].z >= -10)) {
@@ -393,15 +399,19 @@ class MapView extends Component {
 
         const skyUniforms = this.state.sky.material.uniforms;
 
-        skyUniforms['turbidity'].value = 5;
+        skyUniforms['turbidity'].value = 0.5;
         skyUniforms['rayleigh'].value = 0.3;
         skyUniforms['mieCoefficient'].value = 0.005;
         skyUniforms['mieDirectionalG'].value = 0.8;
 
+        let date = new Date(Date.now()).getHours();
+        date = date-8<=0?24-date:date-8
+        if(date==0)date=24;
+
         this.setState({
             sunParameters: {
                 inclination: 0,
-                azimuth: 0.205
+                azimuth: date/24
             },
             pmremGenerator: new THREE.PMREMGenerator(this.state.renderer)
         })
@@ -410,6 +420,7 @@ class MapView extends Component {
     }
 
     updateSun = () => {
+
         const theta = Math.PI * (this.state.sunParameters.inclination - 0.5);
         const phi = 2 * Math.PI * (this.state.sunParameters.azimuth - 0.5);
 

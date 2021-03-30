@@ -134,9 +134,8 @@ class NavigationBar extends Component{
     render() {
         return <NavBar>
                     <NavElement icon={image_icon_quiz} id="quiz-btn"  className="navElem_left"   onClick={this.props.quiz} value="quiz"/>
-                    <NavElement id="profil-btn" className={"navElem_left"} onClick={this.props.prof} value="profil"/>
                     <img src={window.location.origin + '/logo/game_of_math_logo.png'} className="navElem_center"/>
-                    <NavElement icon={image_icon_user}  className="navElem_right"  onClick={this.props.profile} value={this.state.username}/>
+                    <NavElement id="profil-btn" className="navElem_right" onClick={this.props.prof} value={this.state.username}/>
                     <NavElement icon={image_icon_logout}  className="navElem_right"  onClick={this.props.logout} value="deconnexion"/>
                 </NavBar>
     }

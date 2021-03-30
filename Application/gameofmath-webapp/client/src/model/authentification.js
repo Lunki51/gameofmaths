@@ -13,6 +13,7 @@ function auth(username, password){
 
 }
 
+
 /**
  * check if the user is currently logged
  *
@@ -44,6 +45,15 @@ export function getType(){
 
     return Axios.post('/api/user/getType')
 
+}
+
+/**
+ * get the current player data
+ *
+ * @returns {Promise<AxiosResponse<any>>}
+ */
+export function getInfo(){
+    return Axios.post('/api/student/getInfo')
 }
 
 export default auth;

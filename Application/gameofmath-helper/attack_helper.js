@@ -81,7 +81,7 @@ const AttackHelper = function () {
             db.beginTransaction(function (err, t) {
 
                 // Create the quiz
-                quiz_helper.makeRandomQuiz(20, null, t)
+                quiz_helper.makeRandomQuiz(10, null, t)
                     .then(quizID => {
 
                         // Get target

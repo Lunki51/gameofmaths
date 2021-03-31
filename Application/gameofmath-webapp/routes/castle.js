@@ -2,6 +2,7 @@ const express = require('express')
 const router = express.Router()
 
 const db = require('gameofmath-db').db
+const student_dao = require('gameofmath-db').student_dao
 const castle_helper = require('gameofmath-helper').castle_helper
 const castle_dao = require('gameofmath-castle').castle_dao
 const master_dao = require('gameofmath-castle').master_dao
@@ -47,6 +48,121 @@ router.post('/getCastleInfo', (req, res, next) => {
                                     }, [])
                                 })
 
+                            })
+
+                    })
+
+            }
+        }).catch(err => next(err))
+})
+
+/**
+ * Get Info on a master
+ *
+ * @param masterID the id of the master
+ * @return
+ *  0: masterID, castleID, masterStudentID, knights: [ (ID of each student) ], masterStart, masterTaxe, firstname, lastname, mp
+ *  1: if the masterID is invalid or not from the same class as the user
+ */
+router.post('/getMasterInfo', (req, res, next) => {
+    if (!req.session.isLogged) return next(new Error('Client must be logged'))
+
+    const masterID = req.body.masterID;
+    if (masterID == null) return res.send({returnState: 1, msg: 'MasterID invalid'})
+
+    master_dao.findByID(masterID)
+        .then(master => {
+            if (master == null) return res.send({returnState: 1, msg: 'MasterID invalid'})
+            else {
+
+                return castle_dao.findByID(master.masterCastle)
+                    .then(castle => {
+                        if (req.session.isStudent && req.session.user.theClass !== castle.castleClass) return res.send({
+                            returnState: 1,
+                            msg: 'MasterID is not in the student class'
+                        }) else {
+
+                            return knight_dao.findCurrentOfMaster(master.masterID)
+                                .then(knights => {
+
+                                    return student_dao.findByID(master.masterStudent)
+                                        .then(student => {
+
+                                            return res.send({
+                                                returnState: 0,
+                                                masterID: masterID,
+                                                castleID: master.masterCastle,
+                                                masterStudentID: master.masterStudent,
+                                                knights: knights.reduce((acc, obj) => {
+                                                    acc.push(obj.knightStudent)
+                                                    return acc
+                                                }, []),
+                                                masterStart: master.masterStart,
+                                                masterTaxe: master.masterTaxe,
+                                                firstname: student.firstname,
+                                                lastname: student.lastname,
+                                                mp: student.mp,
+                                            })
+
+                                        })
+
+                                })
+
+                        }
+                    })
+
+
+            }
+        }).catch(err => next(err))
+})
+
+/**
+ * Get Info on a knight
+ *
+ * @param knightID the id of the knight
+ * @return
+ *  0: knightID, knightStudentID, masterID, castleID, masterStudentID, knightStart, firstname, lastname, mp
+ *  1: if the knightID is invalid or not from the same class as the user
+ */
+router.post('/getKnightInfo', (req, res, next) => {
+    if (!req.session.isLogged) return next(new Error('Client must be logged'))
+
+    const knightID = req.body.masterID;
+    if (knightID == null) return res.send({returnState: 1, msg: 'KnightID invalid'})
+
+    knight_dao.findByID(knightID)
+        .then(knight => {
+            if (knight == null) return res.send({returnState: 1, msg: 'KnightID invalid'})
+            else {
+
+                return master_dao.findByID(knight.knightMaster)
+                    .then(master => {
+
+                        return castle_dao.findByID(master.masterCastle)
+                            .then(castle => {
+                                if (req.session.isStudent && req.session.user.theClass !== castle.castleClass) return res.send({
+                                    returnState: 1,
+                                    msg: 'MasterID is not in the student class'
+                                }) else {
+
+                                    return student_dao.findByID(knight.knightStudent)
+                                        .then(student => {
+
+                                            return res.send({
+                                                returnState: 0,
+                                                knightID: knightID,
+                                                knightStudentID: knight.knightStudent,
+                                                masterID: knight.knightMaster,
+                                                masterStudentID: master.masterStudent,
+                                                knightStart: knight.knightStart,
+                                                firstname: student.firstname,
+                                                lastname: student.lastname,
+                                                mp: student.mp,
+                                            })
+
+                                        })
+
+                                }
                             })
 
                     })

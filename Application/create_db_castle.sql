@@ -66,7 +66,7 @@ CREATE TABLE Knight(
 CREATE TABLE KnightRequest(
     knightRequestID INTEGER PRIMARY KEY AUTOINCREMENT,
     knightRequestDate NUMERIC NOT NULL,
-    n INTEGER NOT NULL CHECK (knightRequestResult BETWEEN -1 AND 1),
+    knightRequestResult INTEGER NOT NULL CHECK (knightRequestResult BETWEEN -1 AND 1),
     knightRequestMaster INTEGER NOT NULL,
     knightRequestStudent INTEGER NOT NULL,
 
@@ -96,5 +96,5 @@ CREATE TABLE Soldier(
 
     FOREIGN KEY(soldierAttack) REFERENCES Attack(attackID),
     FOREIGN KEY(soldierStudent) REFERENCES Student(theUser),
-    PRIMARY KEY (soldierAttack, soldierStudent),
+    PRIMARY KEY (soldierAttack, soldierStudent)
 );

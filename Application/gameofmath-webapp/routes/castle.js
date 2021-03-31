@@ -85,7 +85,7 @@ router.post('/getMasterInfo', (req, res, next) => {
                             return knight_dao.findCurrentOfMaster(master.masterID)
                                 .then(knights => {
 
-                                    return student_dao.findByID(master.masterStudent)
+                                    return student_dao.findUserByID(master.masterStudent)
                                         .then(student => {
 
                                             return res.send({
@@ -142,10 +142,10 @@ router.post('/getKnightInfo', (req, res, next) => {
                             .then(castle => {
                                 if (req.session.isStudent && req.session.user.theClass !== castle.castleClass) return res.send({
                                     returnState: 1,
-                                    msg: 'MasterID is not in the student class'
+                                    msg: 'KnightID is not in the student class'
                                 }) else {
 
-                                    return student_dao.findByID(knight.knightStudent)
+                                    return student_dao.findUserByID(knight.knightStudent)
                                         .then(student => {
 
                                             return res.send({
@@ -165,6 +165,49 @@ router.post('/getKnightInfo', (req, res, next) => {
                                 }
                             })
 
+                    })
+
+            }
+        }).catch(err => next(err))
+})
+
+/**
+ * Get Info on a student
+ *
+ * @param studentID the id of the student
+ * @return
+ *  0: firstname, lastname, mp, isAKnight, isAMaster
+ *  1: if the knightID is invalid or not from the same class as the user
+ */
+router.post('/getStudentInfo', (req, res, next) => {
+    if (!req.session.isLogged) return next(new Error('Client must be logged'))
+
+    const studentID = req.body.masterID;
+    if (studentID == null) return res.send({returnState: 1, msg: 'StudentID invalid'})
+
+    student_dao.findUserByID(studentID)
+        .then(student => {
+            if (student == null) return res.send({returnState: 1, msg: 'StudentID invalid'})
+            else if (req.session.isStudent && req.session.user.theClass !== castle.castleClass) return res.send({
+                returnState: 1,
+                msg: 'StudentID is not in the student class'
+            }) else {
+
+                return castle_helper.getStudentMaster(studentID)
+                    .then(master => {
+                        return castle_helper.getStudentKnight(studentID)
+                            .then(knight => {
+
+                                res.send({
+                                    returnState: 0,
+                                    firstname: student.firstname,
+                                    lastname: student.lastname,
+                                    mp: student.mp,
+                                    isAKnight: knight != null,
+                                    isAMaster: master != null,
+                                })
+
+                            })
                     })
 
             }

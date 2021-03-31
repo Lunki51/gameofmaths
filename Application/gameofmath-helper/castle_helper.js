@@ -570,7 +570,7 @@ const CastleHelper = function () {
      * @param db db instance to use
      * @returns {Promise} A promise with the master: the master or null
      */
-    this.getStudentMaster = function (studentID, taxe, db = dbD) {
+    this.getStudentMaster = function (studentID, db = dbD) {
         return new Promise((resolve, reject) => {
 
             master_dao.findCurrent(db)
@@ -593,7 +593,7 @@ const CastleHelper = function () {
      * @param db db instance to use
      * @returns {Promise} A promise with the knight: the knight or null
      */
-    this.getStudentKnight = function (studentID, taxe, db = dbD) {
+    this.getStudentKnight = function (studentID, db = dbD) {
         return new Promise((resolve, reject) => {
 
             knight_dao.findCurrent(db)

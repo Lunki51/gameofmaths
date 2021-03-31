@@ -439,7 +439,7 @@ const CastleHelper = function () {
             let currentDate = new Date()
 
             // Get today dailyQuiz
-            dailyQuiz_dao.findAllByDate(new Date(), t)
+            dailyQuiz_dao.findAllByDate(new Date(), db)
                 .then(dailyQuizzes => {
                     if (dailyQuizzes.length > 0) resolve(dailyQuizzes[0])
                     else return this.makeDailyQuiz()
@@ -560,6 +560,52 @@ const CastleHelper = function () {
                     })
 
             })
+
+        })
+    }
+
+    /**
+     * Get the current master associated with the student.
+     *
+     * @param studentID id of the student
+     * @param db db instance to use
+     * @returns {Promise} A promise with the master: the master or null
+     */
+    this.getStudentMaster = function (studentID, taxe, db = dbD) {
+        return new Promise((resolve, reject) => {
+
+            master_dao.findCurrent(db)
+                .then(masters => {
+
+                    return resolve(masters.find(e => e.masterStudent === studentID))
+
+                })
+                .catch(err => {
+                    reject(err)
+                })
+
+        })
+    }
+
+    /**
+     * Get the current knight associated with the student.
+     *
+     * @param studentID id of the student
+     * @param db db instance to use
+     * @returns {Promise} A promise with the knight: the knight or null
+     */
+    this.getStudentKnight = function (studentID, taxe, db = dbD) {
+        return new Promise((resolve, reject) => {
+
+            knight_dao.findCurrent(db)
+                .then(knights => {
+
+                    return resolve(knights.find(e => e.knightStudent === studentID))
+
+                })
+                .catch(err => {
+                    reject(err)
+                })
 
         })
     }

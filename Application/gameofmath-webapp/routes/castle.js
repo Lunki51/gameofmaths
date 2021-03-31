@@ -214,4 +214,41 @@ router.post('/getStudentInfo', (req, res, next) => {
         }).catch(err => next(err))
 })
 
+/**
+ * Get Info on the current student
+ *
+ * @return
+ *  0: firstname, lastname, mp, isAKnight, isAMaster
+ */
+router.post('/getStudentInfo', (req, res, next) => {
+    if (!req.session.isLogged || !req.session.isStudent) return next(new Error('Client must be logged'))
+
+    const studentID = req.session.user.userID
+
+    student_dao.findUserByID(studentID)
+        .then(student => {
+            if (student == null) return res.send({returnState: 1, msg: 'StudentID invalid'})
+            else {
+
+                return castle_helper.getStudentMaster(studentID)
+                    .then(master => {
+                        return castle_helper.getStudentKnight(studentID)
+                            .then(knight => {
+
+                                res.send({
+                                    returnState: 0,
+                                    firstname: student.firstname,
+                                    lastname: student.lastname,
+                                    mp: student.mp,
+                                    isAKnight: knight != null,
+                                    isAMaster: master != null,
+                                })
+
+                            })
+                    })
+
+            }
+        }).catch(err => next(err))
+})
+
 module.exports = router;

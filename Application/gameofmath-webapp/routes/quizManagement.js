@@ -947,6 +947,44 @@ router.post('/getQuestion', (req, res, next) => {
     }).catch(err => next(err))
 })
 
+/**
+ * Change a question
+ *
+ * @param id The id of question
+ * @param upperText the upper text
+ * @param lowerText the lower text
+ * @param type the type
+ * @param level the level
+ * @return
+ *  0: question: The question
+ *  1: if the question id is incorrect
+ *  2: if a param is incorrect
+ */
+router.post('/updateQuestion', (req, res, next) => {
+    if (!req.session.isLogged || !req.session.isTeacher) return next(new Error('Client must be logged on a Teacher account'))
+
+    const id = req.body.id
+    const upperText = req.body.upperText
+    const lowerText = req.body.lowerText
+    const type = req.body.type
+    const level = req.body.level
+
+    if (id == null) return res.send({returnState: 1, msg: 'The question id is incorrect'})
+    if (level == null || Number(level) < 0 || upperText == null || lowerText == null || type == null) return res.send({returnState: 2, msg: 'The level is incorrect'})
+
+    question_dao.findByID(id)
+        .then(q => {
+            q.upperText = upperText
+            q.lowerText = lowerText
+            q.type = type
+            q.level = level
+            return question_dao.update(q).then(() => {
+                res.send({returnState: 0, question: q})
+            }).catch(err => next(err))
+        })
+        .catch(err => next(err))
+})
+
 // #############################################################################################
 // #################################### ANSWER MANAGEMENT ####################################
 // #############################################################################################
@@ -1174,6 +1212,33 @@ router.post('/getAnswer', (req, res, next) => {
         if (answer == null) res.send({returnState: 1, msg: 'The answer id is incorrect'})
         else res.send({returnState: 0, answer: answer})
     }).catch(err => next(err))
+})
+
+/**
+ * Delete all the answer of a question
+ *
+ * @param questionId The id of the question
+ * @return
+ *  0:
+ *  1: if the question id is incorrect
+ */
+router.post('/deleteAnswersOfQuestion', (req, res, next) => {
+    if (!req.session.isLogged || !req.session.isTeacher) return next(new Error('Client must be logged on a Teacher account'))
+
+    const questionId = req.body.questionId
+
+    if (questionId == null) return res.send({returnState: 1, msg: 'The question id is incorrect'})
+
+    question_dao.findByID(questionId)
+        .then(question => {
+            if (question == null) return res.send({returnState: 1, msg: 'The question id is incorrect'})
+
+            let request = 'DELETE FROM Answer WHERE theQuestion = ?';
+            db.run(request, [questionId], function (err) {
+                if (err) next(err)
+                else res.send({returnState: 0})
+            });
+        }).catch(err => next(err))
 })
 
 module.exports = router;

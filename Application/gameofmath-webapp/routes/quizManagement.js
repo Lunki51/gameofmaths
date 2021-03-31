@@ -40,7 +40,7 @@ router.post('/getChapters', (req, res, next) => {
  *  1: if the chapter id is incorrect
  */
 router.post('/getChapter', (req, res, next) => {
-    if (!req.session.isLogged & !req.session.isTeacher) return next(new Error('Client must be logged on a Teacher account'))
+    if (!req.session.isLogged || !req.session.isTeacher) return next(new Error('Client must be logged on a Teacher account'))
 
     const id = req.body.id
 
@@ -61,7 +61,7 @@ router.post('/getChapter', (req, res, next) => {
  *  1: if the chapter's name is incorrect
  */
 router.post('/createChapter', (req, res, next) => {
-    if (!req.session.isLogged && !req.session.isTeacher) return next(new Error('Client must be logged on a Teacher account'))
+    if (!req.session.isLogged || !req.session.isTeacher) return next(new Error('Client must be logged on a Teacher account'))
 
     const name = req.body.name
 
@@ -87,7 +87,7 @@ router.post('/createChapter', (req, res, next) => {
  *  1: if the chapter id is incorrect
  */
 router.post('/deleteChapter', (req, res, next) => {
-    if (!req.session.isLogged && !req.session.isTeacher) return next(new Error('Client must be logged on a Teacher account'))
+    if (!req.session.isLogged || !req.session.isTeacher) return next(new Error('Client must be logged on a Teacher account'))
 
     const id = req.body.id
 
@@ -169,7 +169,7 @@ router.post('/deleteChapter', (req, res, next) => {
  *  2: if the name is incorrect
  */
 router.post('/setChapterName', (req, res, next) => {
-    if (!req.session.isLogged && !req.session.isTeacher) return next(new Error('Client must be logged on a Teacher account'))
+    if (!req.session.isLogged || !req.session.isTeacher) return next(new Error('Client must be logged on a Teacher account'))
 
     const id = req.body.id
     const name = req.body.name
@@ -207,7 +207,7 @@ router.post('/setChapterName', (req, res, next) => {
  *  : if the quizName is incorrect
  */
 router.post('/createQuiz', (req, res, next) => {
-    if (!req.session.isLogged && !req.session.isTeacher) return next(new Error('Client must be logged on a Teacher account'))
+    if (!req.session.isLogged || !req.session.isTeacher) return next(new Error('Client must be logged on a Teacher account'))
 
     const isOrder = req.body.ordered
     const chapter = req.body.chapter
@@ -245,7 +245,7 @@ router.post('/createQuiz', (req, res, next) => {
  *  1: if the quiz id is incorrect
  */
 router.post('/deleteQuiz', (req, res, next) => {
-    if (!req.session.isLogged && !req.session.isTeacher) return next(new Error('Client must be logged on a Teacher account'))
+    if (!req.session.isLogged || !req.session.isTeacher) return next(new Error('Client must be logged on a Teacher account'))
 
     const id = req.body.id
 
@@ -312,7 +312,7 @@ router.post('/deleteQuiz', (req, res, next) => {
  *  2: if isOrder is incorrect
  */
 router.post('/setOrder', (req, res, next) => {
-    if (!req.session.isLogged && !req.session.isTeacher) return next(new Error('Client must be logged on a Teacher account'))
+    if (!req.session.isLogged || !req.session.isTeacher) return next(new Error('Client must be logged on a Teacher account'))
 
     const id = req.body.id
     const isOrder = req.body.isOrder
@@ -345,7 +345,7 @@ router.post('/setOrder', (req, res, next) => {
  *  2: if quizName is incorrect
  */
 router.post('/setQuizName', (req, res, next) => {
-    if (!req.session.isLogged && !req.session.isTeacher) return next(new Error('Client must be logged on a Teacher account'))
+    if (!req.session.isLogged || !req.session.isTeacher) return next(new Error('Client must be logged on a Teacher account'))
 
     const id = req.body.id
     const quizName = req.body.quizName
@@ -374,7 +374,7 @@ router.post('/setQuizName', (req, res, next) => {
  *  0: quizzes: List of quiz
  */
 router.post('/getQuizList', (req, res, next) => {
-    if (!req.session.isLogged && !req.session.isTeacher) return next(new Error('Client must be logged on a Teacher account'))
+    if (!req.session.isLogged || !req.session.isTeacher) return next(new Error('Client must be logged on a Teacher account'))
 
     quiz_dao.findAllOfType('CLASSIC').then(q => {
         res.send({returnState: 0, quizzes: q})
@@ -390,7 +390,7 @@ router.post('/getQuizList', (req, res, next) => {
  *  1: if the chapter id is incorrect
  */
 router.post('/getQuizListWithChapterId', (req, res, next) => {
-    if (!req.session.isLogged && !req.session.isTeacher) return next(new Error('Client must be logged on a Teacher account'))
+    if (!req.session.isLogged || !req.session.isTeacher) return next(new Error('Client must be logged on a Teacher account'))
 
     const id = req.body.id
 
@@ -410,7 +410,7 @@ router.post('/getQuizListWithChapterId', (req, res, next) => {
  *  1: if the quiz id is incorrect
  */
 router.post('/getQuiz', (req, res, next) => {
-    if (!req.session.isLogged & !req.session.isTeacher) return next(new Error('Client must be logged on a Teacher account'))
+    if (!req.session.isLogged || !req.session.isTeacher) return next(new Error('Client must be logged on a Teacher account'))
 
     const id = req.body.id
 
@@ -431,7 +431,7 @@ router.post('/getQuiz', (req, res, next) => {
  *  1: if the quiz name is incorrect
  */
 router.post('/getQuizByName', (req, res, next) => {
-    if (!req.session.isLogged & !req.session.isTeacher) return next(new Error('Client must be logged on a Teacher account'))
+    if (!req.session.isLogged || !req.session.isTeacher) return next(new Error('Client must be logged on a Teacher account'))
 
     const name = req.body.name
 
@@ -459,7 +459,7 @@ router.post('/getQuizByName', (req, res, next) => {
  *  3: if the chapterId is incorrect
  */
 router.post('/createQuestion', (req, res, next) => {
-    if (!req.session.isLogged && !req.session.isTeacher) return next(new Error('Client must be logged on a Teacher account'))
+    if (!req.session.isLogged || !req.session.isTeacher) return next(new Error('Client must be logged on a Teacher account'))
 
     const quizId = req.body.quizId
     const chapterId = req.body.chapterId
@@ -534,7 +534,7 @@ router.post('/createQuestion', (req, res, next) => {
  *  1: if the question id is incorrect
  */
 router.post('/deleteQuestion', (req, res, next) => {
-    if (!req.session.isLogged && !req.session.isTeacher) return next(new Error('Client must be logged on a Teacher account'))
+    if (!req.session.isLogged || !req.session.isTeacher) return next(new Error('Client must be logged on a Teacher account'))
 
     const questionId = req.body.questionId
 
@@ -632,7 +632,7 @@ router.post('/deleteQuestion', (req, res, next) => {
  *  2: if the quizId is incorrect
  */
 router.post('/setQNumber', (req, res, next) => {
-    if (!req.session.isLogged && !req.session.isTeacher) return next(new Error('Client must be logged on a Teacher account'))
+    if (!req.session.isLogged || !req.session.isTeacher) return next(new Error('Client must be logged on a Teacher account'))
 
     const questionId = req.body.questionId
     const quizId = req.body.quizId
@@ -706,7 +706,7 @@ router.post('/setQNumber', (req, res, next) => {
  *  2: if the upperText is incorrect
  */
 router.post('/setUpperText', (req, res, next) => {
-    if (!req.session.isLogged && !req.session.isTeacher) return next(new Error('Client must be logged on a Teacher account'))
+    if (!req.session.isLogged || !req.session.isTeacher) return next(new Error('Client must be logged on a Teacher account'))
 
     const id = req.body.id
     const upperText = req.body.upperText
@@ -735,7 +735,7 @@ router.post('/setUpperText', (req, res, next) => {
  *  2: if the lowerText is incorrect
  */
 router.post('/setLowerText', (req, res, next) => {
-    if (!req.session.isLogged && !req.session.isTeacher) return next(new Error('Client must be logged on a Teacher account'))
+    if (!req.session.isLogged || !req.session.isTeacher) return next(new Error('Client must be logged on a Teacher account'))
 
     const id = req.body.id
     const lowerText = req.body.lowerText
@@ -771,7 +771,7 @@ const upload = multer({
  *  2: if the image is incorrect
  */
 router.post('/setImage', upload.single('image'), (req, res, next) => {
-    if (!req.session.isLogged && !req.session.isTeacher) return next(new Error('Client must be logged on a Teacher account'))
+    if (!req.session.isLogged || !req.session.isTeacher) return next(new Error('Client must be logged on a Teacher account'))
 
     const questionId = req.body.questionId
 
@@ -818,7 +818,7 @@ router.post('/setImage', upload.single('image'), (req, res, next) => {
  *  1: if the question id is incorrect
  */
 router.post('/deleteImage', (req, res, next) => {
-    if (!req.session.isLogged && !req.session.isTeacher) return next(new Error('Client must be logged on a Teacher account'))
+    if (!req.session.isLogged || !req.session.isTeacher) return next(new Error('Client must be logged on a Teacher account'))
 
     const questionId = req.body.questionId
 
@@ -850,7 +850,7 @@ router.post('/deleteImage', (req, res, next) => {
  *  2: if the image is incorrect
  */
 router.post('/setType', (req, res, next) => {
-    if (!req.session.isLogged && !req.session.isTeacher) return next(new Error('Client must be logged on a Teacher account'))
+    if (!req.session.isLogged || !req.session.isTeacher) return next(new Error('Client must be logged on a Teacher account'))
 
     const id = req.body.id
     const type = req.body.type
@@ -882,7 +882,7 @@ router.post('/setType', (req, res, next) => {
  *  2: if the level is incorrect
  */
 router.post('/setLevel', (req, res, next) => {
-    if (!req.session.isLogged && !req.session.isTeacher) return next(new Error('Client must be logged on a Teacher account'))
+    if (!req.session.isLogged || !req.session.isTeacher) return next(new Error('Client must be logged on a Teacher account'))
 
     const id = req.body.id
     const level = req.body.level
@@ -908,7 +908,7 @@ router.post('/setLevel', (req, res, next) => {
  *  0: questions: list of questions in this quiz
  */
 router.post('/getQuestionList', (req, res, next) => {
-    if (!req.session.isLogged && !req.session.isTeacher) return next(new Error('Client must be logged on a Teacher account'))
+    if (!req.session.isLogged || !req.session.isTeacher) return next(new Error('Client must be logged on a Teacher account'))
 
     const id = req.body.id
 
@@ -935,7 +935,7 @@ router.post('/getQuestionList', (req, res, next) => {
  *  1: if the question id is incorrect
  */
 router.post('/getQuestion', (req, res, next) => {
-    if (!req.session.isLogged & !req.session.isTeacher) return next(new Error('Client must be logged on a Teacher account'))
+    if (!req.session.isLogged || !req.session.isTeacher) return next(new Error('Client must be logged on a Teacher account'))
 
     const id = req.body.id
 
@@ -960,7 +960,7 @@ router.post('/getQuestion', (req, res, next) => {
  *  1: if the questionId is incorrect
  */
 router.post('/createAnswer', (req, res, next) => {
-    if (!req.session.isLogged && !req.session.isTeacher) return next(new Error('Client must be logged on a Teacher account'))
+    if (!req.session.isLogged || !req.session.isTeacher) return next(new Error('Client must be logged on a Teacher account'))
 
     const questionId = req.body.questionId
 
@@ -978,26 +978,26 @@ router.post('/createAnswer', (req, res, next) => {
             })
                 .catch(err => next(err))
         })
+})
 
-    /**
-     * Delete answer
-     *
-     * @param id The id of answer
-     * @return
-     *  0:
-     *  1: if the answer id is incorrect
-     */
-    router.post('/deleteAnswer', (req, res, next) => {
-        if (!req.session.isLogged && !req.session.isTeacher) return next(new Error('Client must be logged on a Teacher account'))
+/**
+ * Delete answer
+ *
+ * @param id The id of answer
+ * @return
+ *  0:
+ *  1: if the answer id is incorrect
+ */
+router.post('/deleteAnswer', (req, res, next) => {
+    if (!req.session.isLogged || !req.session.isTeacher) return next(new Error('Client must be logged on a Teacher account'))
 
-        const id = req.body.id
+    const id = req.body.id
 
-        if (id == null) return res.send({returnState: 1, msg: 'The answer id is incorrect'})
+    if (id == null) return res.send({returnState: 1, msg: 'The answer id is incorrect'})
 
-        answer_dao.delete(id).then(() => {
-            res.send({returnState: 0})
-        }).catch(err => next(err))
-    })
+    answer_dao.delete(id).then(() => {
+        res.send({returnState: 0})
+    }).catch(err => next(err))
 })
 
 /**
@@ -1011,7 +1011,7 @@ router.post('/createAnswer', (req, res, next) => {
  *  2: if the text is incorrect
  */
 router.post('/setText', (req, res, next) => {
-    if (!req.session.isLogged && !req.session.isTeacher) return next(new Error('Client must be logged on a Teacher account'))
+    if (!req.session.isLogged || !req.session.isTeacher) return next(new Error('Client must be logged on a Teacher account'))
 
     const text = req.body.text
     const id = req.body.id
@@ -1049,7 +1049,7 @@ router.post('/setText', (req, res, next) => {
  *  3: can't be call on an OPEN question
  */
 router.post('/setIsValid', (req, res, next) => {
-    if (!req.session.isLogged && !req.session.isTeacher) return next(new Error('Client must be logged on a Teacher account'))
+    if (!req.session.isLogged || !req.session.isTeacher) return next(new Error('Client must be logged on a Teacher account'))
 
     const isValid = req.body.isValid
     const id = req.body.id
@@ -1139,7 +1139,7 @@ router.post('/setIsValid', (req, res, next) => {
  *  1: if the theQuestion is incorrect
  */
 router.post('/getAnswersList', (req, res, next) => {
-    if (!req.session.isLogged && !req.session.isTeacher) return next(new Error('Client must be logged on a Teacher account'))
+    if (!req.session.isLogged || !req.session.isTeacher) return next(new Error('Client must be logged on a Teacher account'))
 
     const questionId = req.body.questionId
 
@@ -1164,7 +1164,7 @@ router.post('/getAnswersList', (req, res, next) => {
  *  1: if the answer id is incorrect
  */
 router.post('/getAnswer', (req, res, next) => {
-    if (!req.session.isLogged & !req.session.isTeacher) return next(new Error('Client must be logged on a Teacher account'))
+    if (!req.session.isLogged || !req.session.isTeacher) return next(new Error('Client must be logged on a Teacher account'))
 
     const id = req.body.id
 

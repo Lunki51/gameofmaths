@@ -12,7 +12,7 @@ const db = require('gameofmath-db').db
  *  0: mp: the number of MP of the student
  */
 router.post('/getMP', (req, res, next) => {
-    if (!req.session.isLogged & !req.session.isStudent) return next(new Error('Client must be logged on a student account'))
+    if (!req.session.isLogged || !req.session.isStudent) return next(new Error('Client must be logged on a student account'))
 
     student_dao.findByID(req.session.user.userID).then(student => {
         if (student == null) next(new Error('The student can\'t be found'))
@@ -30,7 +30,7 @@ router.post('/getMP', (req, res, next) => {
  *  0: mp: the gain of the student with his timestamp
  */
 router.post('/getMPArray', (req, res, next) => {
-    if (!req.session.isLogged & !req.session.isStudent) return next(new Error('Client must be logged on a student account'))
+    if (!req.session.isLogged || !req.session.isStudent) return next(new Error('Client must be logged on a student account'))
 
     mpGain_dao.findAllByStudent(req.session.user.userID).then(gains => {
         res.send({
@@ -51,7 +51,7 @@ router.post('/getMPArray', (req, res, next) => {
  *  0: firstname, lastname, className, classGrade, classID, mp
  */
 router.post('/getInfo', (req, res, next) => {
-    if (!req.session.isLogged & !req.session.isStudent) return next(new Error('Client must be logged on a student account'))
+    if (!req.session.isLogged || !req.session.isStudent) return next(new Error('Client must be logged on a student account'))
 
     let request = 'SELECT * FROM User, Student, Class WHERE theUser = userID AND theClass = classID AND theUser = ?'
     db.all(request, [req.session.user.userID], function (err, rows) {

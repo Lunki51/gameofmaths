@@ -554,7 +554,7 @@ router.post('/deleteStudent', (req, res, next) => {
  *  1: the student id is incorrect
  */
 router.post('/getMP', (req, res, next) => {
-    if (!req.session.isLogged || !req.session.isStudent) return next(new Error('Client must be logged on a student account'))
+    if (!req.session.isLogged || !req.session.isTeacher) return next(new Error('Client must be logged on a student account'))
 
     const studentId = req.body.studentId
     if (studentId == null) return res.send({returnState: 1, msg: 'The student id is incorrect'})
@@ -576,7 +576,7 @@ router.post('/getMP', (req, res, next) => {
  *  1: the student od is incorrect
  */
 router.post('/getMPArray', (req, res, next) => {
-    if (!req.session.isLogged || !req.session.isStudent) return next(new Error('Client must be logged on a student account'))
+    if (!req.session.isLogged || !req.session.isTeacher) return next(new Error('Client must be logged on a student account'))
 
     const studentId = req.body.studentId
     if (studentId == null) return res.send({returnState: 1, msg: 'The student id is incorrect'})

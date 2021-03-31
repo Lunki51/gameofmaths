@@ -13,7 +13,7 @@ const db = require('gameofmath-db').db
  *  1: New mail incorrect
  */
 router.post('/changeMail', (req, res, next) => {
-    if (!req.session.isLogged && !req.session.isTeacher) return next(new Error('Client must be logged on a teacher account'))
+    if (!req.session.isLogged || !req.session.isTeacher) return next(new Error('Client must be logged on a teacher account'))
 
     const newMail = req.body.newMail;
 
@@ -37,7 +37,7 @@ router.post('/changeMail', (req, res, next) => {
  *  1: New lastname incorrect
  */
 router.post('/changeLastname', (req, res, next) => {
-    if (!req.session.isLogged && !req.session.isTeacher) return next(new Error('Client must be logged on a teacher account'))
+    if (!req.session.isLogged || !req.session.isTeacher) return next(new Error('Client must be logged on a teacher account'))
 
     const newName = req.body.newName.trim();
 
@@ -61,7 +61,7 @@ router.post('/changeLastname', (req, res, next) => {
  *  1: New firstname incorrect
  */
 router.post('/changeFirstname', (req, res, next) => {
-    if (!req.session.isLogged && !req.session.isTeacher) return next(new Error('Client must be logged on a teacher account'))
+    if (!req.session.isLogged || !req.session.isTeacher) return next(new Error('Client must be logged on a teacher account'))
 
     const newName = req.body.newName.trim();
 
@@ -85,7 +85,7 @@ router.post('/changeFirstname', (req, res, next) => {
  *  1: the key is incorrect
  */
 router.post('/search', (req, res, next) => {
-    if (!req.session.isLogged && !req.session.isTeacher) return next(new Error('Client must be logged on a teacher account'))
+    if (!req.session.isLogged || !req.session.isTeacher) return next(new Error('Client must be logged on a teacher account'))
 
     const key = req.body.key.trim().toUpperCase()
 

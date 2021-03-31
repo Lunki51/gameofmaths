@@ -21,7 +21,7 @@ const fs = require('fs')
  *  0: classes: an array with the classes inside
  */
 router.post('/getClasses', (req, res, next) => {
-    if (!req.session.isLogged & !req.session.isTeacher) return next(new Error('Client must be logged on a Teacher account'))
+    if (!req.session.isLogged || !req.session.isTeacher) return next(new Error('Client must be logged on a Teacher account'))
 
     class_dao.findAll().then(classes => {
         res.send({returnState: 0, classes: classes})
@@ -37,7 +37,7 @@ router.post('/getClasses', (req, res, next) => {
  *  1: if the class id is incorrect
  */
 router.post('/getClass', (req, res, next) => {
-    if (!req.session.isLogged & !req.session.isTeacher) return next(new Error('Client must be logged on a Teacher account'))
+    if (!req.session.isLogged || !req.session.isTeacher) return next(new Error('Client must be logged on a Teacher account'))
 
     const id = req.body.id
 
@@ -59,7 +59,7 @@ router.post('/getClass', (req, res, next) => {
  *  1: if the grade or the name is incorrect
  */
 router.post('/create', (req, res, next) => {
-    if (!req.session.isLogged & !req.session.isTeacher) return next(new Error('Client must be logged on a Teacher account'))
+    if (!req.session.isLogged || !req.session.isTeacher) return next(new Error('Client must be logged on a Teacher account'))
 
     const grade = req.body.grade
     const name = req.body.name
@@ -89,7 +89,7 @@ router.post('/create', (req, res, next) => {
  *  2: if the the name is incorrect
  */
 router.post('/rename', (req, res, next) => {
-    if (!req.session.isLogged & !req.session.isTeacher) return next(new Error('Client must be logged on a Teacher account'))
+    if (!req.session.isLogged || !req.session.isTeacher) return next(new Error('Client must be logged on a Teacher account'))
 
     const id = req.body.id
     const newName = req.body.newName
@@ -119,7 +119,7 @@ router.post('/rename', (req, res, next) => {
  *  2: if the the grade is incorrect
  */
 router.post('/setGrade', (req, res, next) => {
-    if (!req.session.isLogged & !req.session.isTeacher) return next(new Error('Client must be logged on a Teacher account'))
+    if (!req.session.isLogged || !req.session.isTeacher) return next(new Error('Client must be logged on a Teacher account'))
 
     const id = req.body.id
     const newGrade = req.body.newGrade
@@ -147,7 +147,7 @@ router.post('/setGrade', (req, res, next) => {
  *  1: if the the class id is incorrect
  */
 router.post('/regenerateMap', (req, res, next) => {
-    if (!req.session.isLogged & !req.session.isTeacher) return next(new Error('Client must be logged on a Teacher account'))
+    if (!req.session.isLogged || !req.session.isTeacher) return next(new Error('Client must be logged on a Teacher account'))
 
     const id = req.body.id
     if (id == null) return res.send({returnState: 1, msg: 'The class id is incorrect'})
@@ -173,7 +173,7 @@ router.post('/regenerateMap', (req, res, next) => {
  *  1: if the the class id is incorrect
  */
 router.post('/delete', (req, res, next) => {
-    if (!req.session.isLogged & !req.session.isTeacher) return next(new Error('Client must be logged on a Teacher account'))
+    if (!req.session.isLogged || !req.session.isTeacher) return next(new Error('Client must be logged on a Teacher account'))
 
     const id = req.body.id
     if (id == null) return res.send({returnState: 1, msg: 'The class id is incorrect'})
@@ -258,7 +258,7 @@ router.post('/delete', (req, res, next) => {
  *  1: if the class id is incorrect
  */
 router.post('/getStudents', (req, res, next) => {
-    if (!req.session.isLogged & !req.session.isTeacher) return next(new Error('Client must be logged on a Teacher account'))
+    if (!req.session.isLogged || !req.session.isTeacher) return next(new Error('Client must be logged on a Teacher account'))
 
     const id = req.body.id
     if (id == null) return res.send({returnState: 1, msg: 'The class id is incorrect'})
@@ -284,7 +284,7 @@ router.post('/getStudents', (req, res, next) => {
  *  1: if the student id is incorrect
  */
 router.post('/getStudent', (req, res, next) => {
-    if (!req.session.isLogged & !req.session.isTeacher) return next(new Error('Client must be logged on a Teacher account'))
+    if (!req.session.isLogged || !req.session.isTeacher) return next(new Error('Client must be logged on a Teacher account'))
 
     const id = req.body.id
 
@@ -310,7 +310,7 @@ router.post('/getStudent', (req, res, next) => {
  *  2: if the the new name is incorrect
  */
 router.post('/setLastname', (req, res, next) => {
-    if (!req.session.isLogged & !req.session.isTeacher) return next(new Error('Client must be logged on a Teacher account'))
+    if (!req.session.isLogged || !req.session.isTeacher) return next(new Error('Client must be logged on a Teacher account'))
 
     const userId = req.body.userId
     const newName = req.body.newName
@@ -343,7 +343,7 @@ router.post('/setLastname', (req, res, next) => {
  *  2: if the the new name is incorrect
  */
 router.post('/setFirstname', (req, res, next) => {
-    if (!req.session.isLogged & !req.session.isTeacher) return next(new Error('Client must be logged on a Teacher account'))
+    if (!req.session.isLogged || !req.session.isTeacher) return next(new Error('Client must be logged on a Teacher account'))
 
     const userId = req.body.userId
     const newName = req.body.newName
@@ -376,7 +376,7 @@ router.post('/setFirstname', (req, res, next) => {
  *  2: if the the new login is incorrect
  */
 router.post('/setLogin', (req, res, next) => {
-    if (!req.session.isLogged & !req.session.isTeacher) return next(new Error('Client must be logged on a Teacher account'))
+    if (!req.session.isLogged || !req.session.isTeacher) return next(new Error('Client must be logged on a Teacher account'))
 
     const userId = req.body.userId
     const newLogin = req.body.newLogin
@@ -407,7 +407,7 @@ router.post('/setLogin', (req, res, next) => {
  *  1: if the the student id is incorrect
  */
 router.post('/regeneratePassword', (req, res, next) => {
-    if (!req.session.isLogged & !req.session.isTeacher) return next(new Error('Client must be logged on a Teacher account'))
+    if (!req.session.isLogged || !req.session.isTeacher) return next(new Error('Client must be logged on a Teacher account'))
 
     const userId = req.body.userId
     if (userId == null) return res.send({returnState: 1, msg: 'The student id is incorrect'})
@@ -443,7 +443,7 @@ router.post('/regeneratePassword', (req, res, next) => {
  *  2: the class id is incorrect
  */
 router.post('/createStudent', (req, res, next) => {
-    if (!req.session.isLogged & !req.session.isTeacher) return next(new Error('Client must be logged on a Teacher account'))
+    if (!req.session.isLogged || !req.session.isTeacher) return next(new Error('Client must be logged on a Teacher account'))
 
     const classId = req.body.classId
     const login = req.body.login
@@ -497,7 +497,7 @@ router.post('/createStudent', (req, res, next) => {
  *  1: the student od is incorrect
  */
 router.post('/deleteStudent', (req, res, next) => {
-    if (!req.session.isLogged & !req.session.isTeacher) return next(new Error('Client must be logged on a Teacher account'))
+    if (!req.session.isLogged || !req.session.isTeacher) return next(new Error('Client must be logged on a Teacher account'))
 
     const studentId = req.body.studentId
     if (studentId == null) return res.send({returnState: 1, msg: 'The student id is incorrect'})
@@ -554,7 +554,7 @@ router.post('/deleteStudent', (req, res, next) => {
  *  1: the student id is incorrect
  */
 router.post('/getMP', (req, res, next) => {
-    if (!req.session.isLogged & !req.session.isStudent) return next(new Error('Client must be logged on a student account'))
+    if (!req.session.isLogged || !req.session.isStudent) return next(new Error('Client must be logged on a student account'))
 
     const studentId = req.body.studentId
     if (studentId == null) return res.send({returnState: 1, msg: 'The student id is incorrect'})
@@ -576,7 +576,7 @@ router.post('/getMP', (req, res, next) => {
  *  1: the student od is incorrect
  */
 router.post('/getMPArray', (req, res, next) => {
-    if (!req.session.isLogged & !req.session.isStudent) return next(new Error('Client must be logged on a student account'))
+    if (!req.session.isLogged || !req.session.isStudent) return next(new Error('Client must be logged on a student account'))
 
     const studentId = req.body.studentId
     if (studentId == null) return res.send({returnState: 1, msg: 'The student id is incorrect'})

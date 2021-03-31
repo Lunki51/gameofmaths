@@ -22,7 +22,7 @@ const AttackHelper = function () {
         return new Promise((resolve, reject) => {
 
             // Get the master
-            master_dao.findCurrentForCastle(castleID)
+            master_dao.findCurrentForCastle(castleID, db)
                 .then(master => {
 
                     // Check that the castle hasn't been attack recently
@@ -40,16 +40,16 @@ const AttackHelper = function () {
                         .then(prevRes => {
                             if (!prevRes) return prevRes
 
-                            return master_dao.findCurrent()
+                            return master_dao.findCurrent(db)
                                 .then(masters => {
                                     return masters.find(e => e.masterStudent === originStudentID) === undefined
-                                })
+                                }, db)
                         })
                         // Check that the student isn't a knight of the castle
                         .then(prevRes => {
                             if (!prevRes) return prevRes
 
-                            return knight_dao.findCurrentOfMaster(master.masterID)
+                            return knight_dao.findCurrentOfMaster(master.masterID, db)
                                 .then(knights => {
                                     return knights.find(e => e.masterStudent === originStudentID) === undefined
                                 })

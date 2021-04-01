@@ -1,5 +1,4 @@
-import {Component} from "react";
-import {PopupMessage} from "../../teacher_display_2.0";
+import React, {Component} from "react";
 import {deleteClass, getAllClasses} from "../../../../../model/classModel";
 import {getAllStudents,deleteTheStudents} from "../../../../../model/studentModel";
 import {getAllChapter, deleteChapter} from "../../../../../model/chapterModel";
@@ -7,18 +6,15 @@ import {getQuizList, deleteQuiz, addQuestion, getQuestionList, deleteQuestion} f
 
 export class DeleteDisplay extends Component{
 
-    constructor() {
-        super();
+    constructor(props) {
+        super(props);
 
         this.state = {
-            currentStepScreen: <DeleteSelectStep openPopup={this.handleOpenPopup} previous={this.handlePrevious} next={this.handleNext}/>
+            currentStepScreen: <DeleteSelectStep openWaring={props.waringOpen} openError={props.errorOpen} previous={this.handlePrevious} next={this.handleNext}/>
         }
 
     }
 
-    handleOpenPopup = (Object) => {
-        this.props.openPopup(Object)
-    }
 
     handleNext = (nextStepDOMObject) => {
         this.setState({
@@ -72,7 +68,6 @@ class DeleteSelectStep extends Component{
 
 
 
-
     handleConfirmChoice = () => {
 
         switch (this.state.currentChoice) {
@@ -98,15 +93,7 @@ class DeleteSelectStep extends Component{
                 break
             default:
 
-                this.props.openPopup(<PopupMessage
-                    message="Aucune selection"
-                    validText="OK"
-                    validateCallback={()=>{
-                        this.props.closePopup()
-                    }
-                    }
-
-                />)
+                this.props.openError("Aucun choix n'a été sectionné")
 
                 break
         }
@@ -188,7 +175,8 @@ export class DeleteStudentStep extends Component {
             currentStudent: null,
             studentList: [],
             currentClass: 0,
-            classesList: []
+            classesList: [],
+            selectedList: []
         }
     }
 
@@ -222,17 +210,36 @@ export class DeleteStudentStep extends Component {
 
     handleValidate = (event) => {
 
-        deleteTheStudents(this.state.currentStudent.userID,parseInt(this.state.currentClass)).then(res => {
+        let deleteList = ""
 
-            getAllStudents(this.state.currentClass).then(res => {
 
-                this.setState({
-                    studentList: res.data.students
-                })
+
+        this.state.selectedList.forEach((theStudent) => {
+
+            deleteTheStudents(theStudent.userID,parseInt(this.state.currentClass)).then(res => {
+
+                if(res.data.returnState <1 ){
+                    getAllStudents(this.state.currentClass).then(results => {
+
+                        this.setState({
+                            studentList: results.data.students,
+                            selectedList:[]
+                        })
+
+
+                    })
+                }else {
+
+                    }
 
             })
-
         })
+
+
+
+
+
+
 
     }
 
@@ -255,10 +262,38 @@ export class DeleteStudentStep extends Component {
 
     }
 
-    handleSelect = (event, student) =>{
-        this.setState({
-            currentStudent: student
+    handleUpdateListByID = (id) => {
+
+        getAllStudents(id).then(res => {
+
+            this.setState({
+                studentList: res.data.students,
+                currentClass: id
+            })
+
         })
+
+    }
+
+    handleSelect = (event,id, student) =>{
+
+        let container = document.getElementById(id);
+
+        console.log(event.target)
+
+        if((container.style.backgroundColor === "var(--primary_color)" || !container.style.backgroundColor) && id === event.target.id){
+            container.style.backgroundColor = "var(--secondary_color)"
+            this.state.selectedList.push(student)
+        }else{
+            container.style.backgroundColor = "var(--primary_color)"
+            this.setState({
+                selectedList: this.state.selectedList.filter(function(aStudent, index, arr){
+                    return aStudent !== student;
+                })
+                }
+            )
+        }
+
     }
 
     handlePrevious = () => {
@@ -277,7 +312,7 @@ export class DeleteStudentStep extends Component {
                 </select>
 
                 {(this.state.studentList.length > 0)?this.state.studentList.map( (theStudent, index) => {
-                    return <StudentRow onClick={this.handleSelect} value={theStudent} key={index}/>
+                    return <StudentRow id={"student:"+theStudent.userID+":"+index} onClick={this.handleSelect} value={theStudent} key={index}/>
                 }):<h1 className="teacher-student-list-none">Aucun Elève</h1>}
 
                 <br/>
@@ -299,12 +334,12 @@ class StudentRow extends Component {
 
 
     handleClick = (event) => {
-        this.props.onClick(event,this.props.value)
+        this.props.onClick(event,this.props.id,this.props.value)
     }
 
 
     render() {
-        return <div onClick={this.handleClick} className="teacher-student-row">
+        return <div id={this.props.id} onClick={this.handleClick} className="teacher-student-row">
             <h1 className="teacher-student-row-title">{this.props.value.lastname}</h1>
         </div>
     }

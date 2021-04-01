@@ -1,10 +1,7 @@
 import React, {Component} from "react";
-import {PopupMessage} from "../../teacher_display_2.0";
 import {getAllClasses, regenerateMap, updateTheClass} from "../../../../../model/classModel";
 import {
-    createStudent,
     getAllStudents,
-    reg,
     regeneratePassword, updateStudentFirstName, updateStudentlastName,
     updateStudentlogin
 } from "../../../../../model/studentModel";
@@ -12,19 +9,16 @@ import {
 
 export class EditDisplay extends Component {
 
-    constructor() {
-        super();
+    constructor(props) {
+        super(props);
 
         this.state = {
-            currentStepScreen: <EditSelectStep openPopup={this.handleOpenPopup} previous={this.handlePrevious}
+            currentStepScreen: <EditSelectStep openWaring={props.waringOpen} openError={props.errorOpen} previous={this.handlePrevious}
                                                next={this.handleNext}/>
         }
 
     }
 
-    handleOpenPopup = (Object) => {
-        this.props.openPopup(Object)
-    }
 
     handleNext = (nextStepDOMObject) => {
         this.setState({
@@ -99,15 +93,7 @@ class EditSelectStep extends Component {
                 break
             default:
 
-                this.props.openPopup(<PopupMessage
-                    message="Aucune selection"
-                    validText="OK"
-                    validateCallback={() => {
-                        this.props.closePopup()
-                    }
-                    }
-
-                />)
+                this.props.openError("Aucun choix n'a été sectionné")
 
                 break
         }
@@ -116,8 +102,8 @@ class EditSelectStep extends Component {
 
     handleSelectChoice = (event, text, id) => {
         let domObject = document.getElementById(id);
-        if (!this.state.currentChoiceDOM) {
 
+        if (!this.state.currentChoiceDOM) {
             domObject.style.backgroundColor = "var(--secondary_color)"
 
             this.setState({

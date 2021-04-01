@@ -18,20 +18,22 @@ export class StudentDisplay extends Component{
     componentDidMount() {
 
 
-
-
         getAllClasses().then(res => {
+
             this.setState({
                 classesList: res.data.classes
             })
 
-            getAllStudents(res.data.classes[0].classID).then(res => {
+            getAllStudents((this.props.fromSearch)?this.props.fromSearch.theClass:res.data.classes[0].classID).then(res => {
 
-                if(this.props.formCreate){
+                if(this.props.fromSearch){
+
+                    document.getElementById("class:"+this.props.fromSearch.theClass).selected = true;
+
                     this.setState({
                         studentList:res.data.students,
-                        currentClass:this.props.formCreate.theClass,
-                        currentStudent:this.props.formCreate.theStudent
+                        currentClass:this.props.fromSearch.theClass,
+                        currentStudent:this.props.fromSearch
                     })
                 }else{
                     this.setState({
@@ -45,8 +47,42 @@ export class StudentDisplay extends Component{
             })
         })
 
+    }
+
+    componentWillReceiveProps(nextProps, nextContext) {
+
+
+        getAllClasses().then(result => {
+
+            this.setState({
+                classesList: result.data.classes
+            })
+
+            getAllStudents((nextProps.fromSearch)?nextProps.fromSearch.theClass:result.data.classes[0].classID).then(res => {
+
+                    if(nextProps.fromSearch){
+
+                        document.getElementById("class:"+nextProps.fromSearch.theClass).selected = true;
+
+                        this.setState({
+                            studentList:res.data.students,
+                            currentClass:nextProps.fromSearch.theClass,
+                            currentStudent:nextProps.fromSearch
+                        })
+
+                    }else{
+
+                        this.setState({
+                            studentList:res.data.students
+                        })
+
+                    }
+
+            })
+        })
 
     }
+
 
     handleDisplayOverView = (theStudent) => {
 
@@ -78,7 +114,7 @@ export class StudentDisplay extends Component{
 
                 <select onChange={this.handleUpdateList} className="teacher-student-creation-input" id="selected-class">
                     {this.state.classesList.map((theClass, index) => {
-                        return <option key={index} value={theClass.classID}>{theClass.name}</option>
+                        return <option key={index} id={"class:"+theClass.classID} value={theClass.classID}>{theClass.name}</option>
                     })}
                 </select>
 

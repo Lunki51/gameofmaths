@@ -17,12 +17,23 @@ export class ClassesDisplay extends Component{
     componentDidMount() {
         this.handleGetClasses()
 
-        if(this.props.fromCreate){
+        if(this.props.fromSearch){
             this.setState({
-                currentOverviewClass: this.props.fromCreate
+                currentOverviewClass: this.props.fromSearch
             })
         }
 
+
+    }
+
+
+    componentWillReceiveProps(nextProps, nextContext) {
+
+        if(nextProps.fromSearch){
+            this.setState({
+                currentOverviewClass: nextProps.fromSearch
+            })
+        }
 
     }
 

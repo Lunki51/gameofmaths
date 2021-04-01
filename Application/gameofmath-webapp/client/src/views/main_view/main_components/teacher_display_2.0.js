@@ -1,4 +1,4 @@
-import {Component} from "react";
+import React, {Component} from "react";
 import '../styles/teacher_style20.css';
 import '../styles/global_variables.css';
 import {DefaultDisplay} from "./components/teacher_components/default_display";
@@ -14,8 +14,8 @@ import {QuestionDisplay} from "./components/teacher_components/question_display"
 export class TeacherDisplay20 extends Component{
 
 
-    constructor() {
-        super();
+    constructor(props) {
+        super(props);
 
         document.title = "Dashboard | Game Of Math"
 
@@ -41,11 +41,11 @@ export class TeacherDisplay20 extends Component{
         this.setState({currentDisplay: <StudentDisplay/>})
     }
     handleGotoAdding = () => {
-        this.setState({currentDisplay: <AddingDisplay redirect={this.handleRedirectTo}  openPopup={this.handleCreatePopup} closePopup={this.handleDismissPopup}/>})
+        this.setState({currentDisplay: <AddingDisplay errorOpen={this.props.displayError} waringOpen={this.props.displayWarning} redirect={this.handleRedirectTo} />})
     }
 
     handleGotoDelete = () => {
-        this.setState({currentDisplay: <DeleteDisplay redirect={this.handleRedirectTo} openPopup={this.handleCreatePopup} closePopup={this.handleDismissPopup}/>})
+        this.setState({currentDisplay: <DeleteDisplay errorOpen={this.props.displayError} waringOpen={this.props.displayWarning} redirect={this.handleRedirectTo} />})
     }
 
     handleGotoQuestion = () => {
@@ -53,43 +53,39 @@ export class TeacherDisplay20 extends Component{
     }
 
     handleGotoEdit = () => {
-        this.setState({currentDisplay: <EditDisplay redirect={this.handleRedirectTo} openPopup={this.handleCreatePopup} closePopup={this.handleDismissPopup}/>})
+        this.setState({currentDisplay: <EditDisplay errorOpen={this.props.displayError} waringOpen={this.props.displayWarning} redirect={this.handleRedirectTo} />})
     }
 
-    handleRedirectTo(goalElement){
-        this.setState({currentDisplay: goalElement})
+
+
+    handleRedirectTo = (goalElement) =>{
+
+        console.log(goalElement)
+
+        this.setState({
+                currentDisplay: goalElement
+            })
+
     }
 
     ////////////////////////////////////////////////
 
     handleOpenSearch = () => {
-        this.setState({hoverElement: <SearchDisplay dismiss={this.handleDismissHoverElement}/>})
+        this.setState({hoverElement: <SearchDisplay errorOpen={this.props.displayError} waringOpen={this.props.displayWarning} redirect={this.handleRedirectTo} dismiss={this.handleDismissHoverElement}/>})
     }
 
     handleDismissHoverElement = () => {
         this.setState({hoverElement:null})
     }
 
-
-    handleCreatePopup = (PopupMessageObject) => {
-        this.setState({
-            msgElement: PopupMessageObject
-        })
-    }
-
-    handleDismissPopup = () => {
-        this.setState({msgElement:null})
-    }
-
     render() {
         return <div className="background">
 
             {/*///////////////////| DESKTOP VIEW |////////////////////*/}
+
             <div className="teacher-logo-container">
-                <img className="teacher-GOM-logo" src={window.location.origin + "/logo/game_of_math_logo.png"}/>
+                <img className="teacher-GOM-logo" src={window.location.origin + "/logo/game_of_math_logo.png"} alt="logo"/>
             </div>
-
-
 
 
             <nav className="teacher-nav-container">
@@ -117,6 +113,7 @@ export class TeacherDisplay20 extends Component{
 
 
             {/*///////////////////////| GLOBAL VIEW |//////////////////////*/}
+
             {this.state.currentDisplay}
             {this.state.hoverElement}
 
@@ -135,36 +132,11 @@ class NavElement extends Component{
 
         return <div onClick={this.props.onClick} className={this.props.typeClass} >
 
-            <img className="teacher-nav-element-icon" src={this.props.iconURL}/>
+            <img className="teacher-nav-element-icon" src={this.props.iconURL} alt={"icon:"+this.props.title}/>
             <h3 className="teacher-nav-element-title" >{this.props.title}</h3>
 
         </div>
 
     }
 
-}
-
-
-export class PopupMessage extends Component{
-
-    render() {
-
-        return <div className="dim-background">
-                    <div className="teacher-popup-message-container">
-                        <div className="teacher-popup-message-limit">
-                            <p>
-                                {this.props.message}
-                            </p>
-                        </div>
-
-                        <div className="teacher-popup-message-btn-section">
-                            <button className="teacher-popup-message-btn-valid" onClick={this.props.validateCallback}>{this.props.validText}</button>
-
-                            {(this.props.cancelText)?<button className="teacher-popup-message-btn-cancel" onClick={this.props.cancelCallback}>{this.props.cancelText}</button>:
-                            null}
-                        </div>
-
-                    </div>
-                </div>
-    }
 }

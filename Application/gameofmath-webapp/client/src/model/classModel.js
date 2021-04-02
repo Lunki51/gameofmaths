@@ -20,9 +20,7 @@ export function regenerateMap(id){
 }
 
 export function updateTheClass(id,newName, newGrade){
- Axios.post('/api/classManagement/rename', {id,newName}).then((res) => {
-  return Axios.post('/api/classManagement/setGrade', {id,newGrade})
- })
+ return {name:Axios.post('/api/classManagement/rename', {id,newName}),grade:Axios.post('/api/classManagement/setGrade', {id,newGrade})};
 }
 
 export function deleteClass(id){

@@ -5,6 +5,12 @@ export function getQuestion(questionNb) {
     return Axios.post('/api/quiz/getQuestion', {questionNb})
 
 }
+export function getAnswersList(quizId,questionId) {
+
+    return Axios.post('/api/quizManagement/getAnswersList', {quizId,questionId})
+
+}
+
 
 export function deleteQuestion(questionID,quizID){
     let questionId = parseInt(questionID)

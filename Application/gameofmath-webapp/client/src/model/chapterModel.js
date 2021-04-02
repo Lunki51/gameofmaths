@@ -15,7 +15,7 @@ export function createChapter(name){
 
 export function updateChapterName(id,newName){
 
-    return Axios.post('/api/quizManagement/setChapterName', {id,newName})
+    return Axios.post('/api/quizManagement/setChapterName', {id:id,name:newName})
 }
 
 export function deleteChapter(id){

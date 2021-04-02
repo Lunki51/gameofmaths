@@ -24,9 +24,9 @@ export function deleteTheStudents(studentId,classId){
     return Axios.post('/api/classManagement/deleteStudent', {classId,studentId} )
 }
 
-export function regeneratePassword(classId,login,lastname,firstname){
+export function regeneratePassword(classId,userId){
 
-    return Axios.post('/api/classManagement/regeneratePassword', {classID:classId, login:login, lastname:lastname, firstname:firstname} )
+    return Axios.post('/api/classManagement/regeneratePassword', {classId:classId, userId:userId} )
 
 }
 

@@ -17,27 +17,33 @@ beforeAll(async (done) => {
 });
 
 test('insert a quiz', async (done) => {
-    expect( await quiz_dao.insert({
+    expect(await quiz_dao.insert({
         quizID: -1,
         theChapter: 1,
         asAnOrder: 'true',
         quizName: 'q1',
         quizType: 'CLASSIC'
-    }).catch(err => {done(err)})).toBe(1);
+    }).catch(err => {
+        done(err)
+    })).toBe(1);
     expect(await quiz_dao.insert({
         quizID: -1,
         theChapter: 1,
         asAnOrder: 'true',
         quizName: 'q2',
         quizType: 'RANDOM'
-    }).catch(err => {done(err)})).toBe(2);
+    }).catch(err => {
+        done(err)
+    })).toBe(2);
     expect(await quiz_dao.insert({
         quizID: -1,
         theChapter: 2,
         asAnOrder: 'false',
         quizName: 'q3',
         quizType: 'RANDOM'
-    }).catch(err => {done(err)})).toBe(3);
+    }).catch(err => {
+        done(err)
+    })).toBe(3);
     done();
 });
 
@@ -78,20 +84,6 @@ test('get a quiz by ID', async (done) => {
         theChapter: 1,
         asAnOrder: '1',
         quizName: 'q2',
-        quizType: 'RANDOM'
-    });
-    done();
-});
-
-test('get a quiz by name', async (done) => {
-    const data = await quiz_dao.findByName('q3').catch(err => {
-        done(err);
-    });
-    expect(data).toEqual({
-        quizID: 3,
-        theChapter: 2,
-        asAnOrder: '0',
-        quizName: 'q3',
         quizType: 'RANDOM'
     });
     done();

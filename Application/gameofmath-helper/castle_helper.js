@@ -1,13 +1,12 @@
 const dbD = require('gameofmath-db').db
 const mpGain_dao = require('gameofmath-db').mpGain_dao
 const quizDone_dao = require('gameofmath-db').quizDone_dao
-const quiz_dao = require('gameofmath-db').quiz_dao
-const notification_helper = require('notification_helper')
+const notification_helper = require('./notification_helper')
 const knight_dao = require('gameofmath-castle').knight_dao
 const master_dao = require('gameofmath-castle').master_dao
 const knightRequest_dao = require('gameofmath-castle').knightRequest_dao
 const dailyQuiz_dao = require('gameofmath-castle').dailyQuiz_dao
-const quiz_helper = require('gameofmath-helper').quiz_helper
+const quiz_helper = require('./gameofmath-helper')
 
 const CastleHelper = function () {
 
@@ -198,9 +197,9 @@ const CastleHelper = function () {
                                     return knight_dao.update(oldKnight, t)
                                         // Notifie old master
                                         .then(_ => notification_helper.sendTo(oldKnight.knightMaster, 'knightLeaveForOther', {
-                                            knightStudentID : request.knightRequestStudent,
-                                            newMasterID : request.knightRequestMaster,
-                                            date : currentDate
+                                            knightStudentID: request.knightRequestStudent,
+                                            newMasterID: request.knightRequestMaster,
+                                            date: currentDate
                                         }, t))
                                 }
                             })
@@ -215,7 +214,7 @@ const CastleHelper = function () {
                             // Notifie new knight
                             .then(_ => notification_helper.sendTo(request.knightRequestStudent, 'knightRequestAccepted', {
                                 newMaster: request.knightRequestMaster,
-                                knightRequestID : request.knightRequestID,
+                                knightRequestID: request.knightRequestID,
                                 date: currentDate
                             }, t))
                             // Update knightRequest
@@ -234,7 +233,7 @@ const CastleHelper = function () {
                                         // Notifie master
                                         .then(_ => notification_helper.sendTo(item.knightRequestMaster, 'knightRequestTooLate', {
                                             newMaster: request.knightRequestMaster,
-                                            knightRequestID : knightRequestID,
+                                            knightRequestID: knightRequestID,
                                             date: currentDate
                                         }, t))
                                 }))
@@ -286,7 +285,7 @@ const CastleHelper = function () {
                             .then(_ => notification_helper.sendTo(request.knightRequestStudent, 'knightRequestRefused', {
                                 masterID: request.knightRequestMaster,
                                 knightRequestID: knightRequestID,
-                                date : currentDate
+                                date: currentDate
                             }, t))
 
                     })
@@ -439,7 +438,7 @@ const CastleHelper = function () {
             let currentDate = new Date()
 
             // Get today dailyQuiz
-            dailyQuiz_dao.findAllByDate(new Date(), t)
+            dailyQuiz_dao.findAllByDate(new Date(), db)
                 .then(dailyQuizzes => {
                     if (dailyQuizzes.length > 0) resolve(dailyQuizzes[0])
                     else return this.makeDailyQuiz()
@@ -478,8 +477,8 @@ const CastleHelper = function () {
                                 // Get knight
                                 return knight_dao.findCurrentOfMaster(masterID, t)
                                     .then(knights => {
-                                        let pointByKnights = score*10*(1-master.masterTaxe)/knights.length
-                                        let masterPoint = score*10 - knights.length*pointByKnights
+                                        let pointByKnights = score * 10 * (1 - master.masterTaxe) / knights.length
+                                        let masterPoint = score * 10 - knights.length * pointByKnights
 
                                         // Insert QuizDone and master MPGain
                                         return quizDone_dao.insertMPGain({
@@ -560,6 +559,52 @@ const CastleHelper = function () {
                     })
 
             })
+
+        })
+    }
+
+    /**
+     * Get the current master associated with the student.
+     *
+     * @param studentID id of the student
+     * @param db db instance to use
+     * @returns {Promise} A promise with the master: the master or null
+     */
+    this.getStudentMaster = function (studentID, db = dbD) {
+        return new Promise((resolve, reject) => {
+
+            master_dao.findCurrent(db)
+                .then(masters => {
+
+                    return resolve(masters.find(e => e.masterStudent === studentID))
+
+                })
+                .catch(err => {
+                    reject(err)
+                })
+
+        })
+    }
+
+    /**
+     * Get the current knight associated with the student.
+     *
+     * @param studentID id of the student
+     * @param db db instance to use
+     * @returns {Promise} A promise with the knight: the knight or null
+     */
+    this.getStudentKnight = function (studentID, db = dbD) {
+        return new Promise((resolve, reject) => {
+
+            knight_dao.findCurrent(db)
+                .then(knights => {
+
+                    return resolve(knights.find(e => e.knightStudent === studentID))
+
+                })
+                .catch(err => {
+                    reject(err)
+                })
 
         })
     }

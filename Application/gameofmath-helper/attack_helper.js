@@ -1,8 +1,8 @@
 const dbD = require('gameofmath-db').db
 const mpGain_dao = require('gameofmath-db').mpGain_dao
-const notification_helper = require('notification_helper')
-const quiz_helper = require('quiz_helper')
-const castle_helper = require('castle_helper')
+const notification_helper = require('./notification_helper')
+const quiz_helper = require('./quiz_helper')
+const castle_helper = require('./castle_helper')
 const knight_dao = require('gameofmath-castle').knight_dao
 const master_dao = require('gameofmath-castle').master_dao
 const attack_dao = require('gameofmath-castle').attack_dao
@@ -22,7 +22,7 @@ const AttackHelper = function () {
         return new Promise((resolve, reject) => {
 
             // Get the master
-            master_dao.findCurrentForCastle(castleID)
+            master_dao.findCurrentForCastle(castleID, db)
                 .then(master => {
 
                     // Check that the castle hasn't been attack recently
@@ -40,16 +40,16 @@ const AttackHelper = function () {
                         .then(prevRes => {
                             if (!prevRes) return prevRes
 
-                            return master_dao.findCurrent()
+                            return master_dao.findCurrent(db)
                                 .then(masters => {
                                     return masters.find(e => e.masterStudent === originStudentID) === undefined
-                                })
+                                }, db)
                         })
                         // Check that the student isn't a knight of the castle
                         .then(prevRes => {
                             if (!prevRes) return prevRes
 
-                            return knight_dao.findCurrentOfMaster(master.masterID)
+                            return knight_dao.findCurrentOfMaster(master.masterID, db)
                                 .then(knights => {
                                     return knights.find(e => e.masterStudent === originStudentID) === undefined
                                 })
@@ -81,7 +81,7 @@ const AttackHelper = function () {
             db.beginTransaction(function (err, t) {
 
                 // Create the quiz
-                quiz_helper.makeRandomQuiz(20, null, t)
+                quiz_helper.makeRandomQuiz(10, null, t)
                     .then(quizID => {
 
                         // Get target

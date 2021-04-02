@@ -7,6 +7,9 @@ const quizDone_dao = require('gameofmath-db').quizDone_dao
 const mpGain_dao = require('gameofmath-db').mpGain_dao
 const db = require('gameofmath-db').db
 
+const LIMIT = 2
+const LIMIT_DAY = 1
+
 /**
  * Get all the chapter in the DB.
  *
@@ -24,110 +27,146 @@ router.post('/getChapters', (req, res, next) => {
 })
 
 /**
+ * Get the number of remaining quiz.
+ *
+ * @return
+ *  0: nb: number of remaining quiz
+ */
+router.post('/getRemainingQuiz', (req, res, next) => {
+    if (!req.session.isLogged || !req.session.isStudent) return next(new Error('Client must be logged and a student'))
+
+    const limitTime = new Date().setDate(new Date().getDate() - LIMIT_DAY) // Each day
+
+    // Check quiz limit each day
+    db.all('SELECT COUNT(*) AS count FROM QuizDone, MPGain WHERE theGain = mpGainID AND theStudent = ? AND date > ?', [req.session.user.theUser, limitTime], function (err, rows) {
+        if (err) return next(err)
+        else {
+
+            return res.send({returnState: 0, nb: LIMIT - rows[2].nb})
+
+        }
+    })
+})
+
+/**
  * Start a quiz a random quiz in a chapter.
  *
  * @param chapter the chapter of the quiz
  * @return
  *  0: the number of question in the quiz (nbQuestion) and the quiz name (quizName)
  *  1: if there isn't any quiz in the chapter
+ *  2: quiz limit
  */
 router.post('/startQuiz', (req, res, next) => {
     if (!req.session.isLogged || !req.session.isStudent) return next(new Error('Client must be logged and a student'))
     if (req.session.currentQuiz != null && req.session.currentQuiz.quizID > 0) return next(new Error('The student is already on a quiz'))
     if (req.body.chapter == null) return next(new Error('No chapter param in the body'))
 
-    chapter_dao.findByName(req.body.chapter).then(chapter => {
-        if (chapter) {
+    const limitTime = new Date().setDate(new Date().getDate() - LIMIT_DAY) //Each day
 
-            quiz_dao.findAllOfTypeInChapter('CLASSIC', chapter.chapterID).then(quizs => {
-                if (quizs.length === 0) res.send({returnState: 1, msg: 'Pas de quizz disponible pour ce chapitre.'})
-                else {
-                    const quiz = quizs[Math.floor(Math.random() * quizs.length)]
+    // Check quiz limit each day
+    db.all('SELECT COUNT(*) AS count FROM QuizDone, MPGain WHERE theGain = mpGainID AND theStudent = ? AND date > ?', [req.session.user.theUser, limitTime], function (err, rows) {
+        if (err) return next(err)
+        else if (rows[0].count >= LIMIT) return res.send({returnState: 2, msg: 'Limite de quiz atteinte.'})
+        else {
 
-                    db.all('SELECT questionID, upperText, lowerText, image, type, level, U.theChapter, answerID, text, isValid, theQuiz, qNumber, asAnOrder, quizName FROM Question U, Answer A, QuizQuestion Q, Quiz Z WHERE questionID = A.theQuestion AND questionID = Q.theQuestion AND theQuiz = quizID AND quizID = ?', [quiz.quizID], function (err, questions) {
-                        if (err) next(err)
-                        else if (questions.length === 0) next(new Error('The quiz don\'t have any question'))
+            // Get the quiz
+            chapter_dao.findByName(req.body.chapter).then(chapter => {
+                if (chapter) {
+
+                    quiz_dao.findAllOfTypeInChapter('CLASSIC', chapter.chapterID).then(quizs => {
+                        if (quizs.length === 0) res.send({returnState: 1, msg: 'Pas de quiz disponible pour ce chapitre.'})
                         else {
+                            const quiz = quizs[Math.floor(Math.random() * quizs.length)]
 
-                            req.session.currentQuiz = {}
-                            req.session.currentQuiz.quizID = quiz.quizID
-                            req.session.currentQuiz.quizLastQuestion = 0
-                            req.session.currentQuiz.score = 0
-                            req.session.currentQuiz.quizName = quiz.quizName
-                            req.session.currentQuiz.questions = questions.reduce((o, cur) => {
+                            db.all('SELECT questionID, upperText, lowerText, image, type, level, U.theChapter, answerID, text, isValid, theQuiz, qNumber, asAnOrder, quizName FROM Question U, Answer A, QuizQuestion Q, Quiz Z WHERE questionID = A.theQuestion AND questionID = Q.theQuestion AND theQuiz = quizID AND quizID = ?', [quiz.quizID], function (err, questions) {
+                                if (err) next(err)
+                                else if (questions.length === 0) next(new Error('The quiz don\'t have any question'))
+                                else {
 
-                                const index = o.findIndex(q => q.questionID === cur.questionID)
-                                const answer = {answerID: cur.answerID, text: cur.text, isValid: cur.isValid}
+                                    // Init the quiz
+                                    req.session.currentQuiz = {}
+                                    req.session.currentQuiz.quizID = quiz.quizID
+                                    req.session.currentQuiz.quizLastQuestion = 0
+                                    req.session.currentQuiz.score = 0
+                                    req.session.currentQuiz.quizName = quiz.quizName
+                                    req.session.currentQuiz.questions = questions.reduce((o, cur) => {
 
-                                if (index >= 0) {
-                                    o[index].answers = o[index].answers.concat(answer)
-                                } else {
-                                    const obj = {...cur}
-                                    obj.answers = [answer]
+                                        const index = o.findIndex(q => q.questionID === cur.questionID)
+                                        const answer = {answerID: cur.answerID, text: cur.text, isValid: cur.isValid}
 
-                                    delete obj.answerID
-                                    delete obj.text
-                                    delete obj.isValid
+                                        if (index >= 0) {
+                                            o[index].answers = o[index].answers.concat(answer)
+                                        } else {
+                                            const obj = {...cur}
+                                            obj.answers = [answer]
 
-                                    o = o.concat(obj)
-                                }
+                                            delete obj.answerID
+                                            delete obj.text
+                                            delete obj.isValid
 
-                                return o
-                            }, [])
+                                            o = o.concat(obj)
+                                        }
 
-                            //Shuffle answer
-                            req.session.currentQuiz.questions.forEach(q => {
-                                for (let i = 0; i < q.answers.length; i++) {
-                                    let p = Math.floor(Math.random() * q.answers.length)
-                                    let t = q.answers[p]
-                                    q.answers[p] = q.answers[i]
-                                    q.answers[i] = t
+                                        return o
+                                    }, [])
+
+                                    //Shuffle answer
+                                    req.session.currentQuiz.questions.forEach(q => {
+                                        for (let i = 0; i < q.answers.length; i++) {
+                                            let p = Math.floor(Math.random() * q.answers.length)
+                                            let t = q.answers[p]
+                                            q.answers[p] = q.answers[i]
+                                            q.answers[i] = t
+                                        }
+                                    })
+
+                                    if (['true', '1'].find(o => o === quiz.asAnOrder) != null) { //Order question
+                                        req.session.currentQuiz.questions.sort((a, b) => a.qNumber - b.qNumber)
+                                    } else { //Shuffle question
+                                        for (let i = 0; i < req.session.currentQuiz.questions.length; i++) {
+                                            let p = Math.floor(Math.random() * req.session.currentQuiz.questions.length)
+                                            let t = req.session.currentQuiz.questions[p]
+                                            req.session.currentQuiz.questions[p] = req.session.currentQuiz.questions[i]
+                                            req.session.currentQuiz.questions[i] = t
+                                        }
+                                    }
+
+                                    req.session.currentQuiz.maxScore = req.session.currentQuiz.questions.reduce((a, b) => a + b.level, 0)
+                                    req.session.currentQuiz.date = new Date()
+                                    quizDone_dao.insertMPGain({
+                                        mpGainID: -1,
+                                        amount: 0,
+                                        type: 'QUIZ',
+                                        date: req.session.currentQuiz.date,
+                                        theStudent: req.session.user.userID,
+                                        theQuiz: req.session.currentQuiz.quizID,
+                                        score: 0
+                                    }).then(id => {
+                                        req.session.currentQuiz.theGain = id
+                                        res.send({returnState: 0, nbQuestion: req.session.currentQuiz.questions.length, quizName: req.session.currentQuiz.quizName})
+                                    }).catch(
+                                        err => {
+                                            next(err)
+                                        }
+                                    )
+
                                 }
                             })
 
-                            if (['true', '1'].find(o => o === quiz.asAnOrder) != null) { //Order question
-                                req.session.currentQuiz.questions.sort((a, b) => a.qNumber - b.qNumber)
-                            } else { //Shuffle question
-                                for (let i = 0; i < req.session.currentQuiz.questions.length; i++) {
-                                    let p = Math.floor(Math.random() * req.session.currentQuiz.questions.length)
-                                    let t = req.session.currentQuiz.questions[p]
-                                    req.session.currentQuiz.questions[p] = req.session.currentQuiz.questions[i]
-                                    req.session.currentQuiz.questions[i] = t
-                                }
-                            }
-
-                            req.session.currentQuiz.maxScore = req.session.currentQuiz.questions.reduce((a, b) => a + b.level, 0)
-                            req.session.currentQuiz.date = new Date()
-                            quizDone_dao.insertMPGain({
-                                mpGainID: -1,
-                                amount: 0,
-                                type: 'QUIZ',
-                                date: req.session.currentQuiz.date,
-                                theStudent: req.session.user.userID,
-                                theQuiz: req.session.currentQuiz.quizID,
-                                score: 0
-                            }).then(id => {
-                                req.session.currentQuiz.theGain = id
-                                res.send({returnState: 0, nbQuestion: req.session.currentQuiz.questions.length, quizName: req.session.currentQuiz.quizName})
-                            }).catch(
-                                err => {
-                                    next(err)
-                                }
-                            )
-
                         }
+                    }).catch(err => {
+                        next(err)
                     })
 
+                } else {
+                    next(new Error('Can\'t find the chapter'))
                 }
             }).catch(err => {
                 next(err)
             })
 
-        } else {
-            next(new Error('Can\'t find the chapter'))
         }
-    }).catch(err => {
-        next(err)
     })
 
 })

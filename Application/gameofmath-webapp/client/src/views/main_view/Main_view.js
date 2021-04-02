@@ -1,7 +1,7 @@
 import React, {Component} from 'react';
 
 //MODEL
-import auth, {getType, isAuth} from "../../model/authentification";
+import auth, {getType, getUsername, isAuth} from "../../model/authentification";
 
 import LoginView from "./main_components/Login_display";
 import {MobileHeader, NavigationBar, Warning} from "./main_components/components/global_components";
@@ -12,6 +12,7 @@ import {TeacherDisplay20} from "./main_components/teacher_display_2.0";
 
 import {TeacherDisplay} from "./main_components/teacher_display";
 import {CastleDetails} from "./overlay_components/castle_overlay"
+import {ProfilDetails} from "./overlay_components/profil_overlay";
 import {quitQuiz} from "../../model/quizModel";
 
 /**
@@ -43,8 +44,8 @@ class MainView extends Component {
             mapAccess: true,
             who: "",
             username: "",
-            zoomed : false,
-            details : null,
+            zoomed: false,
+            details: null,
         }
 
 
@@ -68,12 +69,12 @@ class MainView extends Component {
                         if(res.data.isLogged){
                             getType().then((response) => {
 
-                                if(response.data.returnState === 0){
-                                    this.setState({
-                                        isLogged: res.data.isLogged,
-                                        who:response.data.type
-                                    })
-                                }
+                            if (response.data.returnState === 0) {
+                                this.setState({
+                                    isLogged: res.data.isLogged,
+                                    who: response.data.type
+                                })
+                            }
 
                             })
                         }else{
@@ -182,7 +183,6 @@ class MainView extends Component {
             this.setState({
                 overlayComponent: null,
                 whatOnOverlay: ""
-
             })
         } else {
             document.getElementById('quiz-btn').style.shadowfilter = "filter : drop-shadow(0px 0px 0px 3px #fff);"
@@ -194,14 +194,32 @@ class MainView extends Component {
 
     }
 
+    handleProfilDisplay = () => {
+        if (this.state.whatOnOverlay === "quiz") {
+            this.handleQuizDisplay();
+        }
+        if (this.state.whatOnOverlay === "profil") {
+            this.setState({
+                overlayComponent: null,
+                whatOnOverlay: ""
+            })
+        } else {
+            this.setState({
+                overlayComponent: <ProfilDetails/>,
+                whatOnOverlay: "profil"
+            })
+
+        }
+    }
+
     handleCastleDetails = (castle) => {
-        this.setState({details : <CastleDetails castle = {castle} clear = {this.handleClearDetails}/>,zoomed:true})
+        this.setState({details: <CastleDetails castle={castle} clear={this.handleClearDetails}/>, zoomed: true})
         console.log("Added details")
     }
 
 
     handleClearDetails = () => {
-        this.setState({details : null,zoomed:false})
+        this.setState({details: null, zoomed: false})
         console.log("Removed details")
     }
 
@@ -222,8 +240,9 @@ class MainView extends Component {
                 return <>
 
                     <MobileHeader/>{/*appear only when mobile*/}
-                    <NavigationBar quiz={this.handleQuizDisplay} logout={this.handleLogout}/>
-                    <MapView details={this.handleCastleDetails} zoomed = {this.state.zoomed}/>
+                    <NavigationBar quiz={this.handleQuizDisplay} prof={this.handleProfilDisplay}
+                                   logout={this.handleLogout}/>
+                    <MapView details={this.handleCastleDetails} zoomed={this.state.zoomed}/>
                     {this.state.details}
                     {this.state.overlayComponent}
                 </>

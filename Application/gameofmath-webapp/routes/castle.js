@@ -57,6 +57,45 @@ router.post('/getCastleInfo', (req, res, next) => {
 })
 
 /**
+ * Get castle list of the class
+ *
+ * @param classID the id of the class
+ * @return
+ *  0: castleIDs: [ ids of the castle sorted ]
+ *  1: if the classID is invalid or not from the same class as the user
+ */
+router.post('/getCastleIDs', (req, res, next) => {
+    if (!req.session.isLogged) return next(new Error('Client must be logged'))
+
+    const classID = req.body.classID;
+    if (classID == null) return res.send({returnState: 1, msg: 'CastleID invalid'})
+
+    student_dao.findUserByID(studentID)
+        .then(student => {
+            if (student == null) return res.send({returnState: 1, msg: 'StudentID invalid'})
+            else if (req.session.isStudent && req.session.user.theClass !== classID) {
+                return res.send({
+                    returnState: 1,
+                    msg: 'StudentID is not in the student class'
+                })
+            } else {
+
+                return castle_dao.findAllOfClass(classID)
+                    .then(castles => {
+                        return res.send({
+                                    returnState: 0,
+                                    castleIDs: castles.reduce((acc, obj) => {
+                                        acc.push(obj.castleID)
+                                        return acc
+                                    }, []).sort()
+                                })
+                    })
+
+            }
+        }).catch(err => next(err))
+})
+
+/**
  * Get Info on a master
  *
  * @param masterID the id of the master

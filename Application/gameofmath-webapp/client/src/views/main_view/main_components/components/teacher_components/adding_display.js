@@ -701,7 +701,7 @@ class AddQuizStep extends Component{
 
         console.log(name,this.state.currentChapter,isOrder)
         if(valid){
-            createQuiz(name,this.state.currentChapter,isOrder).then((res) => {
+            updateQuestion(isOrder,name,this.state.currentChapter).then((res) => {
                 console.log(res)
             })
         }

@@ -226,7 +226,7 @@ router.post('/getStudentInfo', (req, res, next) => {
  * @return
  *  0: firstname, lastname, mp, isAKnight, isAMaster
  */
-router.post('/getStudentInfo', (req, res, next) => {
+router.post('/getSelfInfo', (req, res, next) => {
     if (!req.session.isLogged || !req.session.isStudent) return next(new Error('Client must be logged'))
 
     const studentID = req.session.user.userID

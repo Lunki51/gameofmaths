@@ -150,7 +150,9 @@ describe('Test the startQuiz path', () => {
             quizName: 'q1'
         })
         await postC(res, '/api/quiz/quit').send().catch(done);
-        done();
+        db.run('DELETE FROM QuizDone WHERE score > -1', [], function (err) {
+            done(err)
+        })
     });
 });
 
@@ -163,6 +165,9 @@ describe('Test the isInQuiz path', () => {
             isInQuiz: true
         })
         await postC(res, '/api/quiz/quit').send().catch(done);
+        db.run('DELETE FROM QuizDone WHERE score > -1', [], function (err) {
+            done(err)
+        })
         done();
     });
 });
@@ -212,6 +217,9 @@ describe('Test the getQuestion path', () => {
         })
 
         await postC(res, '/api/quiz/quit').send().catch(done);
+        db.run('DELETE FROM QuizDone WHERE score > -1', [], function (err) {
+            done(err)
+        })
         done();
     });
 
@@ -238,6 +246,9 @@ describe('Test the getQuestion path', () => {
         })
 
         await postC(res, '/api/quiz/quit').send().catch(done);
+        db.run('DELETE FROM QuizDone WHERE score > -1', [], function (err) {
+            done(err)
+        })
         done();
     });
 });
@@ -256,6 +267,9 @@ describe('Test the postAnswer path', () => {
         })
 
         await postC(res, '/api/quiz/quit').send().catch(done);
+        db.run('DELETE FROM QuizDone WHERE score > -1', [], function (err) {
+            done(err)
+        })
         done();
     });
 
@@ -303,6 +317,9 @@ describe('Test the quit path', () => {
         expect((await postC(res, '/api/quiz/isInQuiz').send().catch(done)).body).toEqual({
             returnState: 0,
             isInQuiz: false
+        })
+        db.run('DELETE FROM QuizDone WHERE score > -1', [], function (err) {
+            done(err)
         })
         done();
     });

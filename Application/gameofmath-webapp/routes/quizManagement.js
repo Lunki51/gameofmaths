@@ -826,7 +826,7 @@ router.post('/deleteImage', (req, res, next) => {
 
     if (questionId == null) return res.send({returnState: 1, msg: 'The question id is incorrect'})
 
-    question_dao.findByID(id)
+    question_dao.findByID(questionId)
         .then(q => {
             const img = q.image
             q.image = ''

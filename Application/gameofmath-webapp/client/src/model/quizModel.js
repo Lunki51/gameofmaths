@@ -176,5 +176,8 @@ export function setImage(questionId,imageFile){
         }})
 }
 
+export function deleteImage(questionId){
+    return Axios.post('api/quizManagement/deleteImage',{questionId})
+}
 
 

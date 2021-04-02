@@ -8,7 +8,7 @@ import {
 import {deleteChapter, getAllChapter, updateChapterName} from "../../../../../model/chapterModel";
 import {
     addQuestion,
-    createAnswer, deleteAnswersOfQuestion,
+    createAnswer, deleteAnswersOfQuestion, deleteImage,
     deleteQuestion, deleteQuiz, getAnswersList,
     getQuestion,
     getQuestionList,
@@ -1119,6 +1119,12 @@ class EditQuestionDetailsStep extends Component {
         this.props.previous(<EditQuestionSelectStep previous={this.props.previous} next={this.props.next}/>)
     }
 
+    handleDeleteFile =()=>{
+        deleteImage(this.props.question.questionID).then(res => {
+            console.log(res);
+        });
+    }
+
     render() {
         return <div className="teacher-add-student-step">
 
@@ -1147,8 +1153,12 @@ class EditQuestionDetailsStep extends Component {
                        type="text" defaultValue={this.props.question.qNumber}/>
                 <input className="teacher-student-creation-input" id="select-upperText" placeholder="Texte du haut"
                        type="text" defaultValue={this.props.question.upperText}/>
-                <input onChange={this.handleFileSelected} className="teacher-student-creation-input" id="select-image"
-                       placeholder="Image" type="file" name="file"/>
+                       <div className="teacher-question-creation-answer">
+                           <input onChange={this.handleFileSelected} className="teacher-student-creation-inputcreation-input" id="select-image"
+                                  placeholder="Image" type="file" name="file"/>
+                           <input onClick={this.handleDeleteFile} id="delete-image" className="teacher-question-creation-answer-valid"/>
+                       </div>
+
                 <input className="teacher-student-creation-input" id="select-lowerText" placeholder="Texte du bas"
                        type="text" defaultValue={this.props.question.lowerText}/>
                 <input className="teacher-student-creation-input" id="select-level" placeholder="Difficulté" type="text"

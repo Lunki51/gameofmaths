@@ -7,6 +7,9 @@ const quizDone_dao = require('gameofmath-db').quizDone_dao
 const mpGain_dao = require('gameofmath-db').mpGain_dao
 const db = require('gameofmath-db').db
 
+const LIMIT = 2
+const LIMIT_DAY = 1
+
 /**
  * Get all the chapter in the DB.
  *
@@ -24,6 +27,28 @@ router.post('/getChapters', (req, res, next) => {
 })
 
 /**
+ * Get the number of remaining quiz.
+ *
+ * @return
+ *  0: nb: number of remaining quiz
+ */
+router.post('/getRemainingQuiz', (req, res, next) => {
+    if (!req.session.isLogged || !req.session.isStudent) return next(new Error('Client must be logged and a student'))
+
+    const limitTime = new Date().setDate(new Date().getDate() - LIMIT_DAY) // Each day
+
+    // Check quiz limit each day
+    db.all('SELECT COUNT(*) AS count FROM QuizDone, MPGain WHERE theGain = mpGainID AND theStudent = ? AND date > ?', [req.session.user.theUser, limitTime], function (err, rows) {
+        if (err) return next(err)
+        else {
+
+            return res.send({returnState: 0, nb: LIMIT - rows[2].nb})
+
+        }
+    })
+})
+
+/**
  * Start a quiz a random quiz in a chapter.
  *
  * @param chapter the chapter of the quiz
@@ -37,13 +62,12 @@ router.post('/startQuiz', (req, res, next) => {
     if (req.session.currentQuiz != null && req.session.currentQuiz.quizID > 0) return next(new Error('The student is already on a quiz'))
     if (req.body.chapter == null) return next(new Error('No chapter param in the body'))
 
-    const limitTime = new Date().setDate(new Date().getDate() - 1) //Each day
-    const limit = 2
+    const limitTime = new Date().setDate(new Date().getDate() - LIMIT_DAY) //Each day
 
     // Check quiz limit each day
     db.all('SELECT COUNT(*) AS count FROM QuizDone, MPGain WHERE theGain = mpGainID AND theStudent = ? AND date > ?', [req.session.user.theUser, limitTime], function (err, rows) {
         if (err) return next(err)
-        else if (rows[0].count >= limit) return res.send({returnState: 2, msg: 'Limite de quiz atteinte.'})
+        else if (rows[0].count >= LIMIT) return res.send({returnState: 2, msg: 'Limite de quiz atteinte.'})
         else {
 
             // Get the quiz

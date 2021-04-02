@@ -10,7 +10,7 @@ const PoissonDiskSampling = require('poisson-disk-sampling');
  * @param sizeY the y size of the map
  * @param nbPoints the number of points in the map
  */
-let GameMap = function (sizeX, sizeY, nbPoints) {
+let GameMap = function (sizeX, sizeY, nbPoints,castleNumber) {
     this.heightPerlin = new Perlin(sizeX, sizeY);
     this.biomePerlin = new Perlin(sizeX,sizeY);
 
@@ -303,7 +303,7 @@ let GameMap = function (sizeX, sizeY, nbPoints) {
     //Create a delaunay graph based on the generated points
     this.delaunay = ddelaunay.Delaunay.from(startpos)
 
-    this.castlePosition = this.generateCastle(startpos,8)
+    this.castlePosition = this.generateCastle(startpos,castleNumber)
     //Retrieve the data from the delaunay graph
     let {points, triangles} = this.delaunay;
 
@@ -314,7 +314,7 @@ let GameMap = function (sizeX, sizeY, nbPoints) {
         let t1 = new THREE.Vector2(points[triangles[i] * 2], points[triangles[i] * 2 + 1])
         let t2 = new THREE.Vector2(points[triangles[i + 1] * 2],  points[triangles[i + 1] * 2 + 1])
         let t3 = new THREE.Vector2(points[triangles[i + 2] * 2] , points[triangles[i + 2] * 2 + 1])
-        this.recuTriangle(t1, t2, t3, sizeX, sizeY, 2,colors)
+        this.recuTriangle(t1, t2, t3, sizeX, sizeY, 0,colors)
     }
 
     this.colors = Array.from(colors);

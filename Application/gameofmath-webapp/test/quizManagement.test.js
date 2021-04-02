@@ -160,13 +160,15 @@ describe('Test the deleteChapter path', () => {
             quizID: -1,
             asAnOrder: 'true',
             theChapter: 4,
-            quizName: 'q1'
+            quizName: 'q1',
+            quizType: 'CLASSIC'
         }).catch(done);
         await quiz_dao.insert({
             quizID: -1,
             asAnOrder: 'false',
             theChapter: 4,
-            quizName: 'q2'
+            quizName: 'q2',
+            quizType: 'CLASSIC'
         }).catch(done);
         await question_dao.insert({
             questionID: -1,
@@ -276,7 +278,8 @@ describe('Test the getQuizList path', () => {
             quizID: -1,
             asAnOrder: 'false',
             theChapter: 1,
-            quizName: 'q3'
+            quizName: 'q3',
+            quizType: 'CLASSIC'
         }).catch(done);
 
         const rep = await postC(res, '/api/quizManagement/getQuizList').send().catch(done);
@@ -288,7 +291,8 @@ describe('Test the getQuizList path', () => {
                     quizID: 3,
                     asAnOrder: '0',
                     theChapter: 1,
-                    quizName: 'q3'
+                    quizName: 'q3',
+                    quizType: 'CLASSIC'
                 }
             ]
         })
@@ -309,7 +313,8 @@ describe('Test the createQuiz path', () => {
                 quizID: 4,
                 asAnOrder: 'true',
                 theChapter: 2,
-                quizName: 'q4'
+                quizName: 'q4',
+                quizType: 'CLASSIC'
             }
         })
 
@@ -322,12 +327,14 @@ describe('Test the createQuiz path', () => {
                     quizID: 3,
                     asAnOrder: '0',
                     theChapter: 1,
-                    quizName: 'q3'
+                    quizName: 'q3',
+                    quizType: 'CLASSIC'
                 }, {
                     quizID: 4,
                     asAnOrder: '1',
                     theChapter: 2,
-                    quizName: 'q4'
+                    quizName: 'q4',
+                    quizType: 'CLASSIC'
                 }
             ]
         })
@@ -353,7 +360,8 @@ describe('Test the deleteQuiz path', () => {
                     quizID: 3,
                     asAnOrder: '0',
                     theChapter: 1,
-                    quizName: 'q3'
+                    quizName: 'q3',
+                    quizType: 'CLASSIC'
                 }
             ]
         })
@@ -365,7 +373,8 @@ describe('Test the deleteQuiz path', () => {
             quizID: -1,
             asAnOrder: 'true',
             theChapter: 2,
-            quizName: 'q5'
+            quizName: 'q5',
+            quizType: 'CLASSIC'
         }).catch(done);
         await question_dao.insert({
             questionID: -1,
@@ -406,7 +415,8 @@ describe('Test the deleteQuiz path', () => {
                     quizID: 3,
                     asAnOrder: '0',
                     theChapter: 1,
-                    quizName: 'q3'
+                    quizName: 'q3',
+                    quizType: 'CLASSIC'
                 }
             ]
         })
@@ -439,7 +449,8 @@ describe('Test the setOrder path', () => {
                 quizID: 3,
                 asAnOrder: 'true',
                 theChapter: 1,
-                quizName: 'q3'
+                quizName: 'q3',
+                quizType: 'CLASSIC'
             }
         })
 
@@ -452,7 +463,8 @@ describe('Test the setOrder path', () => {
                     quizID: 3,
                     asAnOrder: '1',
                     theChapter: 1,
-                    quizName: 'q3'
+                    quizName: 'q3',
+                    quizType: 'CLASSIC'
                 }
             ]
         })
@@ -471,7 +483,8 @@ describe('Test the getQuizListWithChapterId path', () => {
                     quizID: 3,
                     asAnOrder: '1',
                     theChapter: 1,
-                    quizName: 'q3'
+                    quizName: 'q3',
+                    quizType: 'CLASSIC'
                 }
             ]
         })
@@ -490,7 +503,8 @@ describe('Test the getQuiz path', () => {
                 quizID: 3,
                 asAnOrder: '1',
                 theChapter: 1,
-                quizName: 'q3'
+                quizName: 'q3',
+                quizType: 'CLASSIC'
             }
         })
         done();
@@ -508,7 +522,8 @@ describe('Test the getQuizByName path', () => {
                 quizID: 3,
                 asAnOrder: '1',
                 theChapter: 1,
-                quizName: 'q3'
+                quizName: 'q3',
+                quizType: 'CLASSIC'
             }
         })
         done();
@@ -577,8 +592,6 @@ describe('Test the createQuestion path', () => {
                 level: 1,
                 theChapter: 1,
                 qNumber: 2,
-                theQuestion: 4,
-                theQuiz: 3
             }
         })
 
@@ -622,6 +635,38 @@ describe('Test the createQuestion path', () => {
                 qNumber: 2
             }
         ]);
+        done();
+    });
+    test('A teacher should be able to create a question without a quiz', async (done) => {
+        const rep = await postC(res, '/api/quizManagement/createQuestion').send({
+            chapterId: 1
+        }).catch(done);
+        expect(rep.body).toEqual({
+            returnState: 0,
+            question: {
+                questionID: 5,
+                upperText: '',
+                lowerText: '',
+                image: '',
+                type: 'QCM',
+                level: 1,
+                theChapter: 1,
+            }
+        })
+
+        const rep2 = await postC(res, '/api/quizManagement/getQuestion').send({id:5}).catch(done);
+        expect(rep2.body).toEqual({
+            returnState: 0,
+            question: {
+                questionID: 5,
+                upperText: '',
+                lowerText: '',
+                image: '',
+                type: 'QCM',
+                level: 1,
+                theChapter: 1,
+            }
+        })
         done();
     });
 });
@@ -676,17 +721,17 @@ describe('Test the deleteQuestion path', () => {
             answerID: -1,
             text: '',
             isValid: 'true',
-            theQuestion: 5
+            theQuestion: 6
         }).catch(done);
         await quizQuestion_dao.insert({
-            theQuestion: 5,
+            theQuestion: 6,
             theQuiz: 3,
             qNumber: 2
         }).catch(done);
 
         //DELETE
         const rep = await postC(res, '/api/quizManagement/deleteQuestion').send({
-            questionId: 5,
+            questionId: 6,
             quizId: 3
         }).catch(done);
         expect(rep.body).toEqual({
@@ -737,7 +782,7 @@ describe('Test the setQNumber path', () => {
         }).catch(done);
 
         const rep = await postC(res, '/api/quizManagement/setQNumber').send({
-            questionId: 6,
+            questionId: 7,
             quizId: 3,
             newQNumber: 1
         }).catch(done);
@@ -753,11 +798,11 @@ describe('Test the setQNumber path', () => {
                 qNumber: 2
             },{
                 theQuiz: 3,
-                theQuestion: 6,
+                theQuestion: 7,
                 qNumber: 1
             },{
                 theQuiz: 3,
-                theQuestion: 7,
+                theQuestion: 8,
                 qNumber: 3
             }
         ]);
@@ -781,11 +826,11 @@ describe('Test the setQNumber path', () => {
                 qNumber: 3
             },{
                 theQuiz: 3,
-                theQuestion: 6,
+                theQuestion: 7,
                 qNumber: 1
             },{
                 theQuiz: 3,
-                theQuestion: 7,
+                theQuestion: 8,
                 qNumber: 2
             }
         ]);
@@ -793,7 +838,7 @@ describe('Test the setQNumber path', () => {
     });
     test('A teacher should be able to place question at a normal position', async (done) => {
         const rep = await postC(res, '/api/quizManagement/setQNumber').send({
-            questionId: 6,
+            questionId: 7,
             quizId: 3,
             newQNumber: 2
         }).catch(done);
@@ -809,11 +854,11 @@ describe('Test the setQNumber path', () => {
                 qNumber: 3
             },{
                 theQuiz: 3,
-                theQuestion: 6,
+                theQuestion: 7,
                 qNumber: 2
             },{
                 theQuiz: 3,
-                theQuestion: 7,
+                theQuestion: 8,
                 qNumber: 1
             }
         ]);
@@ -824,29 +869,26 @@ describe('Test the setQNumber path', () => {
 describe('Test the setUpperText path', () => {
     test('A teacher should be able to set the upper text of a question', async (done) => {
         const rep = await postC(res, '/api/quizManagement/setUpperText').send({
-            id: 6,
+            id: 7,
             quizId: 3,
             upperText: 'up'
         }).catch(done);
         expect(rep.body).toEqual({
             returnState: 0,
             question: {
-                questionID: 6,
+                questionID: 7,
                 upperText: 'up',
                 lowerText: '',
                 image: '',
                 type: 'QCM',
                 level: 1,
                 theChapter: 1,
-                qNumber: 2,
-                theQuestion: 6,
-                theQuiz: 3
             }
         })
 
-        const quiz_question = await question_dao.findByID(6).catch(done);
+        const quiz_question = await question_dao.findByID(7).catch(done);
         expect(quiz_question).toEqual({
-            questionID: 6,
+            questionID: 7,
             upperText: 'up',
             lowerText: '',
             image: '',
@@ -861,29 +903,26 @@ describe('Test the setUpperText path', () => {
 describe('Test the setLowerText path', () => {
     test('A teacher should be able to set the lower text of a question', async (done) => {
         const rep = await postC(res, '/api/quizManagement/setLowerText').send({
-            id: 6,
+            id: 7,
             quizId: 3,
             lowerText: 'low'
         }).catch(done);
         expect(rep.body).toEqual({
             returnState: 0,
             question: {
-                questionID: 6,
+                questionID: 7,
                 upperText: 'up',
                 lowerText: 'low',
                 image: '',
                 type: 'QCM',
                 level: 1,
                 theChapter: 1,
-                qNumber: 2,
-                theQuestion: 6,
-                theQuiz: 3
             }
         })
 
-        const quiz_question = await question_dao.findByID(6).catch(done);
+        const quiz_question = await question_dao.findByID(7).catch(done);
         expect(quiz_question).toEqual({
-            questionID: 6,
+            questionID: 7,
             upperText: 'up',
             lowerText: 'low',
             image: '',
@@ -898,29 +937,26 @@ describe('Test the setLowerText path', () => {
 describe('Test the setType path', () => {
     test('A teacher should be able to set the type of a question', async (done) => {
         const rep = await postC(res, '/api/quizManagement/setType').send({
-            id: 6,
+            id: 7,
             quizId: 3,
             type: 'QCU'
         }).catch(done);
         expect(rep.body).toEqual({
             returnState: 0,
             question: {
-                questionID: 6,
+                questionID: 7,
                 upperText: 'up',
                 lowerText: 'low',
                 image: '',
                 type: 'QCU',
                 level: 1,
                 theChapter: 1,
-                qNumber: 2,
-                theQuestion: 6,
-                theQuiz: 3
             }
         })
 
-        const quiz_question = await question_dao.findByID(6).catch(done);
+        const quiz_question = await question_dao.findByID(7).catch(done);
         expect(quiz_question).toEqual({
-            questionID: 6,
+            questionID: 7,
             upperText: 'up',
             lowerText: 'low',
             image: '',
@@ -935,29 +971,26 @@ describe('Test the setType path', () => {
 describe('Test the setLevel path', () => {
     test('A teacher should be able to set the level of a question', async (done) => {
         const rep = await postC(res, '/api/quizManagement/setLevel').send({
-            id: 6,
+            id: 7,
             quizId: 3,
             level: 3
         }).catch(done);
         expect(rep.body).toEqual({
             returnState: 0,
             question: {
-                questionID: 6,
+                questionID: 7,
                 upperText: 'up',
                 lowerText: 'low',
                 image: '',
                 type: 'QCU',
                 level: 3,
                 theChapter: 1,
-                qNumber: 2,
-                theQuestion: 6,
-                theQuiz: 3
             }
         })
 
-        const quiz_question = await question_dao.findByID(6).catch(done);
+        const quiz_question = await question_dao.findByID(7).catch(done);
         expect(quiz_question).toEqual({
-            questionID: 6,
+            questionID: 7,
             upperText: 'up',
             lowerText: 'low',
             image: '',
@@ -1078,13 +1111,13 @@ describe('Test the createAnswer path', () => {
         }).catch(done)
 
         await quizQuestion_dao.insert({
-            theQuestion: 8,
+            theQuestion: 9,
             theQuiz: 3,
             qNumber: 4
         }).catch(done);
 
         const rep = await postC(res, '/api/quizManagement/createAnswer').send({
-            questionId: 8,
+            questionId: 9,
             quizId: 3
         }).catch(done);
         expect(rep.body).toEqual({
@@ -1093,13 +1126,13 @@ describe('Test the createAnswer path', () => {
                 answerID: 6,
                 text: '',
                 isValid: 'true',
-                theQuestion:8
+                theQuestion:9
             }
         })
 
         const rep2 = await postC(res, '/api/quizManagement/getAnswersList').send({
             quizId:3,
-            questionId: 8
+            questionId: 9
         }).catch(done);
         rep2.body.answers.sort((a, b) => a.answerID - b.answerID)
         expect(rep2.body).toEqual({
@@ -1109,7 +1142,7 @@ describe('Test the createAnswer path', () => {
                     answerID: 6,
                     text: '',
                     isValid: '1',
-                    theQuestion:8
+                    theQuestion:9
                 }
             ]
         })
@@ -1120,7 +1153,7 @@ describe('Test the createAnswer path', () => {
 describe('Test the deleteAnswer path', () => {
     test('A teacher should be able to delete an answer', async (done) => {
         const rep = await postC(res, '/api/quizManagement/deleteAnswer').send({
-            questionId: 8,
+            questionId: 9,
             quizId: 3,
             id: 6
         }).catch(done);
@@ -1130,7 +1163,7 @@ describe('Test the deleteAnswer path', () => {
 
         const rep2 = await postC(res, '/api/quizManagement/getAnswersList').send({
             quizId:3,
-            questionId: 8
+            questionId: 9
         }).catch(done);
         //rep2.body.answers.sort((a, b) => a.answerID - b.answerID)
         expect(rep2.body).toEqual({
@@ -1198,7 +1231,7 @@ describe('Test the setIsValid path', () => {
         }).catch(done)
 
         await quizQuestion_dao.insert({
-            theQuestion: 9,
+            theQuestion: 10,
             theQuiz: 3,
             qNumber: 5
         }).catch(done);
@@ -1207,21 +1240,21 @@ describe('Test the setIsValid path', () => {
             answerID: -1,
             text: '1',
             isValid: 'true',
-            theQuestion:9
+            theQuestion:10
         }).catch(done);
 
         await answer_dao.insert({
             answerID: -1,
             text: '2',
             isValid: 'false',
-            theQuestion:9
+            theQuestion:10
         }).catch(done);
 
         //TEST
         var rep = await postC(res, '/api/quizManagement/setIsValid').send({
             id: 8,
             quizId: 3,
-            questionId: 9,
+            questionId: 10,
             isValid: 'true'
         }).catch(done);
         expect(rep.body).toEqual({
@@ -1230,13 +1263,13 @@ describe('Test the setIsValid path', () => {
                 answerID: 8,
                 text: '2',
                 isValid: 'true',
-                theQuestion:9
+                theQuestion:10
             }
         })
 
         rep = await postC(res, '/api/quizManagement/getAnswersList').send({
             quizId:3,
-            questionId: 9
+            questionId: 10
         }).catch(done);
         rep.body.answers.sort((a, b) => a.answerID - b.answerID)
         expect(rep.body).toEqual({
@@ -1246,12 +1279,12 @@ describe('Test the setIsValid path', () => {
                     answerID: 7,
                     text: '1',
                     isValid: '1',
-                    theQuestion:9
+                    theQuestion:10
                 }, {
                     answerID: 8,
                     text: '2',
                     isValid: '1',
-                    theQuestion: 9
+                    theQuestion: 10
                 }
             ]
         })
@@ -1259,7 +1292,7 @@ describe('Test the setIsValid path', () => {
         rep = await postC(res, '/api/quizManagement/setIsValid').send({
             id: 7,
             quizId: 3,
-            questionId: 9,
+            questionId: 10,
             isValid: 'false'
         }).catch(done);
         expect(rep.body).toEqual({
@@ -1268,13 +1301,13 @@ describe('Test the setIsValid path', () => {
                 answerID: 7,
                 text: '1',
                 isValid: 'false',
-                theQuestion:9
+                theQuestion:10
             }
         })
 
         rep = await postC(res, '/api/quizManagement/getAnswersList').send({
             quizId:3,
-            questionId: 9
+            questionId: 10
         }).catch(done);
         rep.body.answers.sort((a, b) => a.answerID - b.answerID)
         expect(rep.body).toEqual({
@@ -1284,12 +1317,12 @@ describe('Test the setIsValid path', () => {
                     answerID: 7,
                     text: '1',
                     isValid: '0',
-                    theQuestion:9
+                    theQuestion:10
                 }, {
                     answerID: 8,
                     text: '2',
                     isValid: '1',
-                    theQuestion: 9
+                    theQuestion: 10
                 }
             ]
         })
@@ -1309,7 +1342,7 @@ describe('Test the setIsValid path', () => {
         }).catch(done)
 
         await quizQuestion_dao.insert({
-            theQuestion: 10,
+            theQuestion: 11,
             theQuiz: 3,
             qNumber: 6
         }).catch(done);
@@ -1318,21 +1351,21 @@ describe('Test the setIsValid path', () => {
             answerID: -1,
             text: '1',
             isValid: 'true',
-            theQuestion:10
+            theQuestion:11
         }).catch(done);
 
         await answer_dao.insert({
             answerID: -1,
             text: '2',
             isValid: 'false',
-            theQuestion:10
+            theQuestion:11
         }).catch(done);
 
         //TEST
         var rep = await postC(res, '/api/quizManagement/setIsValid').send({
             id: 10,
             quizId: 3,
-            questionId: 10,
+            questionId: 11,
             isValid: 'true'
         }).catch(done);
         expect(rep.body).toEqual({
@@ -1341,13 +1374,13 @@ describe('Test the setIsValid path', () => {
                 answerID: 10,
                 text: '2',
                 isValid: 'true',
-                theQuestion:10
+                theQuestion:11
             }
         })
 
         rep = await postC(res, '/api/quizManagement/getAnswersList').send({
             quizId:3,
-            questionId: 10
+            questionId: 11
         }).catch(done);
         rep.body.answers.sort((a, b) => a.answerID - b.answerID)
         expect(rep.body).toEqual({
@@ -1357,12 +1390,12 @@ describe('Test the setIsValid path', () => {
                     answerID: 9,
                     text: '1',
                     isValid: '0',
-                    theQuestion:10
+                    theQuestion:11
                 }, {
                     answerID: 10,
                     text: '2',
                     isValid: '1',
-                    theQuestion: 10
+                    theQuestion: 11
                 }
             ]
         })
@@ -1382,7 +1415,7 @@ describe('Test the setIsValid path', () => {
         }).catch(done)
 
         await quizQuestion_dao.insert({
-            theQuestion: 11,
+            theQuestion: 12,
             theQuiz: 3,
             qNumber: 7
         }).catch(done);
@@ -1391,18 +1424,18 @@ describe('Test the setIsValid path', () => {
             answerID: -1,
             text: '1',
             isValid: 'true',
-            theQuestion:11
+            theQuestion:12
         }).catch(done);
 
         //TEST
         var rep = await postC(res, '/api/quizManagement/setIsValid').send({
             id: 11,
             quizId: 3,
-            questionId: 11,
+            questionId: 12,
             isValid: 'true'
         }).catch(done);
         expect(rep.body).toEqual({
-            returnState: 5,
+            returnState: 3,
             msg: 'can\'t be call on an OPEN question'
         })
 

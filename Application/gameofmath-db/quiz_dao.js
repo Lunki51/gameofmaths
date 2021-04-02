@@ -12,9 +12,10 @@ const QuizDAO = function () {
         const quiz = object_helper.formatPropertiesWithType([
             {t: 'number', ps: ['quizID', 'theChapter']},
             {t: 'boolean', ps: ['asAnOrder']},
-            {t: 'string', ps: ['quizName']}
+            {t: 'string', ps: ['quizName', 'quizType']}
             ], object);
         if (!quiz) return null;
+        if (['CLASSIC', 'RANDOM'].indexOf(quiz.quizType) >= 0)
 
         return quiz;
     };
@@ -31,8 +32,8 @@ const QuizDAO = function () {
             const quiz = this.format(obj);
             if (!quiz) reject(new Error('Invalid input quiz!'));
             else {
-                let request = 'INSERT INTO Quiz (theChapter, asAnOrder, quizName) VALUES (?, ?, ?)';
-                db.run(request, [quiz.theChapter, quiz.asAnOrder, quiz.quizName], function (err) {
+                let request = 'INSERT INTO Quiz (theChapter, asAnOrder, quizName, quizType) VALUES (?, ?, ?, ?)';
+                db.run(request, [quiz.theChapter, quiz.asAnOrder, quiz.quizName, quiz.quizType], function (err) {
                     if (err) reject(err);
                     else resolve(this.lastID);
                 });
@@ -53,8 +54,8 @@ const QuizDAO = function () {
             const quiz = this.format(obj);
             if (!quiz) reject(new Error('Invalid input quiz!'));
             else {
-                let request = 'UPDATE Quiz SET theChapter = ?, asAnOrder = ?, quizName = ? WHERE quizID = ?';
-                db.run(request, [quiz.theChapter, quiz.asAnOrder, quiz.quizName, quiz.quizID], function (err) {
+                let request = 'UPDATE Quiz SET theChapter = ?, asAnOrder = ?, quizName = ?, quizType = ? WHERE quizID = ?';
+                db.run(request, [quiz.theChapter, quiz.asAnOrder, quiz.quizName, quiz.quizType, quiz.quizID], function (err) {
                     if (err) reject(err);
                     else resolve();
                 });
@@ -107,6 +108,41 @@ const QuizDAO = function () {
         return new Promise((resolve, reject) => {
             let request = 'SELECT * FROM Quiz WHERE theChapter = ?';
             db.all(request, [theChapter], function (err, rows) {
+                if (err) reject(err);
+                else resolve(rows);
+            });
+        });
+    };
+
+    /**
+     * Get all the quiz of the specified type.
+     *
+     * @param theType quiz type
+     * @param db db instance to use
+     * @returns {Promise<Array>} A promise that resolve all the rows
+     */
+    this.findAllOfType = function (theType, db = dbD) {
+        return new Promise((resolve, reject) => {
+            let request = 'SELECT * FROM Quiz WHERE quizType = ?';
+            db.all(request, [theType], function (err, rows) {
+                if (err) reject(err);
+                else resolve(rows);
+            });
+        });
+    };
+
+    /**
+     * Get all the quiz of the specified type in a chapter.
+     *
+     * @param theType quiz type
+     * @param theChapter chapter
+     * @param db db instance to use
+     * @returns {Promise<Array>} A promise that resolve all the rows
+     */
+    this.findAllOfTypeInChapter = function (theType, theChapter, db = dbD) {
+        return new Promise((resolve, reject) => {
+            let request = 'SELECT * FROM Quiz WHERE quizType = ? AND theChapter = ?';
+            db.all(request, [theType, theChapter], function (err, rows) {
                 if (err) reject(err);
                 else resolve(rows);
             });

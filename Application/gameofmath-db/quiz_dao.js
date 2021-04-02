@@ -165,23 +165,6 @@ const QuizDAO = function () {
             });
         });
     };
-
-    /**
-     * Get the quiz with a specific name.
-     *
-     * @param name quiz name
-     * @param db db instance to use
-     * @returns {Promise} A promise that resolve the quiz with this id if it's found
-     */
-    this.findByName = function (name, db = dbD) {
-        return new Promise((resolve, reject) => {
-            let request = 'SELECT * FROM Quiz WHERE quizName = ?';
-            db.all(request, [name], function (err, rows) {
-                if (err) reject(err);
-                else resolve(rows[0]);
-            });
-        });
-    };
 }
 
 var dao = new QuizDAO();

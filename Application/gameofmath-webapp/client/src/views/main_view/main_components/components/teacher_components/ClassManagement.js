@@ -286,7 +286,6 @@ class CreateForm extends Component{
 
             if(this.state.name === "" || this.state.name === ""){
                 alert("tout les champs doivent être remplis")
-                //TODO error style
             }else{
 
 

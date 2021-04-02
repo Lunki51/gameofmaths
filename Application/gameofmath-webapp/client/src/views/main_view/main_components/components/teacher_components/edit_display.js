@@ -357,25 +357,21 @@ class StudentEditOverview extends Component {
 
         if (selectedClass === "empty") {
             valid = false
-            //TODO custom message error
-            alert("Aucunne classe selectionné")
+            alert("Aucune classe selectionné")
         }
 
         if (login.length < 4) {
             valid = false
-            //TODO custom message error
             alert("Login - taille minimum de 4")
         }
 
         if (name === "") {
             valid = false
-            //TODO custom message error
             alert("Nom - obligatoire")
         }
 
         if (firstname === "") {
             valid = false
-            //TODO custom message error
             alert("Prénom - obligatoire")
         }
 
@@ -463,13 +459,11 @@ class EditClassStep extends Component {
 
         if (name === "") {
             valid = false
-            //TODO custom message error
             alert("Nom - obligatoire!")
         }
 
         if (grade === "") {
             valid = false
-            //TODO custom message error
             alert("Niveau - obligatoire!")
         }
 
@@ -477,11 +471,9 @@ class EditClassStep extends Component {
         if (valid) {
             let responses = updateTheClass(this.state.currentClass.classID, name, grade)
             responses.name.then((res) => {
-                //TODO Meilleur système d'erreur
                 if (res.data.returnState != 0) alert("Erreur")
             })
             responses.grade.then((res) => {
-                //TODO Meilleur système d'erreur
                 if (res.data.returnState != 0) alert("Erreur")
             })
         }
@@ -651,7 +643,6 @@ class EditChapterStep extends Component {
             let name = document.getElementById("edit-name").value
             if (name === "") {
                 valid = false
-                //TODO custom message error
                 alert("Nom - obligatoire!")
             }
             if (valid) {
@@ -944,8 +935,6 @@ class QuestionRow extends Component {
 
 
 class EditQuestionDetailsStep extends Component {
-
-    //TODO - Régler problème suppression réponse
 
     constructor() {
         super();
@@ -1412,7 +1401,6 @@ class EditQuizDetailsStep extends Component{
 
         if(name === ""){
             valid = false
-            //TODO custom message error
             alert("Nom - obligatoire!")
         }
 
@@ -1426,7 +1414,6 @@ class EditQuizDetailsStep extends Component{
 
         if(this.state.currentChapter === null){
             valid = false;
-            //TODO custom message error
             alert("Chapitre - obligatoire!")
         }
 

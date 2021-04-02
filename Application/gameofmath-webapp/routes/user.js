@@ -92,7 +92,7 @@ router.post('/getType', (req, res, next) => {
  */
 router.post('/logout', (req, res, next) => {
     req.session.destroy()
-    res.send({returnState: 0, redirect: 'login'}) //TODO check redirect
+    res.send({returnState: 0, redirect: 'login'})
 })
 
 /**

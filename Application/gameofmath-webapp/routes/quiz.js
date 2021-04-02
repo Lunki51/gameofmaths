@@ -232,7 +232,7 @@ router.post('/postAnswer', (req, res, next) => {
     const questionNb = req.body.questionNb
     const questionID = req.body.questionID
     if (questionNb == null || questionID == null) return next(new Error('QuestionNb or/and questionID param missing'))
-    if (questionNb !== req.session.currentQuiz.quizLastQuestion && questionID !== req.session.currentQuiz.questions[questionNb].questionID) return next(new Error('The question don\'t match with the last question')) //TODO error ?
+    if (questionNb !== req.session.currentQuiz.quizLastQuestion && questionID !== req.session.currentQuiz.questions[questionNb].questionID) return next(new Error('The question don\'t match with the last question'))
 
     const q = req.session.currentQuiz.questions[questionNb]
     if (q.type === 'OPEN') {

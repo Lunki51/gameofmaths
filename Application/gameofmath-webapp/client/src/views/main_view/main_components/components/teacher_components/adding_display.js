@@ -218,25 +218,21 @@ class AddStudentStep extends Component{
         let firstname = document.getElementById("select-firstname")
         if(selectedClass.value === "empty"){
             valid = false
-            //TODO custom message error
             alert("Aucunne classe selectionné")
         }
 
         if(login.value.length < 4){
             valid = false
-            //TODO custom message error
             alert("Login - taille minimum de 4")
         }
 
         if(name.value === ""){
             valid = false
-            //TODO custom message error
             alert("Nom - obligatoire")
         }
 
         if(firstname.value === ""){
             valid = false
-            //TODO custom message error
             alert("Prénom - obligatoire")
         }
 
@@ -256,7 +252,6 @@ class AddStudentStep extends Component{
                     console.log(response)
                     //  this.props.redirect(<StudentDisplay formCreate={{studentID:response.data.student.userID, classID:response.data.student.theClass}}/>);
                 } else {
-                    //TODO error msg
                     alert(response.data.msg)
                 }
 
@@ -309,13 +304,11 @@ class AddClassStep extends Component{
 
         if(name === ""){
             valid = false
-            //TODO custom message error
             alert("Nom - obligatoire!")
         }
 
         if(grade === ""){
             valid = false
-            //TODO custom message error
             alert("Niveau - obligatoire!")
         }
 
@@ -368,7 +361,6 @@ class AddChapterStep extends Component {
 
         if (name === "") {
             valid = false
-            //TODO custom message error
             alert("Nom - obligatoire")
 
         }
@@ -409,8 +401,6 @@ class AddChapterStep extends Component {
 ////////////////////////| ADDING QUESTION |//////////////////////////
 
 class AddQuestionStep extends Component{
-
-    //TODO - Régler problème suppression réponse
 
     constructor() {
         super();
@@ -681,7 +671,6 @@ class AddQuizStep extends Component{
 
         if(name === ""){
             valid = false
-            //TODO custom message error
             alert("Nom - obligatoire!")
         }
 
@@ -695,7 +684,6 @@ class AddQuizStep extends Component{
 
         if(this.state.currentChapter === null){
             valid = false;
-            //TODO custom message error
             alert("Chapitre - obligatoire!")
         }
 

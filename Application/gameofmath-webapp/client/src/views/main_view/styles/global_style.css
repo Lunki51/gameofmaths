@@ -60,7 +60,7 @@
         border-top:1px solid var(--border_color);
 
         background:var(--wood_style_color);
-
+        z-index: 30;
         display: inline-flex;
         justify-content: space-around;
 
@@ -597,3 +597,4 @@
     scrollbar-width: thin;
     scrollbar-color: var(--text_color) transparent;
 }
+

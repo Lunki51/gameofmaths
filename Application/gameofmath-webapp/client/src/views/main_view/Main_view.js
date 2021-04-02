@@ -9,8 +9,6 @@ import MapView from "./main_components/Map_display";
 import Axios from "axios";
 import {Quiz} from "./overlay_components/chapters_overlay";
 import {TeacherDisplay20} from "./main_components/teacher_display_2.0";
-
-import {TeacherDisplay} from "./main_components/teacher_display";
 import {CastleDetails} from "./overlay_components/castle_overlay"
 import {ProfilDetails} from "./overlay_components/profil_overlay";
 import {quitQuiz} from "../../model/quizModel";
@@ -58,8 +56,7 @@ class MainView extends Component {
 
 
         //Check if the user is authenticated
-        isAuth()
-            .then((res) => {
+        isAuth().then((res) => {
 
                 if (this._isMounted) {
                     if (res.data.returnState === 0) {
@@ -214,13 +211,11 @@ class MainView extends Component {
 
     handleCastleDetails = (castle) => {
         this.setState({details: <CastleDetails castle={castle} clear={this.handleClearDetails}/>, zoomed: true})
-        console.log("Added details")
     }
 
 
     handleClearDetails = () => {
         this.setState({details: null, zoomed: false})
-        console.log("Removed details")
     }
 
 

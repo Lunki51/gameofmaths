@@ -44,6 +44,14 @@ export function updateStudentFirstName(classId,studentId,newFirstName){
     return Axios.post('/api/classManagement/setLogin', {studentId:studentId, classId:classId,firstname:newFirstName} )
 }
 
+export function getRemainingDailyQuestion(){
+    return Axios.post('/api/studentManagement/')
+}
+
+export function getStudentInfo(){
+    return Axios.post('/api/student/getInfo')
+}
+
 /**
  * create a student
  *

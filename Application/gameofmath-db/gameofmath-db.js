@@ -1,4 +1,5 @@
 const db_connection = require('./sqlite_connection');
+const object_helper = require('./object_helper');
 const user_dao = require('./user_dao');
 const teacher_dao = require('./teacher_dao');
 const class_dao = require('./class_dao');
@@ -13,6 +14,7 @@ const quizQuestion_dao = require('./quizQuestion_dao');
 
 module.exports = {
     db: db_connection,
+    object_helper: object_helper,
     user_dao: user_dao,
     teacher_dao: teacher_dao,
     class_dao: class_dao,

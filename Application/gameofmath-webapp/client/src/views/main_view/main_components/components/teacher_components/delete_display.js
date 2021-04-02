@@ -275,6 +275,7 @@ export class DeleteStudentStep extends Component {
 
     }
 
+
     handleSelect = (event,id, student) =>{
 
         let container = document.getElementById(id);
@@ -584,7 +585,8 @@ export class DeleteQuestionStep extends Component {
             currentChapter: 0,
             chapterList: [],
             currentQuiz: 0,
-            quizList: []
+            quizList: [],
+            currentChoiceDOM: null
         }
     }
 
@@ -617,10 +619,26 @@ export class DeleteQuestionStep extends Component {
 
     }
 
-    handleDisplayOverView = (theQuestion) => {
-        this.setState({
-            currentQuestion: theQuestion
-        })
+    handleDisplayOverView = (theQuestion,id) => {
+        let domObject = document.getElementById(id);
+        console.log(domObject)
+        if(!this.state.currentChoiceDOM){
+
+            domObject.style.backgroundColor = "var(--secondary_color)"
+
+            this.setState({
+                currentChoiceDOM :domObject,
+                currentQuestion: theQuestion
+            })
+        }else{
+            this.state.currentChoiceDOM.style.backgroundColor = "var(--primary_color)"
+            domObject.style.backgroundColor = "var(--secondary_color)"
+
+            this.setState({
+                currentChoiceDOM :domObject,
+                currentQuestion: theQuestion
+            })
+        }
 
     }
 
@@ -709,7 +727,7 @@ export class DeleteQuestionStep extends Component {
                 </select>
 
                 {(this.state.questionList.length > 0)?this.state.questionList.map( (theQuestion, index) => {
-                    return <QuestionRow onClick={this.handleDisplayOverView} value={theQuestion} key={index}/>
+                    return <QuestionRow onClick={this.handleDisplayOverView} value={theQuestion} key={index} id={"question"+theQuestion.name+index}/>
                 }):<h1 className="teacher-student-list-none">Aucune Question</h1>}
 
                 <br/>
@@ -734,18 +752,18 @@ class QuestionRow extends Component {
 
 
     handleClick = () => {
-        this.props.onClick(this.props.value)
+        this.props.onClick(this.props.value,this.props.id)
     }
 
     render() {
-        return <div onClick={this.handleClick} className="teacher-class-row">
+        return <div onClick={this.handleClick} className="teacher-class-row" id={this.props.id}>
             <h1 className="teacher-class-row-title">Question : {this.props.value.qNumber}</h1>
         </div>
     }
 
 }
 
-///////////////////////| DELETE STUDENT |/////////////////////////
+///////////////////////| DELETE QUIZ |/////////////////////////
 
 export class DeleteQuizStep extends Component {
 
@@ -756,7 +774,8 @@ export class DeleteQuizStep extends Component {
             currentQuiz: null,
             quizList: [],
             currentChapter: 0,
-            chapterList: []
+            chapterList: [],
+            currentChoiceDOM: null
         }
     }
 
@@ -802,10 +821,26 @@ export class DeleteQuizStep extends Component {
 
     }
 
-    handleDisplayOverView = (theQuiz) => {
-        this.setState({
-            currentQuiz: theQuiz
-        })
+    handleDisplayOverView = (theQuiz,id) => {
+        let domObject = document.getElementById(id);
+        console.log(domObject)
+        if(!this.state.currentChoiceDOM){
+
+            domObject.style.backgroundColor = "var(--secondary_color)"
+
+            this.setState({
+                currentChoiceDOM :domObject,
+                currentQuiz: theQuiz
+            })
+        }else{
+            this.state.currentChoiceDOM.style.backgroundColor = "var(--primary_color)"
+            domObject.style.backgroundColor = "var(--secondary_color)"
+
+            this.setState({
+                currentChoiceDOM :domObject,
+                currentQuiz: theQuiz
+            })
+        }
     }
 
     handleUpdateList = (event) => {
@@ -843,7 +878,8 @@ export class DeleteQuizStep extends Component {
                 </select>
 
                 {(this.state.quizList.length > 0)?this.state.quizList.map( (theQuiz, index) => {
-                    return <QuizRow onClick={this.handleSelect} value={theQuiz} key={index}/>
+                    console.log(theQuiz)
+                    return <QuizRow onClick={this.handleDisplayOverView} value={theQuiz} key={index} id={"question"+index}/>
                 }):<h1 className="teacher-student-list-none">Aucun Quiz</h1>}
 
                 <br/>
@@ -865,13 +901,13 @@ class QuizRow extends Component {
 
 
     handleClick = (event) => {
-        this.props.onClick(event,this.props.value)
+        this.props.onClick(this.props.value,this.props.id)
     }
 
 
     render() {
-        return <div onClick={this.handleClick} className="teacher-student-row">
-            <h1 className="teacher-student-row-title">{this.props.value.quizName}</h1>
+        return <div onClick={this.handleClick} className="teacher-student-row" id={this.props.id}>
+            <h1 className="teacher-student-row-title" >{this.props.value.quizName} </h1>
         </div>
     }
 

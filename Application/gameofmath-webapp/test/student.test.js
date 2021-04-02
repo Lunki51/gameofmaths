@@ -76,8 +76,8 @@ describe('Test the getMPArray path', () => {
         }).catch(done)
         await mpGain_dao.insert({
             mpGainID: -1,
-            amount: 15,
-            type: 'QUIZ',
+            amount: -15,
+            type: 'BATTLELOST',
             date: new Date(850000),
             theStudent: 1
         }).catch(done)
@@ -88,8 +88,24 @@ describe('Test the getMPArray path', () => {
             mp: [
                 {gain: 10, time: 500000},
                 {gain: 20, time: 550000},
-                {gain: 15, time: 850000},
+                {gain: -15, time: 850000},
             ]
+        })
+        done();
+    });
+});
+
+describe('Test the getInfo path', () => {
+    test('A student should be able to get is info', async (done) => {
+        const rep = await postC(res, '/api/student/getInfo').send().catch(done);
+        expect(rep.body).toEqual({
+            returnState: 0,
+            firstname: 'prenom',
+            lastname: 'nom',
+            className: 'C',
+            classGrade: '6',
+            classID: 1,
+            mp: 20
         })
         done();
     });

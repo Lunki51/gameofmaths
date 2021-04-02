@@ -49,7 +49,15 @@ beforeAll(async (done) => {
         quizID: -1,
         theChapter: 1,
         asAnOrder: 'true',
-        quizName: 'q1'
+        quizName: 'q1',
+        quizType: 'CLASSIC'
+    }).catch(done);
+    await quiz_dao.insert({
+        quizID: -1,
+        theChapter: 1,
+        asAnOrder: 'true',
+        quizName: 'q2',
+        quizType: 'RANDOM'
     }).catch(done);
     await question_dao.insert({
         questionID: -1,
@@ -142,7 +150,9 @@ describe('Test the startQuiz path', () => {
             quizName: 'q1'
         })
         await postC(res, '/api/quiz/quit').send().catch(done);
-        done();
+        db.run('DELETE FROM QuizDone WHERE score > -1', [], function (err) {
+            done(err)
+        })
     });
 });
 
@@ -155,6 +165,9 @@ describe('Test the isInQuiz path', () => {
             isInQuiz: true
         })
         await postC(res, '/api/quiz/quit').send().catch(done);
+        db.run('DELETE FROM QuizDone WHERE score > -1', [], function (err) {
+            done(err)
+        })
         done();
     });
 });
@@ -204,6 +217,9 @@ describe('Test the getQuestion path', () => {
         })
 
         await postC(res, '/api/quiz/quit').send().catch(done);
+        db.run('DELETE FROM QuizDone WHERE score > -1', [], function (err) {
+            done(err)
+        })
         done();
     });
 
@@ -230,6 +246,9 @@ describe('Test the getQuestion path', () => {
         })
 
         await postC(res, '/api/quiz/quit').send().catch(done);
+        db.run('DELETE FROM QuizDone WHERE score > -1', [], function (err) {
+            done(err)
+        })
         done();
     });
 });
@@ -248,6 +267,9 @@ describe('Test the postAnswer path', () => {
         })
 
         await postC(res, '/api/quiz/quit').send().catch(done);
+        db.run('DELETE FROM QuizDone WHERE score > -1', [], function (err) {
+            done(err)
+        })
         done();
     });
 
@@ -295,6 +317,9 @@ describe('Test the quit path', () => {
         expect((await postC(res, '/api/quiz/isInQuiz').send().catch(done)).body).toEqual({
             returnState: 0,
             isInQuiz: false
+        })
+        db.run('DELETE FROM QuizDone WHERE score > -1', [], function (err) {
+            done(err)
         })
         done();
     });

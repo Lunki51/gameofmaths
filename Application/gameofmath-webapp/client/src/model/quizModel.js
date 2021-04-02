@@ -12,6 +12,16 @@ export function getAnswersList(quizId,questionId) {
 }
 
 
+export function updateQuestion(id,upperText,lowerText,type,level) {
+
+    return Axios.post('/api/quizManagement/updateQuestion', {id,upperText,lowerText,type,level})
+
+}
+
+export function deleteAnswersOfQuestion(questionId){
+    return Axios.post('/api/quizManagement/deleteAnswersOfQuestion', {questionId})
+}
+
 export function deleteQuestion(questionID,quizID){
     let questionId = parseInt(questionID)
     let quizId = parseInt(quizID)
@@ -76,6 +86,14 @@ export function createAnswer(quizID,questionID,text,isValid){
             return res.data.msg
         }
     })
+}
+
+export function setQuizName(id,quizName){
+    return Axios.post('/api/quizManagement/setQuizName', {id,quizName} )
+}
+
+export function setQuizOrdered(id,isOrder){
+    return Axios.post('/api/quizManagement/setOrder', {id,isOrder} )
 }
 
 export function getQuizList(chapterId){

@@ -40,7 +40,7 @@ router.post('/getChapters', (req, res, next) => {
  *  1: if the chapter id is incorrect
  */
 router.post('/getChapter', (req, res, next) => {
-    if (!req.session.isLogged & !req.session.isTeacher) return next(new Error('Client must be logged on a Teacher account'))
+    if (!req.session.isLogged || !req.session.isTeacher) return next(new Error('Client must be logged on a Teacher account'))
 
     const id = req.body.id
 
@@ -61,7 +61,7 @@ router.post('/getChapter', (req, res, next) => {
  *  1: if the chapter's name is incorrect
  */
 router.post('/createChapter', (req, res, next) => {
-    if (!req.session.isLogged && !req.session.isTeacher) return next(new Error('Client must be logged on a Teacher account'))
+    if (!req.session.isLogged || !req.session.isTeacher) return next(new Error('Client must be logged on a Teacher account'))
 
     const name = req.body.name
 
@@ -87,7 +87,7 @@ router.post('/createChapter', (req, res, next) => {
  *  1: if the chapter id is incorrect
  */
 router.post('/deleteChapter', (req, res, next) => {
-    if (!req.session.isLogged && !req.session.isTeacher) return next(new Error('Client must be logged on a Teacher account'))
+    if (!req.session.isLogged || !req.session.isTeacher) return next(new Error('Client must be logged on a Teacher account'))
 
     const id = req.body.id
 
@@ -169,7 +169,7 @@ router.post('/deleteChapter', (req, res, next) => {
  *  2: if the name is incorrect
  */
 router.post('/setChapterName', (req, res, next) => {
-    if (!req.session.isLogged && !req.session.isTeacher) return next(new Error('Client must be logged on a Teacher account'))
+    if (!req.session.isLogged || !req.session.isTeacher) return next(new Error('Client must be logged on a Teacher account'))
 
     const id = req.body.id
     const name = req.body.name
@@ -207,7 +207,7 @@ router.post('/setChapterName', (req, res, next) => {
  *  : if the quizName is incorrect
  */
 router.post('/createQuiz', (req, res, next) => {
-    if (!req.session.isLogged && !req.session.isTeacher) return next(new Error('Client must be logged on a Teacher account'))
+    if (!req.session.isLogged || !req.session.isTeacher) return next(new Error('Client must be logged on a Teacher account'))
 
     const isOrder = req.body.ordered
     const chapter = req.body.chapter
@@ -226,9 +226,13 @@ router.post('/createQuiz', (req, res, next) => {
         quizID: -1,
         asAnOrder: isOrder,
         theChapter: chapter,
-        quizName: quizName
+        quizName: quizName,
+        quizType: 'CLASSIC'
     }).then(id => {
-        res.send({returnState: 0, quiz: {quizID: id, asAnOrder: isOrder, theChapter: chapter, quizName: quizName}})
+        res.send({
+            returnState: 0,
+            quiz: {quizID: id, asAnOrder: isOrder, theChapter: chapter, quizName: quizName, quizType: 'CLASSIC'}
+        })
     }).catch(err => next(err))
 })
 
@@ -241,7 +245,7 @@ router.post('/createQuiz', (req, res, next) => {
  *  1: if the quiz id is incorrect
  */
 router.post('/deleteQuiz', (req, res, next) => {
-    if (!req.session.isLogged && !req.session.isTeacher) return next(new Error('Client must be logged on a Teacher account'))
+    if (!req.session.isLogged || !req.session.isTeacher) return next(new Error('Client must be logged on a Teacher account'))
 
     const id = req.body.id
 
@@ -308,7 +312,7 @@ router.post('/deleteQuiz', (req, res, next) => {
  *  2: if isOrder is incorrect
  */
 router.post('/setOrder', (req, res, next) => {
-    if (!req.session.isLogged && !req.session.isTeacher) return next(new Error('Client must be logged on a Teacher account'))
+    if (!req.session.isLogged || !req.session.isTeacher) return next(new Error('Client must be logged on a Teacher account'))
 
     const id = req.body.id
     const isOrder = req.body.isOrder
@@ -341,13 +345,13 @@ router.post('/setOrder', (req, res, next) => {
  *  2: if quizName is incorrect
  */
 router.post('/setQuizName', (req, res, next) => {
-    if (!req.session.isLogged && !req.session.isTeacher) return next(new Error('Client must be logged on a Teacher account'))
+    if (!req.session.isLogged || !req.session.isTeacher) return next(new Error('Client must be logged on a Teacher account'))
 
     const id = req.body.id
     const quizName = req.body.quizName
 
     if (id == null) return res.send({returnState: 1, msg: 'The quiz id is incorrect'})
-    if (quizName == null ) return res.send({
+    if (quizName == null) return res.send({
         returnState: 2,
         msg: 'quizName is incorrect'
     })
@@ -370,9 +374,9 @@ router.post('/setQuizName', (req, res, next) => {
  *  0: quizzes: List of quiz
  */
 router.post('/getQuizList', (req, res, next) => {
-    if (!req.session.isLogged && !req.session.isTeacher) return next(new Error('Client must be logged on a Teacher account'))
+    if (!req.session.isLogged || !req.session.isTeacher) return next(new Error('Client must be logged on a Teacher account'))
 
-    quiz_dao.findAll().then(q => {
+    quiz_dao.findAllOfType('CLASSIC').then(q => {
         res.send({returnState: 0, quizzes: q})
     }).catch(err => next(err))
 })
@@ -386,13 +390,13 @@ router.post('/getQuizList', (req, res, next) => {
  *  1: if the chapter id is incorrect
  */
 router.post('/getQuizListWithChapterId', (req, res, next) => {
-    if (!req.session.isLogged && !req.session.isTeacher) return next(new Error('Client must be logged on a Teacher account'))
+    if (!req.session.isLogged || !req.session.isTeacher) return next(new Error('Client must be logged on a Teacher account'))
 
     const id = req.body.id
 
     if (id == null) return res.send({returnState: 1, msg: 'The chapter id is incorrect'})
 
-    quiz_dao.findAllInChapter(id).then(q => {
+    quiz_dao.findAllOfTypeInChapter('CLASSIC', id).then(q => {
         res.send({returnState: 0, quizzes: q})
     }).catch(err => next(err))
 })
@@ -406,7 +410,7 @@ router.post('/getQuizListWithChapterId', (req, res, next) => {
  *  1: if the quiz id is incorrect
  */
 router.post('/getQuiz', (req, res, next) => {
-    if (!req.session.isLogged & !req.session.isTeacher) return next(new Error('Client must be logged on a Teacher account'))
+    if (!req.session.isLogged || !req.session.isTeacher) return next(new Error('Client must be logged on a Teacher account'))
 
     const id = req.body.id
 
@@ -427,7 +431,7 @@ router.post('/getQuiz', (req, res, next) => {
  *  1: if the quiz name is incorrect
  */
 router.post('/getQuizByName', (req, res, next) => {
-    if (!req.session.isLogged & !req.session.isTeacher) return next(new Error('Client must be logged on a Teacher account'))
+    if (!req.session.isLogged || !req.session.isTeacher) return next(new Error('Client must be logged on a Teacher account'))
 
     const name = req.body.name
 
@@ -446,68 +450,78 @@ router.post('/getQuizByName', (req, res, next) => {
 /**
  * Create new question
  *
- * @param chapterId The if of chapter
+ * @param chapterId the id of the chapter
  * @param quizId the id of quiz
  * @return
  *  0: question: The question
- *  1: if the chapterId is incorrect
- *  2: if the quizId is incorrect
- *  3: if quizId and chapterId dont match
+ *  1: if the quizId is incorrect
+ *  2: if quizId and chapterId dont match
+ *  3: if the chapterId is incorrect
  */
 router.post('/createQuestion', (req, res, next) => {
-    if (!req.session.isLogged && !req.session.isTeacher) return next(new Error('Client must be logged on a Teacher account'))
+    if (!req.session.isLogged || !req.session.isTeacher) return next(new Error('Client must be logged on a Teacher account'))
 
-    const chapterId = req.body.chapterId
     const quizId = req.body.quizId
+    const chapterId = req.body.chapterId
 
-    if (chapterId == null) res.send({returnState: 1, msg: 'ChapterId is incorrect'})
-    if (quizId == null) res.send({returnState: 2, msg: 'QuizId is incorrect'})
+    if (chapterId == null) return res.send({returnState: 3, msg: 'chapterId is incorrect'})
 
-    quiz_dao.findByID(quizId).then(quiz => {
-        if (quiz == null) res.send({returnState: 2, msg: 'QuizId is incorrect'})
-        else if (quiz.theChapter !== chapterId) res.send({returnState: 3, msg: 'QuizId and chapterId dont match'})
-        else {
-            db.all('SELECT MAX(qNumber)+1 AS next FROM QuizQuestion WHERE theQuiz = ?', [quizId], function (err, rows) {
-                if (err) next(err)
-                else {
-
-                    const nb = rows[0].next == null ? 1 : rows[0].next
-                    db.beginTransaction(function (err, transaction) {
-                        if (err) reject(err);
-                        else {
-                            const clone = {
-                                questionID: -1,
-                                upperText: '',
-                                lowerText: '',
-                                image: '',
-                                type: 'QCM',
-                                level: 1,
-                                theChapter: chapterId,
-                                theQuiz: quizId,
-                                qNumber: nb
-                            }
-                            question_dao.insert(clone, transaction).then(id => {
-                                clone.theQuestion = id;
-                                clone.questionID = id;
-                                quizQuestion_dao.insert(clone, transaction).then(_ => {
-                                    transaction.commit(err => {
-                                        if (err) next(err);
-                                        else res.send({returnState: 0, question: clone})
-                                    });
-                                }).catch(err => {
-                                    transaction.rollback();
-                                    next(err);
-                                });
-                            }).catch(err => {
-                                transaction.rollback();
-                                next(err);
-                            });
-                        }
-                    });
-
-                }
-            })
+    db.beginTransaction(function (err, t) {
+        if (err) return next(err)
+        const clone = {
+            questionID: -1,
+            upperText: '',
+            lowerText: '',
+            image: '',
+            type: 'QCM',
+            level: 1,
+            theChapter: chapterId,
         }
+        question_dao.insert(clone, t)
+            .then(questionID => {
+                clone.questionID = questionID
+
+                if (quizId != null) {
+                    return quiz_dao.findByID(quizId, t).then(quiz => {
+                        if (quiz == null) return res.send({returnState: 1, msg: 'QuizId is incorrect'})
+                        else if (quiz.theChapter !== chapterId) return res.send({
+                            returnState: 2,
+                            msg: 'the chapter is not the same on quizId'
+                        })
+                        else {
+
+                            return new Promise((resolve, reject) => {
+                                t.all('SELECT MAX(qNumber)+1 AS next FROM QuizQuestion WHERE theQuiz = ?', [quizId], function (err, rows) {
+                                    if (err) reject(err)
+                                    else {
+
+                                        const nb = rows[0].next == null ? 1 : rows[0].next
+                                        clone.qNumber = nb
+
+                                        quizQuestion_dao.insert({
+                                            theQuiz: quizId,
+                                            theQuestion: questionID,
+                                            qNumber: nb
+                                        }, t).then(resolve)
+                                    }
+                                })
+                            })
+
+                        }
+                    })
+                } else return 1
+
+            })
+            .then(_ => {
+                t.commit(err => {
+                    if (err) next(err);
+                    else res.send({returnState: 0, question: clone})
+                });
+            })
+            .catch(err => {
+                t.rollback();
+                next(err);
+            });
     })
 })
 
@@ -515,31 +529,49 @@ router.post('/createQuestion', (req, res, next) => {
  * Delete question
  *
  * @param questionId The id of question
- * @param quizId The id of the quiz
  * @return
  *  0:
  *  1: if the question id is incorrect
- *  2: if the quizId is incorrect
  */
 router.post('/deleteQuestion', (req, res, next) => {
-    if (!req.session.isLogged && !req.session.isTeacher) return next(new Error('Client must be logged on a Teacher account'))
+    if (!req.session.isLogged || !req.session.isTeacher) return next(new Error('Client must be logged on a Teacher account'))
 
     const questionId = req.body.questionId
-    const quizId = req.body.quizId
 
     if (questionId == null) return res.send({returnState: 1, msg: 'The question id is incorrect'})
-    if (quizId == null) return res.send({returnState: 2, msg: 'The id of the quiz is incorrect'})
 
     db.all('SELECT * FROM QuizQuestion, Question WHERE theQuestion = questionID AND questionID = ?', [questionId], function (err, questions) {
         if (err) next(err)
         else {
             const q = questions[0]
-            if (q == null) res.send({returnState: 1, msg: 'The quiz id is incorrect'})
-            else if (q.theQuiz !== Number(quizId)) res.send({
-                returnState: 4,
-                msg: 'The quizId don\'t match'
-            })
-            else {
+            if (q == null) {
+
+                db.beginTransaction(function (err, t) {
+
+                    t.run('DELETE FROM Answer WHERE theQuestion = ?', [questionId], function (err) {
+                        if (err) {
+                            t.rollback()
+                            next(err)
+                        } else {
+
+                            t.run('DELETE FROM Question WHERE questionID = ?', [questionId], function (err) {
+                                if (err) {
+                                    t.rollback()
+                                    next(err)
+                                } else {
+                                    t.commit(err => {
+                                        if (err) next(err);
+                                        else res.send({returnState: 0});
+                                    });
+                                }
+
+                            })
+                        }
+                    })
+
+                })
+
+            } else {
 
                 db.beginTransaction(function (err, t) {
 
@@ -561,7 +593,7 @@ router.post('/deleteQuestion', (req, res, next) => {
                                             next(err)
                                         } else {
 
-                                            t.run('UPDATE QuizQuestion SET qNumber = qNumber - 1 WHERE theQuiz = ? AND qNumber > ?', [quizId, q.qNumber], function (err) {
+                                            t.run('UPDATE QuizQuestion SET qNumber = qNumber - 1 WHERE theQuiz = ? AND qNumber > ?', [q.theQuiz, q.qNumber], function (err) {
                                                 if (err) {
                                                     t.rollback()
                                                     next(err)
@@ -600,7 +632,7 @@ router.post('/deleteQuestion', (req, res, next) => {
  *  2: if the quizId is incorrect
  */
 router.post('/setQNumber', (req, res, next) => {
-    if (!req.session.isLogged && !req.session.isTeacher) return next(new Error('Client must be logged on a Teacher account'))
+    if (!req.session.isLogged || !req.session.isTeacher) return next(new Error('Client must be logged on a Teacher account'))
 
     const questionId = req.body.questionId
     const quizId = req.body.quizId
@@ -667,86 +699,58 @@ router.post('/setQNumber', (req, res, next) => {
  * Change upperText
  *
  * @param id The id of question
- * @param quizId The id of the quiz
  * @param upperText THe new upperText text
  * @return
  *  0: question: The question
  *  1: if the question id is incorrect
- *  2: if the quizId is incorrect
- *  3: if the upperText is incorrect
- *  4: if the quizId and quizId of question dont match
+ *  2: if the upperText is incorrect
  */
 router.post('/setUpperText', (req, res, next) => {
-    if (!req.session.isLogged && !req.session.isTeacher) return next(new Error('Client must be logged on a Teacher account'))
+    if (!req.session.isLogged || !req.session.isTeacher) return next(new Error('Client must be logged on a Teacher account'))
 
     const id = req.body.id
-    const quizId = req.body.quizId
     const upperText = req.body.upperText
 
     if (id == null) return res.send({returnState: 1, msg: 'The question id is incorrect'})
-    if (quizId == null) return res.send({returnState: 2, msg: 'The quizId is incorrect'})
-    if (upperText == null) return res.send({returnState: 3, msg: 'The upperText is incorrect'})
+    if (upperText == null) return res.send({returnState: 2, msg: 'The upperText is incorrect'})
 
-    db.all('SELECT * FROM QuizQuestion, Question WHERE theQuestion = questionID AND questionID = ?', [id], function (err, questions) {
-        if (err) next(err)
-        else {
-            const q = questions[0]
-            if (q == null) res.send({returnState: 1, msg: 'The quiz id is incorrect'})
-            else if (q.theQuiz !== Number(quizId)) res.send({
-                returnState: 4,
-                msg: 'The quizId don\'t match'
+    question_dao.findByID(id)
+        .then(q => {
+            q.upperText = upperText
+            return question_dao.update(q).then(() => {
+                res.send({returnState: 0, question: q})
             })
-            else {
-                q.upperText = upperText
-                question_dao.update(q).then(() => {
-                    res.send({returnState: 0, question: q})
-                }).catch(err => next(err))
-            }
-        }
-    })
+        })
+        .catch(err => next(err))
 })
 
 /**
  * Change lowerText
  *
  * @param id The id of question
- * @param quizId The id of the quiz
  * @param lowerText THe new lowerText text
  * @return
  *  0: question: The question
  *  1: if the question id is incorrect
- *  2: if the quizId is incorrect
- *  3: if the lowerText is incorrect
- *  4: if the quizId and quizId of question dont match
+ *  2: if the lowerText is incorrect
  */
 router.post('/setLowerText', (req, res, next) => {
-    if (!req.session.isLogged && !req.session.isTeacher) return next(new Error('Client must be logged on a Teacher account'))
+    if (!req.session.isLogged || !req.session.isTeacher) return next(new Error('Client must be logged on a Teacher account'))
 
     const id = req.body.id
-    const quizId = req.body.quizId
     const lowerText = req.body.lowerText
 
     if (id == null) return res.send({returnState: 1, msg: 'The question id is incorrect'})
-    if (quizId == null) return res.send({returnState: 2, msg: 'The quizId is incorrect'})
-    if (lowerText == null) return res.send({returnState: 3, msg: 'The lowerText is incorrect'})
+    if (lowerText == null) return res.send({returnState: 2, msg: 'The lowerText is incorrect'})
 
-    db.all('SELECT * FROM QuizQuestion, Question WHERE theQuestion = questionID AND questionID = ?', [id], function (err, questions) {
-        if (err) next(err)
-        else {
-            const q = questions[0]
-            if (q == null) res.send({returnState: 1, msg: 'The quiz id is incorrect'})
-            else if (q.theQuiz !== Number(quizId)) res.send({
-                returnState: 4,
-                msg: 'The quizId and quizId of question dont match'
+    question_dao.findByID(id)
+        .then(q => {
+            q.lowerText = lowerText
+            return question_dao.update(q).then(() => {
+                res.send({returnState: 0, question: q})
             })
-            else {
-                q.lowerText = lowerText
-                question_dao.update(q).then(() => {
-                    res.send({returnState: 0, question: q})
-                }).catch(err => next(err))
-            }
-        }
-    })
+        })
+        .catch(err => next(err))
 })
 
 const upload = multer({
@@ -760,218 +764,166 @@ const upload = multer({
  * Change image
  *
  * @param questionId The id of question
- * @param quizId The id of the quiz
  * @param image THe new image
  * @return
  *  0: question: The question
  *  1: if the question id is incorrect
- *  2: if the quizId is incorrect
- *  3: if the image is incorrect
- *  4: if the quizId and quizId of question dont match
+ *  2: if the image is incorrect
  */
 router.post('/setImage', upload.single('image'), (req, res, next) => {
-    if (!req.session.isLogged && !req.session.isTeacher) return next(new Error('Client must be logged on a Teacher account'))
+    if (!req.session.isLogged || !req.session.isTeacher) return next(new Error('Client must be logged on a Teacher account'))
 
     const questionId = req.body.questionId
-    const quizId = req.body.quizId
 
     if (questionId == null) return res.send({returnState: 1, msg: 'The question id is incorrect'})
-    if (quizId == null) return res.send({returnState: 2, msg: 'The quizId is incorrect'})
 
-    db.all('SELECT * FROM QuizQuestion, Question WHERE theQuestion = questionID AND questionID = ?', [questionId], function (err, questions) {
-        if (err) next(err)
-        else {
-            const q = questions[0]
-            if (q == null) res.send({returnState: 1, msg: 'The quiz id is incorrect'})
-            else if (q.theQuiz !== Number(quizId)) res.send({
-                returnState: 4,
-                msg: 'The quizId and quizId of question dont match'
-            })
-            else {
-                const tempPath = req.file.path
-                const extension = path.extname(req.file.originalname).toLowerCase()
-                const targetPath = './client/public/questionImages/i' + questionId + extension
+    const tempPath = req.file.path
+    const extension = path.extname(req.file.originalname).toLowerCase()
+    const targetPath = './client/public/questionImages/i' + questionId + extension
 
-                if (['.png', '.jpg', '.gif'].find(o => o === extension) == null) {
-                    fs.unlink(tempPath, err1 => {
-                        if (err1) next(err1)
-                        else res.send({returnState: 3, msg: 'The image is incorrect'})
+    if (['.png', '.jpg', '.gif'].find(o => o === extension) == null) {
+        fs.unlink(tempPath, err1 => {
+            if (err1) next(err1)
+            else res.send({returnState: 2, msg: 'The image is incorrect'})
+        })
+    } else {
+        fs.rename(tempPath, targetPath, err => {
+            if (err) {
+                fs.unlink(tempPath, err1 => {
+                    if (err1) next(err1)
+                    else next(err)
+                })
+            } else {
+
+                question_dao.findByID(id)
+                    .then(q => {
+                        q.image = '/questionImages/i' + questionId + extension
+                        return question_dao.update(q).then(() => {
+                            res.send({returnState: 0, question: q})
+                        })
                     })
-                } else {
-                    fs.rename(tempPath, targetPath, err => {
-                        if (err) {
-                            fs.unlink(tempPath, err1 => {
-                                if (err1) next(err1)
-                                else next(err)
-                            })
-                        } else {
+                    .catch(err => next(err))
 
-                            q.image = '/questionImages/i' + questionId + extension
-                            question_dao.update(q).then(() => {
-                                res.send({returnState: 0, question: q})
-                            }).catch(err => next(err))
-
-                        }
-                    })
-                }
             }
-        }
-    })
+        })
+    }
 })
 
 /**
  * Delete image
  *
  * @param questionId The id of question
- * @param quizId The id of the quiz
  * @return
  *  0: question: The question
  *  1: if the question id is incorrect
- *  2: if the quizId is incorrect
- *  3: if the quizId and quizId of question dont match
  */
 router.post('/deleteImage', (req, res, next) => {
-    if (!req.session.isLogged && !req.session.isTeacher) return next(new Error('Client must be logged on a Teacher account'))
+    if (!req.session.isLogged || !req.session.isTeacher) return next(new Error('Client must be logged on a Teacher account'))
 
     const questionId = req.body.questionId
-    const quizId = req.body.quizId
 
     if (questionId == null) return res.send({returnState: 1, msg: 'The question id is incorrect'})
-    if (quizId == null) return res.send({returnState: 2, msg: 'The quizId is incorrect'})
 
-    db.all('SELECT * FROM QuizQuestion, Question WHERE theQuestion = questionID AND questionID = ?', [questionId], function (err, questions) {
-        if (err) next(err)
-        else {
-            const q = questions[0]
-            if (q == null) res.send({returnState: 1, msg: 'The quiz id is incorrect'})
-            else if (q.theQuiz !== Number(quizId)) res.send({
-                returnState: 3,
-                msg: 'The quizId and quizId of question dont match'
+    question_dao.findByID(id)
+        .then(q => {
+            const img = q.image
+            q.image = ''
+            return question_dao.update(q).then(() => {
+                if (fs.existsSync(path.join('./client/public/', img))) {
+                    fs.unlink(path.join('./client/public/', img), err => {
+                    })
+                }
+                res.send({returnState: 0, question: q})
             })
-            else {
-
-                const img = q.image
-                q.image = ''
-                question_dao.update(q).then(() => {
-                    if (fs.existsSync(path.join('./client/public/', img))) {
-                        fs.unlink(path.join('./client/public/', img), err => {
-                        })
-                    }
-                    res.send({returnState: 0, question: q})
-                }).catch(err => next(err))
-            }
-        }
-    })
+        })
+        .catch(err => next(err))
 })
 
 /**
  * Change type
  *
  * @param id The id of question
- * @param quizId The id of the quiz
  * @param type THe new type
  * @return
  *  0: question: The question
  *  1: if the question id is incorrect
- *  2: if the quizId is incorrect
- *  3: if the image is incorrect
- *  4: if the quizId and quizId of question dont match
+ *  2: if the image is incorrect
  */
 router.post('/setType', (req, res, next) => {
-    if (!req.session.isLogged && !req.session.isTeacher) return next(new Error('Client must be logged on a Teacher account'))
+    if (!req.session.isLogged || !req.session.isTeacher) return next(new Error('Client must be logged on a Teacher account'))
 
     const id = req.body.id
-    const quizId = req.body.quizId
     const type = req.body.type
 
     if (id == null) return res.send({returnState: 1, msg: 'The question id is incorrect'})
-    if (quizId == null) return res.send({returnState: 2, msg: 'The quizId is incorrect'})
     if (type == null || ['QCM', 'QCU', 'OPEN'].find(o => o === type) == null) return res.send({
-        returnState: 3,
+        returnState: 2,
         msg: 'The type is incorrect'
     })
 
-    db.all('SELECT * FROM QuizQuestion, Question WHERE theQuestion = questionID AND questionID = ?', [id], function (err, questions) {
-        if (err) next(err)
-        else {
-            const q = questions[0]
-            if (q == null) res.send({returnState: 2, msg: 'The quiz id is incorrect'})
-            else if (q.theQuiz !== Number(quizId)) res.send({
-                returnState: 4,
-                msg: 'The quizId and quizId of question dont match'
+    question_dao.findByID(id)
+        .then(q => { //TODO nage answer depending of the type
+            q.type = type
+            return question_dao.update(q).then(() => {
+                res.send({returnState: 0, question: q})
             })
-            else { //TODO nage answer depending of the type
-                q.type = type
-                question_dao.update(q).then(() => {
-                    res.send({returnState: 0, question: q})
-                }).catch(err => next(err))
-            }
-        }
-    })
+        })
+        .catch(err => next(err))
 })
 
 /**
  * Change level
  *
  * @param id The id of question
- * @param quizId The id of the quiz
  * @param level The new level
  * @return
  *  0: question: The question
  *  1: if the question id is incorrect
- *  2: if the quizId is incorrect
- *  3: if the level is incorrect
- *  4: if the quizId and quizId of question dont match
+ *  2: if the level is incorrect
  */
 router.post('/setLevel', (req, res, next) => {
-    if (!req.session.isLogged && !req.session.isTeacher) return next(new Error('Client must be logged on a Teacher account'))
+    if (!req.session.isLogged || !req.session.isTeacher) return next(new Error('Client must be logged on a Teacher account'))
 
     const id = req.body.id
-    const quizId = req.body.quizId
     const level = req.body.level
 
     if (id == null) return res.send({returnState: 1, msg: 'The question id is incorrect'})
-    if (quizId == null) return res.send({returnState: 2, msg: 'The quizId is incorrect'})
-    if (level == null || Number(level) < 0) return res.send({returnState: 3, msg: 'The level is incorrect'})
+    if (level == null || Number(level) < 0) return res.send({returnState: 2, msg: 'The level is incorrect'})
 
-    db.all('SELECT * FROM QuizQuestion, Question WHERE theQuestion = questionID AND questionID = ?', [id], function (err, questions) {
-        if (err) next(err)
-        else {
-            const q = questions[0]
-            if (q == null) res.send({returnState: 2, msg: 'The quiz id is incorrect'})
-            else if (q.theQuiz !== Number(quizId)) res.send({
-                returnState: 4,
-                msg: 'The quizId and quizId of question dont match'
-            })
-            else {
-                q.level = level
-                question_dao.update(q).then(() => {
-                    res.send({returnState: 0, question: q})
-                }).catch(err => next(err))
-            }
-        }
-    })
+    question_dao.findByID(id)
+        .then(q => {
+            q.level = level
+            return question_dao.update(q).then(() => {
+                res.send({returnState: 0, question: q})
+            }).catch(err => next(err))
+        })
+        .catch(err => next(err))
 })
 
 /**
  * Get list of question
  *
- * @param id the id of quiz
+ * @param id the id of quiz (Can be null to return all the question non associated with a quiz)
  * @return
  *  0: questions: list of questions in this quiz
- *  1: if the quiz id is incorrect
  */
 router.post('/getQuestionList', (req, res, next) => {
-    if (!req.session.isLogged && !req.session.isTeacher) return next(new Error('Client must be logged on a Teacher account'))
+    if (!req.session.isLogged || !req.session.isTeacher) return next(new Error('Client must be logged on a Teacher account'))
 
     const id = req.body.id
 
-    if (id == null) return res.send({returnState: 1, msg: 'The quiz id is incorrect'})
+    if (id == null) {
+        db.all('SELECT * FROM Question WHERE questionID NOT IN (SELECT questionID FROM QuizQuestion, Question WHERE theQuestion = questionID)', [id], function (err, questions) {
+            if (err) next(err)
+            else res.send({returnState: 0, questions: questions})
+        })
+    } else {
+        db.all('SELECT * FROM QuizQuestion, Question WHERE theQuestion = questionID AND theQuiz = ?', [id], function (err, questions) {
+            if (err) next(err)
+            else res.send({returnState: 0, questions: questions})
+        })
+    }
 
-    db.all('SELECT * FROM QuizQuestion, Question WHERE theQuestion = questionID AND theQuiz = ?', [id], function (err, questions) {
-        if (err) next(err)
-        else res.send({returnState: 0, questions: questions})
-    })
 })
 
 /**
@@ -983,7 +935,7 @@ router.post('/getQuestionList', (req, res, next) => {
  *  1: if the question id is incorrect
  */
 router.post('/getQuestion', (req, res, next) => {
-    if (!req.session.isLogged & !req.session.isTeacher) return next(new Error('Client must be logged on a Teacher account'))
+    if (!req.session.isLogged || !req.session.isTeacher) return next(new Error('Client must be logged on a Teacher account'))
 
     const id = req.body.id
 
@@ -995,6 +947,44 @@ router.post('/getQuestion', (req, res, next) => {
     }).catch(err => next(err))
 })
 
+/**
+ * Change a question
+ *
+ * @param id The id of question
+ * @param upperText the upper text
+ * @param lowerText the lower text
+ * @param type the type
+ * @param level the level
+ * @return
+ *  0: question: The question
+ *  1: if the question id is incorrect
+ *  2: if a param is incorrect
+ */
+router.post('/updateQuestion', (req, res, next) => {
+    if (!req.session.isLogged || !req.session.isTeacher) return next(new Error('Client must be logged on a Teacher account'))
+
+    const id = req.body.id
+    const upperText = req.body.upperText
+    const lowerText = req.body.lowerText
+    const type = req.body.type
+    const level = req.body.level
+
+    if (id == null) return res.send({returnState: 1, msg: 'The question id is incorrect'})
+    if (level == null || Number(level) < 0 || upperText == null || lowerText == null || type == null) return res.send({returnState: 2, msg: 'The level is incorrect'})
+
+    question_dao.findByID(id)
+        .then(q => {
+            q.upperText = upperText
+            q.lowerText = lowerText
+            q.type = type
+            q.level = level
+            return question_dao.update(q).then(() => {
+                res.send({returnState: 0, question: q})
+            }).catch(err => next(err))
+        })
+        .catch(err => next(err))
+})
+
 // #############################################################################################
 // #################################### ANSWER MANAGEMENT ####################################
 // #############################################################################################
@@ -1002,83 +992,50 @@ router.post('/getQuestion', (req, res, next) => {
 /**
  * Create new answer
  *
- * @param quizId the id of quiz
  * @param questionId the id of question
  * @return
  *  0: answer: The answer
  *  1: if the questionId is incorrect
- *  2: if the quizId is incorrect
- *  3: if quizId dont match the question
  */
 router.post('/createAnswer', (req, res, next) => {
-    if (!req.session.isLogged && !req.session.isTeacher) return next(new Error('Client must be logged on a Teacher account'))
+    if (!req.session.isLogged || !req.session.isTeacher) return next(new Error('Client must be logged on a Teacher account'))
 
     const questionId = req.body.questionId
-    const quizId = req.body.quizId
 
     if (questionId == null) return res.send({returnState: 1, msg: 'questionId is incorrect'})
-    if (quizId == null) return res.send({returnState: 2, msg: 'QuizId is incorrect'})
 
-    db.all('SELECT * FROM QuizQuestion, Question WHERE theQuestion = questionID AND questionID = ?', [questionId], function (err, questions) {
-        if (err) next(err)
-        else {
-            const q = questions[0]
-            if (q == null) res.send({returnState: 2, msg: 'The quiz id is incorrect'})
-            else if (q.theQuiz !== Number(quizId)) res.send({
-                returnState: 3,
-                msg: 'The quizId and quizId of question dont match'
+    question_dao.findByID(questionId)
+        .then(q => {
+
+            const answer = {answerID: -1, text: '', isValid: 'false', theQuestion: questionId}
+            if (q.type === 'OPEN') answer.isValid = 'true'
+            return answer_dao.insert(answer).then(id => {
+                answer.answerID = id
+                res.send({returnState: 0, answer: answer})
+
             })
-            else {
-                const answer = {answerID: -1, text: '', isValid: 'false', theQuestion: questionId}
-                if (q.type === 'OPEN') answer.isValid = 'true'
-                answer_dao.insert(answer).then(id => {
-                    answer.answerID = id
-                    res.send({returnState: 0, answer: answer})
-                }).catch(err => next(err))
-            }
-        }
-    })
+                .catch(err => next(err))
+        })
 })
 
 /**
  * Delete answer
  *
  * @param id The id of answer
- * @param quizId the id of quiz
- * @param questionId the id of question
  * @return
  *  0:
  *  1: if the answer id is incorrect
- *  2: if the quizId is incorrect
- *  3: if the questionId is incorrect
  */
 router.post('/deleteAnswer', (req, res, next) => {
-    if (!req.session.isLogged && !req.session.isTeacher) return next(new Error('Client must be logged on a Teacher account'))
+    if (!req.session.isLogged || !req.session.isTeacher) return next(new Error('Client must be logged on a Teacher account'))
 
     const id = req.body.id
-    const quizId = req.body.quizId
-    const questionId = req.body.questionId
 
     if (id == null) return res.send({returnState: 1, msg: 'The answer id is incorrect'})
-    if (questionId == null) return res.send({returnState: 2, msg: 'questionId is incorrect'})
-    if (quizId == null) return res.send({returnState: 3, msg: 'QuizId is incorrect'})
 
-    db.all('SELECT * FROM QuizQuestion Q, Question, Answer A WHERE Q.theQuestion = questionID AND questionID = A.theQuestion AND answerID = ?', [id], function (err, answers) {
-        if (err) next(err)
-        else {
-            const a = answers[0]
-            if (a == null) res.send({returnState: 1, msg: 'The answer id is incorrect'})
-            else if (a.theQuestion !== Number(questionId)) res.send({returnState: 2, msg: 'questionId is incorrect'})
-            else if (a.theQuiz !== Number(quizId)) res.send({returnState: 3, msg: 'QuizId is incorrect'})
-            else {
-
-                answer_dao.delete(id).then(() => {
-                    res.send({returnState: 0})
-                }).catch(err => next(err))
-
-            }
-        }
-    })
+    answer_dao.delete(id).then(() => {
+        res.send({returnState: 0})
+    }).catch(err => next(err))
 })
 
 /**
@@ -1086,48 +1043,36 @@ router.post('/deleteAnswer', (req, res, next) => {
  *
  * @param id The id of answer
  * @param text the text
- * @param quizId the id of quiz
- * @param questionId the question id
  * @return
  *  0: answer: The answer
  *  1: if the answer id is incorrect
- *  2: if the quizId is incorrect
- *  3: if the questionId is incorrect
- *  4: if the text is incorrect
+ *  2: if the text is incorrect
  */
 router.post('/setText', (req, res, next) => {
-    if (!req.session.isLogged && !req.session.isTeacher) return next(new Error('Client must be logged on a Teacher account'))
+    if (!req.session.isLogged || !req.session.isTeacher) return next(new Error('Client must be logged on a Teacher account'))
 
     const text = req.body.text
     const id = req.body.id
-    const quizId = req.body.quizId
-    const questionId = req.body.questionId
 
     if (id == null) return res.send({returnState: 1, msg: 'The answer id is incorrect'})
-    if (questionId == null) return res.send({returnState: 2, msg: 'questionId is incorrect'})
-    if (text == null) return res.send({returnState: 4, msg: 'The text is incorrect'})
-    if (quizId == null) return res.send({returnState: 3, msg: 'QuizId is incorrect'})
+    if (text == null) return res.send({returnState: 2, msg: 'The text is incorrect'})
 
-    db.all('SELECT * FROM QuizQuestion Q, Question, Answer A WHERE Q.theQuestion = questionID AND questionID = A.theQuestion AND answerID = ?', [id], function (err, answers) {
-        if (err) next(err)
-        else {
-            const a = answers[0]
-            if (a == null) res.send({returnState: 1, msg: 'The answer id is incorrect'})
-            else if (a.theQuestion !== Number(questionId)) res.send({returnState: 2, msg: 'questionId is incorrect'})
-            else if (a.theQuiz !== Number(quizId)) res.send({returnState: 3, msg: 'QuizId is incorrect'})
-            else {
 
-                a.text = text
-                answer_dao.update(a).then(() => {
+    answer_dao.findByID(id)
+        .then(a => {
+
+            a.text = text
+            return answer_dao.update(a)
+                .then(() => {
                     res.send({
                         returnState: 0,
                         answer: {answerID: a.answerID, text: a.text, isValid: a.isValid, theQuestion: a.theQuestion}
                     })
-                }).catch(err => next(err))
+                })
 
-            }
-        }
-    })
+        })
+        .catch(err => next(err))
+
 })
 
 /**
@@ -1135,147 +1080,117 @@ router.post('/setText', (req, res, next) => {
  *
  * @param id The id of answer
  * @param isValid the isValis value
- * @param quizId the id of quiz
- * @param questionId the question id
  * @return
  *  0: answer: The answer
  *  1: if the answer id is incorrect
  *  2: if isValid is incorrect
- *  3: if the questionId is incorrect
- *  4: if the the question is a QCU and isValid is false
- *  5: can't be call on an OPEN question
+ *  3: can't be call on an OPEN question
  */
 router.post('/setIsValid', (req, res, next) => {
-    if (!req.session.isLogged && !req.session.isTeacher) return next(new Error('Client must be logged on a Teacher account'))
+    if (!req.session.isLogged || !req.session.isTeacher) return next(new Error('Client must be logged on a Teacher account'))
 
     const isValid = req.body.isValid
     const id = req.body.id
-    const quizId = req.body.quizId
-    const questionId = req.body.questionId
 
     if (id == null) return res.send({returnState: 1, msg: 'The answer id is incorrect'})
-    if (questionId == null) return res.send({returnState: 2, msg: 'questionId is incorrect'})
     if (isValid == null || ['0', '1', 'true', 'false'].find(o => o === isValid) == null) return res.send({
         returnState: 2,
         msg: 'isValid is incorrect'
     })
-    if (quizId == null) return res.send({returnState: 3, msg: 'QuizId is incorrect'})
 
-    db.all('SELECT * FROM QuizQuestion Q, Question, Answer A WHERE Q.theQuestion = questionID AND questionID = A.theQuestion AND answerID = ?', [id], function (err, answers) {
-        if (err) next(err)
-        else {
-            const a = answers[0]
-            if (a == null) res.send({returnState: 1, msg: 'The answer id is incorrect'})
-            else if (a.theQuestion !== Number(questionId)) res.send({returnState: 2, msg: 'questionId is incorrect'})
-            else if (a.theQuiz !== Number(quizId)) res.send({returnState: 3, msg: 'QuizId is incorrect'})
-            else {
+    answer_dao.findByID(id)
+        .then(a => {
 
-                a.isValid = isValid
+            return question_dao.findByID(a.theQuestion)
+                .then(q => {
 
-                if (a.type === 'OPEN') {
-                    return res.send({
-                        returnState: 5,
-                        msg: 'can\'t be call on an OPEN question'
-                    })
-                } else if (a.type === 'QCU') {
+                    a.isValid = isValid
 
-                    if (['0', 'false'].find(o => o === isValid) != null) return res.send({
-                        returnState: 4,
-                        msg: 'isValid can\'t be false on a QCU'
-                    })
+                    if (q.type === 'OPEN') {
+                        return res.send({
+                            returnState: 3,
+                            msg: 'can\'t be call on an OPEN question'
+                        })
+                    } else if (q.type === 'QCU') {
 
-                    db.beginTransaction((err, t) => {
-                        if (err) {
-                            next(err)
-                            t.rollback()
-                        } else {
-                            t.run('UPDATE Answer SET isValid = \'0\' WHERE theQuestion = ?', [questionId], (err) => {
-                                if (err) {
-                                    next(err)
-                                    t.rollback()
-                                } else {
-                                    answer_dao.update(a, t).then(() => {
-                                        t.commit(err => {
-                                            if (err) {
-                                                next(err);
-                                                t.rollback()
-                                            } else {
-                                                res.send({
-                                                    returnState: 0,
-                                                    answer: {
-                                                        answerID: a.answerID,
-                                                        text: a.text,
-                                                        isValid: a.isValid,
-                                                        theQuestion: a.theQuestion
-                                                    }
-                                                })
-                                            }
-                                        });
-                                    }).catch(err => {
+                        if (['0', 'false'].find(o => o === isValid) != null) return res.send({
+                            returnState: 2,
+                            msg: 'isValid can\'t be false on a QCU'
+                        })
+
+                        db.beginTransaction((err, t) => {
+                            if (err) {
+                                next(err)
+                                t.rollback()
+                            } else {
+                                t.run('UPDATE Answer SET isValid = \'0\' WHERE theQuestion = ?', [a.theQuestion], (err) => {
+                                    if (err) {
                                         next(err)
                                         t.rollback()
-                                    })
-                                }
-                            })
-                        }
-                    })
-
-                } else {
-                    answer_dao.update(a).then(() => {
-                        res.send({
-                            returnState: 0,
-                            answer: {answerID: a.answerID, text: a.text, isValid: a.isValid, theQuestion: a.theQuestion}
+                                    } else {
+                                        answer_dao.update(a, t).then(() => {
+                                            t.commit(err => {
+                                                if (err) {
+                                                    next(err);
+                                                    t.rollback()
+                                                } else {
+                                                    res.send({
+                                                        returnState: 0,
+                                                        answer: a
+                                                    })
+                                                }
+                                            });
+                                        }).catch(err => {
+                                            next(err)
+                                            t.rollback()
+                                        })
+                                    }
+                                })
+                            }
                         })
-                    }).catch(err => {
-                        next(err)
-                    })
-                }
 
-            }
-        }
-    })
+                    } else {
+                        answer_dao.update(a).then(() => {
+                            res.send({
+                                returnState: 0,
+                                answer: a
+                            })
+                        }).catch(err => {
+                            next(err)
+                        })
+                    }
+
+                })
+
+
+        })
+        .catch(err => next(err))
+
 })
 
 /**
  * Get list of answer
  *
- * @param quizId the id of quiz
  * @param questionId the question id
  * @return
  *  0: answers: list of answers in this question
  *  1: if the theQuestion is incorrect
- *  2: if the quizId is incorrect
  */
 router.post('/getAnswersList', (req, res, next) => {
-    if (!req.session.isLogged && !req.session.isTeacher) return next(new Error('Client must be logged on a Teacher account'))
+    if (!req.session.isLogged || !req.session.isTeacher) return next(new Error('Client must be logged on a Teacher account'))
 
-    const quizId = req.body.quizId
     const questionId = req.body.questionId
 
     if (questionId == null) return res.send({returnState: 1, msg: 'questionId is incorrect'})
-    if (quizId == null) return res.send({returnState: 2, msg: 'QuizId is incorrect'})
 
-    db.all('SELECT * FROM QuizQuestion Q, Question, Answer A WHERE Q.theQuestion = questionID AND A.theQuestion = questionID AND questionID = ?', [questionId], function (err, answers) {
-        if (err) next(err)
-        else {
-            const a = answers[0]
-            if (a == null) {
-                res.send({
-                    returnState: 0, answers: []
+    answer_dao.findAllInQuestion(questionId)
+        .then(answers => {
+            res.send({
+                returnState: 0, answers: answers.map(o => {
+                    return {answerID: o.answerID, text: o.text, isValid: o.isValid, theQuestion: o.theQuestion}
                 })
-            }
-            else if (a.theQuiz !== Number(quizId)) res.send({returnState: 2, msg: 'QuizId is incorrect'})
-            else {
-
-                res.send({
-                    returnState: 0, answers: answers.map(o => {
-                        return {answerID: o.answerID, text: o.text, isValid: o.isValid, theQuestion: o.theQuestion}
-                    })
-                })
-
-            }
-        }
-    })
+            })
+        })
 })
 
 /**
@@ -1287,7 +1202,7 @@ router.post('/getAnswersList', (req, res, next) => {
  *  1: if the answer id is incorrect
  */
 router.post('/getAnswer', (req, res, next) => {
-    if (!req.session.isLogged & !req.session.isTeacher) return next(new Error('Client must be logged on a Teacher account'))
+    if (!req.session.isLogged || !req.session.isTeacher) return next(new Error('Client must be logged on a Teacher account'))
 
     const id = req.body.id
 
@@ -1297,6 +1212,33 @@ router.post('/getAnswer', (req, res, next) => {
         if (answer == null) res.send({returnState: 1, msg: 'The answer id is incorrect'})
         else res.send({returnState: 0, answer: answer})
     }).catch(err => next(err))
+})
+
+/**
+ * Delete all the answer of a question
+ *
+ * @param questionId The id of the question
+ * @return
+ *  0:
+ *  1: if the question id is incorrect
+ */
+router.post('/deleteAnswersOfQuestion', (req, res, next) => {
+    if (!req.session.isLogged || !req.session.isTeacher) return next(new Error('Client must be logged on a Teacher account'))
+
+    const questionId = req.body.questionId
+
+    if (questionId == null) return res.send({returnState: 1, msg: 'The question id is incorrect'})
+
+    question_dao.findByID(questionId)
+        .then(question => {
+            if (question == null) return res.send({returnState: 1, msg: 'The question id is incorrect'})
+
+            let request = 'DELETE FROM Answer WHERE theQuestion = ?';
+            db.run(request, [questionId], function (err) {
+                if (err) next(err)
+                else res.send({returnState: 0})
+            });
+        }).catch(err => next(err))
 })
 
 module.exports = router;

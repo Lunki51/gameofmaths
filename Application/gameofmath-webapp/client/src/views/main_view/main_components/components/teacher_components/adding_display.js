@@ -1,7 +1,6 @@
 import {Component} from "react";
 import {createClass, getAllClasses} from "../../../../../model/classModel";
 import {createStudent, getAllStudents, getAllTheStudents} from "../../../../../model/studentModel";
-import {PopupMessage} from "../../teacher_display_2.0";
 import {StudentDisplay} from "./student_display";
 import {createChapter,getAllChapter} from "../../../../../model/chapterModel";
 import {addQuestion, createAnswer, createQuiz, deleteQuestion, getQuizList} from "../../../../../model/quizModel";
@@ -115,15 +114,6 @@ class AddSelectStep extends Component{
                 break
             default:
 
-                this.props.openPopup(<PopupMessage
-                    message="Auccune selection"
-                    validText="OK"
-                    validateCallback={()=>{
-                        this.props.closePopup()
-                        }
-                    }
-
-                />)
 
                 break
         }

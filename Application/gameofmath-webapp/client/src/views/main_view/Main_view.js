@@ -128,7 +128,7 @@ class MainView extends Component {
                 //if wrong password or login
 
                 if (response.data.returnState === 1) {
-                   this.handleDisplayErrorMsg(response.data.msg)
+                    this.handleDisplayErrorMsg(response.data.msg)
 
                 } else if (response.data.returnState === 0) {
                     isAuth()
@@ -219,7 +219,7 @@ class MainView extends Component {
                 //user is a teacher
                 return <>
 
-                    <TeacherDisplay20 closeWarning={this.closeWarning} displayWarning={this.handleDisplayWarning} logout={this.handleLogout}/>
+                    <TeacherDisplay20 displayWarning={this.handleDisplayWarning} displayError={this.handleDisplayErrorMsg} logout={this.handleLogout}/>
                     {this.state.errorMsg}
 
                 </>

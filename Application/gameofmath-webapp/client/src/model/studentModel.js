@@ -20,7 +20,6 @@ export function getAllTheStudents(){
 
 export function deleteTheStudents(studentId,classId){
 
-    console.log(classId,studentId)
     return Axios.post('/api/classManagement/deleteStudent', {classId,studentId} )
 }
 

@@ -12,7 +12,7 @@ import {
     deleteQuestion, deleteQuiz, getAnswersList,
     getQuestion,
     getQuestionList,
-    getQuizList, setQuizName, setQuizOrdered, updateQuestion
+    getQuizList, setImage, setQuizName, setQuizOrdered, updateQuestion
 } from "../../../../../model/quizModel";
 
 
@@ -1015,8 +1015,9 @@ class EditQuestionDetailsStep extends Component {
     }
 
     handleSwitch = () => {
-        let isValid = document.getElementById("toggle-switch")
 
+        let isValid = document.getElementById("toggle-switch")
+        console.log(isValid)
         if (isValid && isValid.style.backgroundColor === "var(--secondary_color)") {
             isValid.style.backgroundColor = "var(--primary_color)"
             this.setState({
@@ -1028,14 +1029,15 @@ class EditQuestionDetailsStep extends Component {
                 isValid: false
             })
         }
+
+        console.log(this.state.isValid)
     }
 
     handleAddAnswer = () => {
         let answerText = document.getElementById("select-textAnswer").value
-        let isValid = !this.state.isValid
         let tab = this.state.answerList
 
-        tab.push({answerText: answerText, isValid: isValid})
+        tab.push({text: answerText, isValid: this.state.isValid})
         this.setState({
             answerList: tab
         })
@@ -1079,11 +1081,19 @@ class EditQuestionDetailsStep extends Component {
         }
 
         if (valid) {
-            deleteAnswersOfQuestion(this.props.question.questionID).then(respone=>{
+            deleteAnswersOfQuestion(this.props.question.questionID).then(response=>{
+                if(response.data.returnState!==0)console.log("Error")
                 updateQuestion(this.props.question.questionID,upperText,lowerText,type,level).then(response=>{
                     if(response.data.returnState!==0)console.log("Error")
+                    if(this.state.selectedFile){
+                        setImage(this.props.question.questionID,this.state.selectedFile).then(response=>{
+                            console.log(response)
+                            }
+                        )
+                    }
                     this.state.answerList.forEach(answer => {
-                        createAnswer(this.state.currentQuiz, response, answer.answerText, answer.isValid).then(r => {
+                        console.log(answer.text)
+                        createAnswer(this.state.currentQuiz, this.props.question.questionID, answer.text, answer.isValid).then(r => {
                             console.log(r)
                         })
                     })
@@ -1094,6 +1104,7 @@ class EditQuestionDetailsStep extends Component {
         }
 
         //no reload
+        this.props.previous(<EditSelectStep previous={this.props.previous} next={this.props.next}/>)
         event.preventDefault();
     }
 
@@ -1137,7 +1148,7 @@ class EditQuestionDetailsStep extends Component {
                 <input className="teacher-student-creation-input" id="select-upperText" placeholder="Texte du haut"
                        type="text" defaultValue={this.props.question.upperText}/>
                 <input onChange={this.handleFileSelected} className="teacher-student-creation-input" id="select-image"
-                       placeholder="Image" type="file"/>
+                       placeholder="Image" type="file" name="file"/>
                 <input className="teacher-student-creation-input" id="select-lowerText" placeholder="Texte du bas"
                        type="text" defaultValue={this.props.question.lowerText}/>
                 <input className="teacher-student-creation-input" id="select-level" placeholder="Difficulté" type="text"
@@ -1351,6 +1362,8 @@ class EditQuizDetailsStep extends Component{
     }
 
     componentDidMount() {
+        this.setState({currentChapter:this.props.quiz.theChapter})
+        if(this.props.quiz.asAnOrder==="true") this.handleSwitch();
         this.getChapter()
     }
 
@@ -1417,6 +1430,8 @@ class EditQuizDetailsStep extends Component{
             })
         }
 
+        this.props.previous(<EditSelectStep previous={this.props.previous} next={this.props.next}/>)
+
         //no reload
         event.preventDefault();
     }
@@ -1439,16 +1454,17 @@ class EditQuizDetailsStep extends Component{
     }
 
     render() {
+        console.log(this.props.quiz)
         return <div className="teacher-add-student-step">
 
             <form className="teacher-student-creation-container" onSubmit={this.handleValidate}>
 
-                <input className="teacher-student-creation-input" id="select-name" placeholder="Nom" type="text"/>
+                <input className="teacher-student-creation-input" id="select-name" placeholder="Nom" type="text" defaultValue={this.props.quiz.quizName}/>
 
                 <select onChange={this.handleUpdateList} className="teacher-student-creation-input" id="selected-class">
                     <option className="teacher-student-creation-option" value="empty">Choix du Chapitre</option>
                     {this.state.chaptersList.map((theChapter, index) => {
-                        return <option key={index} value={theChapter.chapterID}>{theChapter.name}</option>
+                        return <option key={index} value={theChapter.chapterID} selected={theChapter.chapterID==this.state.currentChapter}>{theChapter.name}</option>
                     })}
                 </select>
                 <div className="teacher-question-creation-quiz-order" id="toggle-switch" onClick={this.handleSwitch}>

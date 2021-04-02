@@ -96,7 +96,7 @@ router.post('/logout', (req, res, next) => {
 })
 
 /**
- * Allow the client to change is password.
+ * Allow the client to change his password.
  *
  * @param oldPassword old client's password
  * @param newPassword new client's password

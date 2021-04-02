@@ -763,7 +763,7 @@ class QuestionRow extends Component {
 
 }
 
-///////////////////////| DELETE STUDENT |/////////////////////////
+///////////////////////| DELETE QUIZ |/////////////////////////
 
 export class DeleteQuizStep extends Component {
 

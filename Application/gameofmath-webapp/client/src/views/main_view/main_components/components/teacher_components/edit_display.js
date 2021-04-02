@@ -8,11 +8,11 @@ import {
 import {deleteChapter, getAllChapter, updateChapterName} from "../../../../../model/chapterModel";
 import {
     addQuestion,
-    createAnswer,
-    deleteQuestion, getAnswersList,
+    createAnswer, deleteAnswersOfQuestion,
+    deleteQuestion, deleteQuiz, getAnswersList,
     getQuestion,
     getQuestionList,
-    getQuizList
+    getQuizList, setQuizName, setQuizOrdered, updateQuestion
 } from "../../../../../model/quizModel";
 
 
@@ -100,7 +100,9 @@ class EditSelectStep extends Component {
                                                         next={this.props.next} previous={this.props.previous}/>)
                 break
             case this.QUIZ_TEXT:
-
+                this.props.next(<EditQuizListStep openPopup={this.props.openPopup}
+                                                        closePopup={this.props.closePopup}
+                                                        next={this.props.next} previous={this.props.previous}/>)
 
                 break
             default:
@@ -1077,14 +1079,17 @@ class EditQuestionDetailsStep extends Component {
         }
 
         if (valid) {
-            addQuestion(this.state.currentChapter, qNumber, this.state.currentQuiz, upperText, lowerText, type, level).then((response) => {
-                console.log(response)
-                this.state.answerList.forEach(answer => {
-                    createAnswer(this.state.currentQuiz, response, answer.answerText, answer.isValid).then(r => {
-                        console.log(r)
+            deleteAnswersOfQuestion(this.props.question.questionID).then(respone=>{
+                updateQuestion(this.props.question.questionID,upperText,lowerText,type,level).then(response=>{
+                    if(response.data.returnState!==0)console.log("Error")
+                    this.state.answerList.forEach(answer => {
+                        createAnswer(this.state.currentQuiz, response, answer.answerText, answer.isValid).then(r => {
+                            console.log(r)
+                        })
                     })
                 })
             })
+
 
         }
 
@@ -1190,3 +1195,276 @@ class AnswersRow extends Component {
     }
 
 }
+
+///////////////////////| DELETE QUIZ |/////////////////////////
+
+export class EditQuizListStep extends Component {
+
+    constructor() {
+        super();
+
+        this.state = {
+            currentQuiz: null,
+            quizList: [],
+            currentChapter: 0,
+            chapterList: [],
+            currentChoiceDOM: null
+        }
+    }
+
+    componentDidMount() {
+
+
+        getAllChapter().then(res => {
+            this.setState({
+                chapterList: res.data.chapters
+            })
+
+            getQuizList(res.data.chapters[0].chapterID).then(res => {
+                if (this.props.formCreate) {
+                    this.setState({
+                        quizList: res.data.quizzes,
+                        currentChapter: this.props.formCreate.theChapter.chapterID,
+                        currentQuiz: this.props.formCreate.theQuiz
+                    })
+                } else {
+                    this.setState({
+                        quizList: res.data.quizzes
+                    })
+                }
+
+
+            })
+        })
+
+    }
+
+    handleValidate = (event) => {
+        if(this.state.currentQuiz){
+            this.props.next(<EditQuizDetailsStep previous={this.props.previous} next={this.props.next} quiz={this.state.currentQuiz}/>)
+        }
+    }
+
+    handleDisplayOverView = (theQuiz,id) => {
+        let domObject = document.getElementById(id);
+        console.log(domObject)
+        if(!this.state.currentChoiceDOM){
+
+            domObject.style.backgroundColor = "var(--secondary_color)"
+
+            this.setState({
+                currentChoiceDOM :domObject,
+                currentQuiz: theQuiz
+            })
+        }else{
+            this.state.currentChoiceDOM.style.backgroundColor = "var(--primary_color)"
+            domObject.style.backgroundColor = "var(--secondary_color)"
+
+            this.setState({
+                currentChoiceDOM :domObject,
+                currentQuiz: theQuiz
+            })
+        }
+    }
+
+    handleUpdateList = (event) => {
+
+        getQuizList(event.target.value).then(res => {
+
+            this.setState({
+                quizList: res.data.quizzes,
+                currentChapter: event.target.value
+            })
+
+        })
+
+    }
+
+    handleSelect = (event, quiz) =>{
+        this.setState({
+            currentQuiz: quiz
+        })
+    }
+
+    handlePrevious = () => {
+        this.props.previous(<EditSelectStep previous={this.props.previous} next={this.props.next} />)
+    }
+
+    render() {
+        return <div className="teacher-default-dashboard-container">
+
+            <div className="teacher-students-list-overview">
+
+                <select onChange={this.handleUpdateList} className="teacher-student-creation-input" id="selected-class">
+                    {this.state.chapterList.map((theChapter, index) => {
+                        return <option key={index} value={theChapter.chapterID}>{theChapter.name}</option>
+                    })}
+                </select>
+
+                {(this.state.quizList.length > 0)?this.state.quizList.map( (theQuiz, index) => {
+                    console.log(theQuiz)
+                    return <QuizRow onClick={this.handleDisplayOverView} value={theQuiz} key={index} id={"question"+index}/>
+                }):<h1 className="teacher-student-list-none">Aucun Quiz</h1>}
+
+                <br/>
+                <br/>
+                <br/>
+                <br/>
+                <br/>
+
+            </div>
+            <button className="teacher-student-valid-delete-btn" onClick={this.handleValidate} >Editer</button>
+
+            <button onClick={this.handlePrevious} className="teacher-previous-btn" >Précédent</button>
+        </div>
+    }
+
+}
+
+class QuizRow extends Component {
+
+
+    handleClick = (event) => {
+        this.props.onClick(this.props.value,this.props.id)
+    }
+
+
+    render() {
+        return <div onClick={this.handleClick} className="teacher-student-row" id={this.props.id}>
+            <h1 className="teacher-student-row-title" >{this.props.value.quizName} </h1>
+        </div>
+    }
+
+}
+
+
+class EditQuizDetailsStep extends Component{
+
+    constructor() {
+        super();
+
+        this.state = {
+            currentChapter: 0,
+            chaptersList: [],
+            isOrder: false
+        }
+    }
+
+    componentDidMount() {
+        this.getChapter()
+    }
+
+    getChapter = () =>{
+        getAllChapter().then((response) => {
+
+            this.setState({
+                chaptersList:response.data.chapters
+            })
+
+        })
+    }
+
+    handleSwitch = () => {
+        let isOrder = document.getElementById("toggle-switch")
+
+        if(isOrder && isOrder.style.backgroundColor === "var(--secondary_color)"){
+            isOrder.style.backgroundColor = "var(--primary_color)"
+            this.setState({
+                isOrder: true
+            })
+        }else{
+            isOrder.style.backgroundColor = "var(--secondary_color)"
+            this.setState({
+                isOrder: false
+            })
+        }
+    }
+
+    handleValidate = (event) => {
+
+        let valid = true;
+        let name = document.getElementById("select-name").value
+        let isOrder = '1';
+
+
+        if(name === ""){
+            valid = false
+            //TODO custom message error
+            alert("Nom - obligatoire!")
+        }
+
+        if(this.state.isOrder){
+            isOrder = '1'
+        }else if(!this.state.isOrder){
+            isOrder = '0'
+        }else{
+            valid = false;
+        }
+
+        if(this.state.currentChapter === null){
+            valid = false;
+            //TODO custom message error
+            alert("Chapitre - obligatoire!")
+        }
+
+        if(valid){
+            setQuizName(this.props.quiz.quizID,name).then(response=>{
+                if(response.data.returnState!==0)console.error("ERROR")
+                setQuizOrdered(this.props.quiz.quizID,isOrder).then(response=>{
+                    if(response.data.returnState!==0)console.error("ERROR")
+                    }
+                )
+            })
+        }
+
+        //no reload
+        event.preventDefault();
+    }
+
+    handleUpdateList = (event) => {
+
+        getAllChapter((event) ? event.target.value : this.state.currentChapter).then(res => {
+
+            this.setState({
+                chaptersList: res.data.chapters,
+                currentChapter: (event) ? event.target.value : this.state.currentChapter
+            })
+
+        })
+
+    }
+
+    handlePrevious = () => {
+        this.props.previous(<EditQuizListStep previous={this.props.previous} next={this.props.next} />)
+    }
+
+    render() {
+        return <div className="teacher-add-student-step">
+
+            <form className="teacher-student-creation-container" onSubmit={this.handleValidate}>
+
+                <input className="teacher-student-creation-input" id="select-name" placeholder="Nom" type="text"/>
+
+                <select onChange={this.handleUpdateList} className="teacher-student-creation-input" id="selected-class">
+                    <option className="teacher-student-creation-option" value="empty">Choix du Chapitre</option>
+                    {this.state.chaptersList.map((theChapter, index) => {
+                        return <option key={index} value={theChapter.chapterID}>{theChapter.name}</option>
+                    })}
+                </select>
+                <div className="teacher-question-creation-quiz-order" id="toggle-switch" onClick={this.handleSwitch}>
+                    <h2 className="teacher-question-creation-answer-is-valid-text" id="select-isValidAnswer">Est Ordonné</h2>
+                </div>
+
+                <br/>
+                <br/>
+
+                <input className="teacher-student-creation-valid" type="submit" value="Valider"/>
+            </form>
+
+
+            <button onClick={this.handlePrevious} className="teacher-previous-btn" >Précédent</button>
+        </div>
+    }
+
+}
+

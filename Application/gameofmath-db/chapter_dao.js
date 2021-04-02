@@ -15,7 +15,7 @@ const ChapterDAO = function () {
         }, {t: 'number', ps: ['chapterID']}], object);
         if (!chapter) return null;
 
-        chapter.name = chapter.name.toLowerCase();
+        //chapter.name = chapter.name.toLowerCase();
 
         return chapter;
     };

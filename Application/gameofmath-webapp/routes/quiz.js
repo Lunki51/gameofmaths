@@ -17,7 +17,7 @@ router.post('/getChapters', (req, res, next) => {
     if (!req.session.isLogged) next(new Error('The client must be logged'))
 
     chapter_dao.findAll().then(rep => {
-        res.send({returnState: 0, chapters: rep.map(c => c.name)})
+        res.send({returnState: 0, chapters: rep})
     }).catch(err => {
         next(err)
     })
@@ -34,9 +34,9 @@ router.post('/getChapters', (req, res, next) => {
 router.post('/startQuiz', (req, res, next) => {
     if (!req.session.isLogged || !req.session.isStudent) return next(new Error('Client must be logged and a student'))
     if (req.session.currentQuiz != null && req.session.currentQuiz.quizID > 0) return next(new Error('The student is already on a quiz'))
-    if (req.body.chapter == null) return next(new Error('No chapter param in the body'))
+    if (req.body.chapterID == null) return next(new Error('No chapter param in the body'))
 
-    chapter_dao.findByName(req.body.chapter).then(chapter => {
+    chapter_dao.findByID(req.body.chapterID).then(chapter => {
         if (chapter) {
 
             quiz_dao.findAllInChapter(chapter.chapterID).then(quizs => {

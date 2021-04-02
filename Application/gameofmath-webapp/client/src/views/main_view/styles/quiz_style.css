@@ -198,15 +198,18 @@
 
         /*set position*/
         position: absolute;
-        float: right;
-        right: 60px;
+
+        transform: translateX(-50%);
+
+        left: 50%;
+        bottom: 110px;
 
         border: solid var(--border_color) 1px;
         background-color: var(--wood_style_color);
         border-radius: 10px;
-        top: 20px;
-        width: 480px;
-        height: 350px;
+
+        width: fit-content;
+        height: 130px;
 
         place-items: center;
 
@@ -243,7 +246,7 @@
 
     .answer-quiz:hover{
 
-        width: 430px;
+        background-color: var(--wood_style_color-hover);
     }
 
 
@@ -254,10 +257,9 @@
 
         /*set position*/
         position: absolute;
-        float: right;
-        transform: translateY(-50%);
-        top: 40%;
-        margin-right: 60px;
+        transform: translateX(-50%);
+        bottom: 130px;
+        left: 50%;
         padding-left: 10px;
 
         /*set size*/
@@ -286,10 +288,13 @@
         position: absolute;
 
         bottom: 25px;
-        right: 180px;
 
         width: 200px;
         height: 60px;
+
+        transform: translateX(-50%);
+
+        left: 50%;
 
         border: none;
         border-radius: 10px;
@@ -329,8 +334,14 @@
 
     .upperText{
 
+        position: absolute;
+
         font-size: 20px;
-        margin: 20px;
+
+        transform: translateX(-50%);
+        left: 50%;
+
+        top: 70px;
 
         color: var(--text_color);
 
@@ -338,15 +349,30 @@
 
     .lowerText{
 
+        position: absolute;
+
         font-size: 16px;
-        margin: 20px;
         color: var(--text_color);
+
+        transform: translateX(-50%);
+
+        left: 50%;
+
+        bottom: 250px;
 
     }
 
     .image{
 
-        width: 300px;
+        position: absolute;
+
+        transform: translate(-50%, -90%);
+
+        top: 50%;
+
+        left: 50%;
+
+        height: 200px;
         border-radius: 10px;
 
     }
@@ -355,7 +381,7 @@
 
         position: absolute;
         top: 10px;
-        left: 10px;
+        left: 5px;
 
         width:100px;
         height: 50px;
@@ -418,9 +444,7 @@
 
 .question-container{
 
-    float: left;
-    margin-left: 100px;
-    margin-top: 70px;
+
 
 }
 

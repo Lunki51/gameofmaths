@@ -696,8 +696,7 @@ router.post('/getMPArray', (req, res, next) => {
  *  0: students: All students ID
  */
 router.post('/getAllStudents', (req, res, next) => {
-    if (!req.session.isLogged & !req.session.isTeacher) return next(new Error('Client must be logged on a Teacher account'))
-
+    if (!req.session.isLogged && !req.session.isTeacher) return next(new Error('Client must be logged on a Teacher account'))
 
     student_dao.findAll().then(students => {
         students.forEach(o => {

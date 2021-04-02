@@ -253,7 +253,16 @@ class QuestionOverview extends Component {
 
     render() {
         return <>
-            <h1 className="teacher-class-overview-title">Id: {this.props.theQuestion.type}</h1>
+            <h1 className="teacher-class-overview-title">Question: N°{this.props.theQuestion.qNumber}</h1>
+
+            <div className="teacher-question-information">
+                <h1 className="teacher-question-overview-title">Upper text: {this.props.theQuestion.upperText}</h1>
+                <h1 className="teacher-question-overview-title">Lower text: {this.props.theQuestion.lowerText}</h1>
+                <h1 className="teacher-question-overview-title">Type: {this.props.theQuestion.type}</h1>
+
+            </div>
+
+
         </>
     }
 }

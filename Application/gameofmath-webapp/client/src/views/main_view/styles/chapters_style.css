@@ -85,23 +85,23 @@
 
     }
 
-    .answer-quiz:hover{
 
-        border: 2px solid var(--border_color);
-    }
 
     .container-chapter{
 
 
+        position: relative;
 
-        width: 300px;
-        height: 200px;
+        width: 90%;
+        height:70px;
 
         background-color: var(--wood_style_color);
         border: 1px solid var(--border_color);
         border-radius: 10px;
 
-        margin: 20px;
+        margin-top: 10px;
+        transform: translateX(-50%);
+        left: 50%;
 
         font-size: 30px;
 
@@ -159,10 +159,6 @@
 
 
 
-.answer-quiz:hover{
-
-    border: 2px solid var(--border_color);
-}
 
 
 .container-chapter:hover{
@@ -209,6 +205,8 @@
 
     transform: translateX(-50%);
     left: 50%;
+    top: 10px;
+    margin: 0;
 
     color: var(--text_color);
 

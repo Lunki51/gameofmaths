@@ -336,6 +336,25 @@
     font-family: sans-serif;
 }
 
+.teacher-question-overview-title{
+
+
+
+    margin: 10px;
+    color: white;
+    font-family: sans-serif;
+}
+
+.teacher-question-information{
+
+    position: absolute;
+    background-color: var(--primary_color);
+    border-radius: 10px;
+    left: 20px;
+    top: 100px;
+    height: fit-content;
+    width: 700px;
+}
 
 .teacher-class-overview-numb{
     width: 350px;

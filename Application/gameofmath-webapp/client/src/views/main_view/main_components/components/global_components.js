@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import "../../styles/global_style.css";
 import {getUsername} from "../../../../model/authentification";
+import {getStudentInfo} from "../../../../model/studentModel";
 
 
 //IMAGES
@@ -21,6 +22,10 @@ class ContainerTitle extends Component{
         this.props = props;
     }
 
+    componentDidMount() {
+
+
+    }
 
     render(){
 
@@ -100,7 +105,8 @@ class NavigationBar extends Component{
         this.props = props
 
         this.state = {
-            username : ""
+            user: null,
+            username: ""
         }
 
     }
@@ -110,19 +116,22 @@ class NavigationBar extends Component{
 
         this._isMounted = true;
 
-            //get the current username
-            getUsername().then((response) => {
 
-                    if(this._isMounted) {
+        getStudentInfo().then(res => {
 
-                        this.setState({
-                            username: response.data.username,
-                        })
+            console.log(res)
 
-                    }
-                })
+            this.setState({
+                user:res.data,
+                username:res.data.firstname
+            })
+
+        })
+
+
 
     }
+
 
 
 
@@ -132,10 +141,9 @@ class NavigationBar extends Component{
 
 
     render() {
-        return <NavBar>
+        return <NavBar user={this.state.user}>
                     <NavElement icon={image_icon_quiz} id="quiz-btn"  className="navElem_left"   onClick={this.props.quiz} value="quiz"/>
                     <img src={window.location.origin + '/logo/game_of_math_logo.png'} className="navElem_center"/>
-                    <NavElement id="profil-btn" className="navElem_right" onClick={this.props.prof} value={this.state.username}/>
                     <img src={window.location.origin + '/logo/banner_gom.png'} className="navElem_center"/>
                     <NavElement icon={image_icon_user}  className="navElem_right"  onClick={this.props.profile} value={this.state.username}/>
                     <NavElement icon={image_icon_logout}  className="navElem_right"  onClick={this.props.logout} value="deconnexion"/>
@@ -155,6 +163,14 @@ export class NavBar extends Component{
     constructor(props){
         super(props);
         this.props = props;
+
+        this.state = {
+            user: props.user
+        }
+    }
+
+    componentDidMount() {
+
     }
 
 
@@ -163,6 +179,9 @@ export class NavBar extends Component{
             <ul className="navbar_container">
                 {this.props.children}
             </ul>
+            <div className="mp-container">
+
+            </div>
         </>
     }
 

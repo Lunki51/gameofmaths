@@ -53,14 +53,14 @@
 
         position: absolute;
         right: 0px;
-        height: var(--naviguaton-bar-height);
+        height: 70px;
         bottom: 0px;
         left:0px;
 
         border-top:1px solid var(--border_color);
 
         background:var(--wood_style_color);
-
+        z-index: 30;
         display: inline-flex;
         justify-content: space-around;
 
@@ -139,32 +139,10 @@
         padding-top: 80px;
         overflow: auto;
 
-    }
-
-    .container-castle-details{
-
-        /*set position*/
-        position: absolute;
-        transform: translateX(-1%);
-        left: 1%;
-        top: calc(var(--naviguaton-bar-height) + 10px + var(--naviguaton-bar-offset));
-
-        /*set size*/
-        width: 90%;
-        height: 60%;
-
-        /*set appearence*/
-        background-color: var(--wood_style_color);
-        border-radius: 20px;
-        border: 2px solid var(--border_color);
-
-        /*set children*/
-        display: grid;
-        align-content: center;
-        padding-top: 80px;
-        overflow: auto;
 
     }
+
+
 
 
     /*container component*/
@@ -208,23 +186,38 @@
 
         /*set position*/
         position: absolute;
-        transform: translate(-50%,-50%);
-        left: 50%;
+        transform: translateY(-50%);
+        left: 0;
         top: 50%;
 
         /*set size*/
-        width: 75%;
-        height: 500px;
+        width: 500px;
+        height: 600px;
 
         /*set appearance*/
         background-color: var(--wood_style_color);
-        border-radius: 20px;
+        border-top-right-radius: 20px;
+        border-bottom-right-radius: 20px;
+
         border: 2px solid var(--border_color);
+        border-left: none;
 
         /*set children*/
         text-align:center;
 
+        animation-name: entryQuiz;
+        animation-duration: 500ms;
 
+    }
+
+    @keyframes entryQuiz {
+        from{
+            left: -500px;
+        }
+
+        to{
+            left: 0;
+        }
     }
 
 
@@ -232,22 +225,23 @@
 
         /*set position*/
         position: absolute;
-        transform: translate(-50%,-50%);
-        left: 50%;
+        transform: translateY(-50%);
+        left: 0;
         top: 50%;
 
         /*set size*/
-        width: 75%;
+        width: 350px;
         height: 500px;
 
         /*set appearence*/
         background-color: var(--wood_style_color);
-        border-radius: 20px;
-        border: 2px solid var(--border_color);
+        border-top-right-radius: 10px;
+        border-bottom-right-radius: 10px;
+        border-top: 2px solid var(--border_color);
+        border-right: 2px solid var(--border_color);
+        border-bottom: 2px solid var(--border_color);
 
         /*set children*/
-        display: grid;
-        grid-template-columns: repeat(4, 2fr);
         padding-top: 80px;
 
         animation-name: slideInSelection;
@@ -257,67 +251,28 @@
     }
 
     @keyframes slideInSelection {
+
         from{
-            width: 0%;
-            height: 0%;
-            left: 2%;
-            top: 2%;
+            left: -300px;
             overflow: hidden;
         }
 
         to{
-            width: 75%;
-            height: 500px;
-            left: 50%;
-            top: 50%;
+            left: 0;
             overflow: auto;
         }
     }
 
-    .container-castle-details{
-
-        /*set position*/
-        position: absolute;
-        transform: translateX(-1%);
-        left: 1%;
-        top: calc(var(--naviguaton-bar-height) + 10px + var(--naviguaton-bar-offset));
-
-        /*set size*/
-        width: 25%;
-        height: 500px;
-
-        /*set appearence*/
-        background-color: var(--wood_style_color);
-        border-radius: 20px;
-        border: 2px solid var(--border_color);
-
-        /*set children*/
-        display: grid;
-        grid-template-columns: repeat(4, 2fr);
-        padding-top: 80px;
 
 
-        overflow: auto;
 
-    }
     /*container component*/
-
-
-
-
-
-
-
-
-
-
-
 
     .navbar_container{
 
-        margin-top: var(--naviguaton-bar-offset);
+        margin-top: 20px;
         position: absolute;
-        height: var(--naviguaton-bar-height);
+        height: 70px;
         left: 10px;
         right: 10px;
 
@@ -362,7 +317,7 @@
         top: 70%;
         left: 50%;
         transform: translate(-50%,-50%);
-        height: var(--naviguaton-bar-height);
+        height: 100px;
 
     }
 
@@ -642,3 +597,4 @@
     scrollbar-width: thin;
     scrollbar-color: var(--text_color) transparent;
 }
+

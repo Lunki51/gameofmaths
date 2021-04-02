@@ -1,7 +1,5 @@
 import React, {Component} from "react";
 import {search} from "../../../../../model/searchModel";
-import {EditDisplay} from "./edit_display";
-import {ClassDisplay} from "./ClassDisplay";
 import {StudentDisplay} from "./student_display";
 import {ClassesDisplay} from "./classes_display";
 import {QuestionDisplay} from "./question_display";

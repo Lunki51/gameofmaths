@@ -21,8 +21,8 @@ class MapView extends Component {
     _isMounted = false
 
 
-    constructor(props: P, context: any) {
-        super(props, context);
+    constructor() {
+        super();
 
         this.state = {
             global: false,
@@ -490,7 +490,7 @@ class MapView extends Component {
     }
 
     render() {
-        return <div class={"mapView"} onTouchMove={this.onTouchMove} onTouchStart={this.onTouchStart}
+        return <div className={"mapView"} onTouchMove={this.onTouchMove} onTouchStart={this.onTouchStart}
                     ref={ref => (this.mount = ref)}/>
 
     }

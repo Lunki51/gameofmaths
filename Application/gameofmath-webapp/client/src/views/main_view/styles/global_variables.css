@@ -1,9 +1,6 @@
-
-
-
-
-
 :root{
+
+    /*//////////////| color |///////////////*/
 
     --primary_color : #485962;
     --secondary_color : #6d96aa;
@@ -11,9 +8,17 @@
     --text_color_hover: #eff0cf;
     --border_color : #c8b959;
     --input_color : #244049;
-    --wood_style_color : #1d1913;
+    --wood_style_color : #2b2521;
     --wood_style_color-hover: #0f0d0b;
+    --input_color-active: #1b3037;
+    --button-waring : #366371;
+    --primary_color-shadow: #323e44;
+    --button-delete:#C64F4F;
+    --button-regenerate:#34A775;
     --naviguaton-bar-height: 70px;
     --naviguaton-bar-offset: 20px;
 
+    /*/////////////////| dimension |////////////*/
+
+    --teacher_nav-width:80px;
 }

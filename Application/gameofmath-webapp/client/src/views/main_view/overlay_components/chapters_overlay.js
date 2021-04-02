@@ -3,8 +3,16 @@ import '../styles/quiz_style.css';
 import '../styles/global_style.css'
 import '../styles/global_variables.css';
 import '../styles/chapters_style.css';
-import {getNumQuestion, getState, isOnQuiz, quitQuiz, setQuizState, submitAnswer} from "../../../model/quizModel";
-import Axios from "axios";
+import {
+    getChapters,
+    getNumQuestion,
+    getState,
+    isOnQuiz,
+    quitQuiz,
+    setQuizState,
+    submitAnswer
+} from "../../../model/quizModel";
+
 
 
 export class ChapterSelection extends Component{
@@ -15,25 +23,31 @@ export class ChapterSelection extends Component{
         super();
 
         this.state = {
-            chapters : [],
+            list:[],
         }
 
     }
 
-
+    handleClick= (event, anID) => {
+        this.props.onSelection(event,anID)
+    }
 
     componentDidMount() {
 
         this._isMounted=true
+        this.handleGetChapter()
 
-        Axios.post('/api/quiz/getChapters')
-            .then((response) =>{
-                if(this._isMounted)
+    }
+
+
+    handleGetChapter = () => {
+        getChapters().then((res) => {
+
+            if(this._isMounted)
                 this.setState({
-                    chapters : response.data.chapters
+                    list : res.data.chapters,
                 })
-            })
-
+        })
     }
 
     componentWillUnmount() {
@@ -44,15 +58,45 @@ export class ChapterSelection extends Component{
 
         return <div className="container-chapter-selection">
 
-            <h1 className="chapter-selection-headline">Chapitres</h1>
+            <h1 className="chapter-selection-headline">Chapitre</h1>
 
-            {this.state.chapters.map((mapping, i) => (
-                <Chapter text={mapping} key={i} onClick={this.props.onSelection}/>
-            ))}
+            { this.state.list.map((theElement, i) => {
+               return <ListComponent theObject={theElement} key={i} onClick={this.handleClick}/>
+            })}
 
 
         </div>
 
+    }
+
+
+}
+
+
+class ListComponent extends Component{
+
+
+    constructor(props) {
+        super(props);
+
+        this.state = {
+            theObject:props.theObject,
+        }
+    }
+
+
+    handleOnClick = (event) =>{
+
+
+        this.props.onClick(event,this.state.theObject.chapterID)
+
+    }
+
+
+    render() {
+        return (
+            <input type="button" value={this.state.theObject.name} onClick={this.handleOnClick} className="container-chapter"/>
+        );
     }
 
 
@@ -109,41 +153,41 @@ class QuizView extends Component {
 
         this._isMounted = true;
 
-        const chapter = this.props.chapter
-
-
         this.setState({
-            chapter : chapter
+            chapterID : this.props.chapter
         })
 
 
 
 
-        isOnQuiz()
-            .then((response) =>{
+        isOnQuiz().then((response) =>{
 
                 if(!response.data.isInQuiz){
                     //start new quiz quiz
-                    getNumQuestion(chapter)
-                        .then((response) =>{
+                    getNumQuestion(this.props.chapter).then((response) =>{
 
                             if(response.data.returnState === 0){
-
 
                                 if(this._isMounted) {
 
                                     this.setState({
-                                        chapter: chapter,
+                                        chapter: this.props.chapter,
                                         numQuestion: response.data.nbQuestion
                                     })
 
 
-                                    setQuizState(this.state.currentQuestion)
-                                        .then((res) => {
+                                    setQuizState(this.state.currentQuestion) .then((res) => {
 
-                                            this.setState(res)
+                                            this.setState({
+                                                type : res.type,
+                                                upperText : res.upperText,
+                                                img : res.img,
+                                                lowerText : res.lowerText,
+                                                answers : res.answers,
+                                                questionID : res.questionID,
+                                            })
 
-                                        })
+                                    })
                                 }
 
                             }else{
@@ -153,7 +197,6 @@ class QuizView extends Component {
                                     this.setState({
                                         hasQuestion: false,
                                         errorMsg: response.data.msg
-
                                     })
                                 }
                             }
@@ -161,13 +204,12 @@ class QuizView extends Component {
 
 
                 }else{
-                    getState()
-                        .then((response) => {
+                    getState().then((response) => {
 
                             if(this._isMounted) {
 
                                 this.setState({
-                                    chapter: chapter,
+                                    chapter: this.props.chapter,
                                     numQuestion: response.data.state.questionNb
                                 })
 
@@ -182,8 +224,7 @@ class QuizView extends Component {
                                         alreadyDone: true
                                     })
                                 } else {
-                                    setQuizState(this.state.currentQuestion)
-                                        .then((res) => {
+                                    setQuizState(this.state.currentQuestion).then((res) => {
 
                                             this.setState(res)
 
@@ -303,8 +344,6 @@ class QuizView extends Component {
         })
 
 
-
-
         event.preventDefault();
 
     }
@@ -318,21 +357,12 @@ class QuizView extends Component {
 
 
 
-
-
-
     render() {
 
 
 
         // know if the user is already on a quiz
         if(this.state.hasQuestion){
-
-
-
-
-            console.log(this.state.img)
-
 
             //if the quiz is not done
             if(!this.state.quizDone) {
@@ -348,8 +378,6 @@ class QuizView extends Component {
                                 {(this.state.img)?<img className="image" src={this.state.img} alt="error not found"/>:null}
                                 <h1 className="lowerText">{this.state.lowerText}</h1>
                             </div>
-
-
 
                             <form onSubmit={this.handleSubmit}>
 
@@ -455,17 +483,7 @@ class Answer extends Component {
 
 }
 
-class Chapter extends Component{
 
-
-    render() {
-        return (
-            <input type="button" value={this.props.text} onClick={this.props.onClick} className="container-chapter"/>
-        );
-    }
-
-
-}
 
 
 
@@ -481,7 +499,7 @@ export class Quiz extends Component{
 
         this.state = {
             onChapter : true,
-            chapterSelected : ""
+            chapterSelected : -1
         }
 
 
@@ -505,11 +523,11 @@ export class Quiz extends Component{
 
 
     //HANDLERS
-    handleChapterChoice = (event) => {
+    handleChapterChoice = (event, theChapterID) => {
 
         this.setState(
             {
-                chapterSelected:event.target.value,
+                chapterSelected:theChapterID,
                 onChapter:false
             }
         )
@@ -520,13 +538,10 @@ export class Quiz extends Component{
 
         this.setState(
             {
-                chapterSelected:"",
+                chapterSelected:-1,
                 onChapter:true
             }
         )
-
-
-
 
         event.preventDefault();
     }
@@ -538,7 +553,7 @@ export class Quiz extends Component{
             if(res.data.returnState === 0){
 
                 this.setState({
-                    chapterSelected:"",
+                    chapterSelected:-1,
                     onChapter:true
                 })
 
@@ -549,8 +564,6 @@ export class Quiz extends Component{
     }
 
 
-
-
     render() {
 
         if(this.state.onChapter === true){
@@ -558,8 +571,6 @@ export class Quiz extends Component{
         }else{
             return <QuizView quit={this.handleQuit} handleBackToChapter={this.handleBackToChapter} chapter={this.state.chapterSelected}/>
         }
-
-
 
     }
 

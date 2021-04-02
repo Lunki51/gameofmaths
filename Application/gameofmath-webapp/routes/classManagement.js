@@ -91,6 +91,8 @@ router.post('/create', (req, res, next) => {
 router.post('/rename', (req, res, next) => {
     if (!req.session.isLogged || !req.session.isTeacher) return next(new Error('Client must be logged on a Teacher account'))
 
+
+    console.log(req)
     const id = req.body.id
     const newName = req.body.newName
 
@@ -599,6 +601,25 @@ router.post('/getMPArray', (req, res, next) => {
         }
     }).catch(err => next(err))
 
+})
+
+/**
+ * Get the list of all student ID
+ *
+ * @return
+ *  0: students: All students ID
+ */
+router.post('/getAllStudents', (req, res, next) => {
+    if (!req.session.isLogged || !req.session.isTeacher) return next(new Error('Client must be logged on a Teacher account'))
+
+
+    student_dao.findAll().then(students => {
+        students.forEach(o => {
+            delete o.theClass
+            delete o.mp
+        })
+        res.send({returnState: 0, students: students})
+    }).catch(err => next(err))
 })
 
 module.exports = router;

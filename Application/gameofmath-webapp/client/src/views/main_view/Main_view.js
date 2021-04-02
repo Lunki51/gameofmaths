@@ -4,11 +4,11 @@ import React, {Component} from 'react';
 import auth, {getType, getUsername, isAuth} from "../../model/authentification";
 
 import LoginView from "./main_components/Login_display";
-import {MobileHeader, NavigationBar} from "./main_components/components/global_components";
+import {MobileHeader, NavigationBar, Warning} from "./main_components/components/global_components";
 import MapView from "./main_components/Map_display";
 import Axios from "axios";
 import {Quiz} from "./overlay_components/chapters_overlay";
-import {TeacherDisplay} from "./main_components/teacher_display";
+import {TeacherDisplay20} from "./main_components/teacher_display_2.0";
 import {CastleDetails} from "./overlay_components/castle_overlay"
 import {ProfilDetails} from "./overlay_components/profil_overlay";
 import {quitQuiz} from "../../model/quizModel";
@@ -37,6 +37,7 @@ class MainView extends Component {
                     })
             },
             overlayComponent: null,
+            errorMsg:null,
             whatOnOverlay: "",
             mapAccess: true,
             who: "",
@@ -55,16 +56,15 @@ class MainView extends Component {
 
 
         //Check if the user is authenticated
-        isAuth()
-            .then((res) => {
+        isAuth().then((res) => {
 
                 if (this._isMounted) {
                     if (res.data.returnState === 0) {
                         if (res.data.isLogged === true) {
                             document.title = "Game Of Math"
                         }
-
-                        getType().then((response) => {
+                        if(res.data.isLogged){
+                            getType().then((response) => {
 
                             if (response.data.returnState === 0) {
                                 this.setState({
@@ -73,7 +73,13 @@ class MainView extends Component {
                                 })
                             }
 
-                        })
+                            })
+                        }else{
+                            this.setState({
+                                isLogged: res.data.isLogged,
+                            })
+                        }
+
 
 
                     }
@@ -84,6 +90,27 @@ class MainView extends Component {
 
 
     //HANDLER
+
+    handleDisplayErrorMsg = (msg) => {
+        this.setState({
+            errorMsg: <Warning msg={msg} okClick={this.closeWarning}/>
+        })
+    }
+
+    handleDisplayWarning = (msg, validate) => {
+        this.setState({
+            errorMsg: <>
+                <div className="blur-background"/>
+                <Warning msg={msg} cancel={this.closeWarning} okClick={validate}/>
+                </>
+        })
+    }
+
+    closeWarning = () => {
+        this.setState({
+            errorMsg:null
+        })
+    }
 
     /**
      * handle submit button and redirect to the
@@ -103,8 +130,7 @@ class MainView extends Component {
                 //if wrong password or login
 
                 if (response.data.returnState === 1) {
-                    //TODO put styled error message
-                    alert(response.data.msg)
+                    this.handleDisplayErrorMsg(response.data.msg)
 
                 } else if (response.data.returnState === 0) {
                     isAuth()
@@ -185,13 +211,11 @@ class MainView extends Component {
 
     handleCastleDetails = (castle) => {
         this.setState({details: <CastleDetails castle={castle} clear={this.handleClearDetails}/>, zoomed: true})
-        console.log("Added details")
     }
 
 
     handleClearDetails = () => {
         this.setState({details: null, zoomed: false})
-        console.log("Removed details")
     }
 
 
@@ -221,14 +245,24 @@ class MainView extends Component {
             } else {
 
                 //user is a teacher
-                return <TeacherDisplay logout={this.handleLogout}/>
+                return <>
+
+                    <TeacherDisplay20 displayWarning={this.handleDisplayWarning} displayError={this.handleDisplayErrorMsg} logout={this.handleLogout}/>
+                    {this.state.errorMsg}
+
+                </>
 
             }
 
         } else {
 
             //the user is not logged
-            return <LoginView handleLogin={this.handleLogin}/>
+
+            return <>
+
+                <LoginView handleLogin={this.handleLogin}/>
+                {this.state.errorMsg}
+            </>
 
         }
 

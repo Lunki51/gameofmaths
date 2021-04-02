@@ -764,7 +764,7 @@ const upload = multer({
  * Change image
  *
  * @param questionId The id of question
- * @param image THe new image
+ * @param image The new image
  * @return
  *  0: question: The question
  *  1: if the question id is incorrect
@@ -773,6 +773,8 @@ const upload = multer({
 router.post('/setImage', upload.single('image'), (req, res, next) => {
     if (!req.session.isLogged || !req.session.isTeacher) return next(new Error('Client must be logged on a Teacher account'))
 
+
+    console.log(req)
     const questionId = req.body.questionId
 
     if (questionId == null) return res.send({returnState: 1, msg: 'The question id is incorrect'})
@@ -795,7 +797,7 @@ router.post('/setImage', upload.single('image'), (req, res, next) => {
                 })
             } else {
 
-                question_dao.findByID(id)
+                question_dao.findByID(questionId)
                     .then(q => {
                         q.image = '/questionImages/i' + questionId + extension
                         return question_dao.update(q).then(() => {
@@ -824,7 +826,7 @@ router.post('/deleteImage', (req, res, next) => {
 
     if (questionId == null) return res.send({returnState: 1, msg: 'The question id is incorrect'})
 
-    question_dao.findByID(id)
+    question_dao.findByID(questionId)
         .then(q => {
             const img = q.image
             q.image = ''

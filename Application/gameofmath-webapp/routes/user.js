@@ -92,11 +92,11 @@ router.post('/getType', (req, res, next) => {
  */
 router.post('/logout', (req, res, next) => {
     req.session.destroy()
-    res.send({returnState: 0, redirect: 'login'}) //TODO check redirect
+    res.send({returnState: 0, redirect: 'login'})
 })
 
 /**
- * Allow the client to change is password.
+ * Allow the client to change his password.
  *
  * @param oldPassword old client's password
  * @param newPassword new client's password

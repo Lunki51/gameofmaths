@@ -8,9 +8,7 @@ import Axios from "axios";
  * @param {*} password the password
  */
 function auth(username, password){
-
     return Axios.post("/api/user/auth",{username,password})
-
 }
 
 

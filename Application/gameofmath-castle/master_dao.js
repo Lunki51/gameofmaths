@@ -120,7 +120,7 @@ const MasterDAO = function () {
      */
     this.findCurrent = function (db = dbD) {
         return new Promise((resolve, reject) => {
-            let request = 'SELECT * FROM Master m1 WHERE m1.masterStart = (SELECT MAX(m2.masterStart) FROM Master m2 WHERE m2.masterCastle = m1.castle)';
+            let request = 'SELECT * FROM Master m1 WHERE m1.masterStart = (SELECT MAX(m2.masterStart) FROM Master m2 WHERE m2.masterCastle = m1.masterCastle)';
             db.all(request, [], function (err, rows) {
                 if (err) reject(err);
                 else resolve(rows);
@@ -138,7 +138,7 @@ const MasterDAO = function () {
     this.findCurrentForCastle = function (castleID, db = dbD) {
         return new Promise((resolve, reject) => {
             let request = 'SELECT * FROM Master m1 WHERE masterCastle = ? AND masterStart = (SELECT MAX(masterStart) FROM Master WHERE masterCastle = ?)';
-            db.all(request, [castleID], function (err, rows) {
+            db.all(request, [castleID, castleID], function (err, rows) {
                 if (err) reject(err);
                 else resolve(rows[0]);
             });
@@ -154,7 +154,7 @@ const MasterDAO = function () {
      */
     this.findCurrentInClass = function (classID, db = dbD) {
         return new Promise((resolve, reject) => {
-            let request = 'SELECT * FROM Master m1 WHERE m1.masterStart = (SELECT MAX(m2.masterStart) FROM Master m2 WHERE m2.masterCastle = m1.castle) AND masterID IN (SELECT masterID FROM Master, Student WHERE masterStudent = theUser AND theClass = ?)';
+            let request = 'SELECT * FROM Master m1 WHERE m1.masterStart = (SELECT MAX(m2.masterStart) FROM Master m2 WHERE m2.masterCastle = m1.masterCastle) AND masterID IN (SELECT masterID FROM Master, Student WHERE masterStudent = theUser AND theClass = ?)';
             db.all(request, [classID], function (err, rows) {
                 if (err) reject(err);
                 else resolve(rows);

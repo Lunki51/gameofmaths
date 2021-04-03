@@ -157,7 +157,7 @@ router.post('/regenerateMap', (req, res, next) => {
     class_dao.findByID(id).then(c => {
         if (c == null) res.send({returnState: 1, msg: 'The class id is incorrect'})
         else {
-            const m = JSON.stringify(renderApi.createMap(200, 200, 10000))
+            const m = JSON.stringify(renderApi.createMap(1000, 1000, 10000))
             fs.writeFile('./files/maps/m' + id + '.json', m, err => {
                 if (err) next(err)
                 else res.send({returnState: 0})

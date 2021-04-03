@@ -5,9 +5,11 @@ import {Water} from "three/examples/jsm/objects/Water";
 import {Sky} from "three/examples/jsm/objects/Sky"
 import {GLTFLoader} from 'three/examples/jsm/loaders/GLTFLoader';
 import {BufferGeometryUtils} from 'three/examples/jsm/utils/BufferGeometryUtils';
-import '../styles/map_style.css'
+import 'three/examples/fonts/helvetiker_regular.typeface.json'
 import Axios from "axios";
 import Stats from "stats.js"
+import {MeshBasicMaterial} from "three";
+import {getInfo} from "../../../model/authentification";
 
 
 /**
@@ -50,8 +52,14 @@ class MapView extends Component {
                 rotateX: 0,
                 rotateY: 0,
                 camDistance: 100,
-            }
+            },
+            player: null
         };
+
+        getInfo().then(response => {
+            this.setState({player: response.data})
+            console.log(this.state.player)
+        })
     }
 
     componentDidMount() {
@@ -72,7 +80,7 @@ class MapView extends Component {
         let time = Date.now();
 
         requestAnimationFrame(this.animate);
-        //this.state.stats.begin();
+        this.state.stats.begin();
         if (!this.props.zoomed) {
             let posX = Math.min(Math.max(-this.state.inputVars.rotateX * 50, -this.state.mapDetails.sizeX), this.state.mapDetails.sizeX);
             let posY = Math.min(Math.max(-this.state.inputVars.rotateY * 50, -this.state.mapDetails.sizeY), this.state.mapDetails.sizeY);
@@ -94,22 +102,22 @@ class MapView extends Component {
             this.state.renderer.render(this.state.HResScene, this.state.camera);
 
             let length = Date.now() - time;
-            if(this.state.nbFrames>10){
-                if(this.state.avgFPS>35){
+            if (this.state.nbFrames > 10) {
+                if (this.state.avgFPS > 35) {
                     this.setState({able: false})
                 }
-            }else{
-                if(this.state.avgFPS==0){
-                    this.setState({avgFPS:length})
-                }else{
-                    this.setState({avgFPS:(this.state.avgFPS+length)/2})
+            } else {
+                if (this.state.avgFPS == 0) {
+                    this.setState({avgFPS: length})
+                } else {
+                    this.setState({avgFPS: (this.state.avgFPS + length) / 2})
                 }
             }
         } else {
             this.state.renderer.render(this.state.LResScene, this.state.camera);
         }
-        this.setState({nbFrames: this.state.nbFrames+1})
-        //this.state.stats.end();
+        this.setState({nbFrames: this.state.nbFrames + 1})
+        this.state.stats.end();
     }
 
     mouseMoveEvent = (event) => {
@@ -234,9 +242,12 @@ class MapView extends Component {
         }
         let gltfLoader = new GLTFLoader();
         gltfLoader.load("mapData/castle.glb", model => {
-            console.log(model.scene)
             let castlesPosition = map.castlePosition;
-            for (let position of castlesPosition) {
+
+            const loader = new THREE.FontLoader();
+            var font = loader.parse(require('three/examples/fonts/helvetiker_regular.typeface.json'))
+            for (let i = 0; i < castlesPosition.length; i++) {
+                let position = castlesPosition[i];
                 let positionModel = model.scene.clone(true);
                 let vectorPos = new THREE.Vector3(position[0], position[1], position[2]);
                 this.state.castles.push(vectorPos);
@@ -246,9 +257,8 @@ class MapView extends Component {
                 positionModel.scale.set(0.8, 0.8, 0.8)
                 positionModel.name = "Castle"
 
-                let PointLight = new THREE.PointLight(new THREE.Color(255, 255, 0), 0.005, 20)
+                let PointLight = new THREE.PointLight(new THREE.Color(255, 255, 0), 0.005, 70)
                 PointLight.position.set(position[0], position[1] + 10, position[2])
-
 
                 const geometry = new THREE.BoxGeometry();
                 let material;
@@ -257,6 +267,7 @@ class MapView extends Component {
                 } else {
                     material = new THREE.MeshBasicMaterial({color: 0x00ff00});
                 }
+
                 const cube = new THREE.Mesh(geometry, material);
                 cube.name = "HelperCube"
                 cube.position.set(position[0], position[1], position[2])
@@ -265,15 +276,38 @@ class MapView extends Component {
                 this.setState({currentCastle: this.state.currentCastle + 1})
                 cube.visible = false;
 
+                Axios.post("/api/castle/getCastleIDs", {classID: this.state.player.classID}).then(res => {
+                    Axios.post("/api/castle/getCastleInfo", {castleID: res.data.castleIDs[i]}).then(res => {
+                        if (res.data.returnState === 0) {
+                            const fontGeometry = new THREE.TextGeometry(res.data.castleName, {
+                                font: font,
+                                size: 10,
+                                height: 1,
+                                curveSegments: 12,
+                                bevelEnabled: false
+                            });
+                            fontGeometry.computeBoundingBox();
+                            fontGeometry.center();
+                            let mesh = new THREE.Mesh(fontGeometry, new THREE.MeshStandardMaterial({color: 0x5F5F5F}));
+
+                            mesh.rotateX(-Math.PI / 2)
+                            mesh.position.set(position[0] , position[1] + 20, position[2]-20 )
+                            this.state.HResScene.add(mesh)
+                        }
+                    })
+                })
+
+
                 this.state.HResScene.add(cube.clone())
                 this.state.LResScene.add(cube.clone())
                 let date = new Date(Date.now()).getHours();
-                if(date<8 ||date>20){
+                if (date < 8 || date > 20) {
                     this.state.HResScene.add(PointLight)
                 }
                 this.state.HResScene.add(positionModel.clone());
                 this.state.LResScene.add(positionModel.clone());
             }
+
         }, undefined, function (error) {
 
             console.error(error);
@@ -297,7 +331,7 @@ class MapView extends Component {
             }
 
             for (let i = 0; i < map.length; i++) {
-                if(map[i].y<=this.state.water.position.y+1)continue;
+                if (map[i].y <= this.state.water.position.y + 1) continue;
                 let valid = true;
                 castles.forEach(castle => {
                     if ((castle[0] - map[i].x <= 10 && castle[0] - map[i].x >= -10) && (castle[2] - map[i].z <= 10 && castle[2] - map[i].z >= -10)) {
@@ -332,8 +366,8 @@ class MapView extends Component {
                 let geometryArray = geometries.get(key);
                 let geometry = BufferGeometryUtils.mergeBufferGeometries(geometryArray, false)
                 let material;
-                this.state.LResScene.add( new THREE.Mesh(geometry, new THREE.MeshBasicMaterial({color: key})));
-                this.state.HResScene.add( new THREE.Mesh(geometry, new THREE.MeshStandardMaterial({color: key})));
+                this.state.LResScene.add(new THREE.Mesh(geometry, new THREE.MeshBasicMaterial({color: key})));
+                this.state.HResScene.add(new THREE.Mesh(geometry, new THREE.MeshStandardMaterial({color: key})));
             }
 
         }, undefined, error => {
@@ -405,13 +439,13 @@ class MapView extends Component {
         skyUniforms['mieDirectionalG'].value = 0.8;
 
         let date = new Date(Date.now()).getHours();
-        date = date-8<=0?24-date:date-8
-        if(date==0)date=24;
+        date = date - 8 <= 0 ? 24 - date : date - 8
+        if (date == 0) date = 24;
 
         this.setState({
             sunParameters: {
                 inclination: 0,
-                azimuth: date/24
+                azimuth: date / 24
             },
             pmremGenerator: new THREE.PMREMGenerator(this.state.renderer)
         })
@@ -461,8 +495,8 @@ class MapView extends Component {
             //this.setupGui();
 
             this.mount.appendChild(this.state.renderer.domElement);
-            //this.mount.appendChild(this.state.stats.dom)
-            //this.state.stats.showPanel(0);
+            this.mount.appendChild(this.state.stats.dom)
+            this.state.stats.showPanel(0);
 
 
             this.animate();

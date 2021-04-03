@@ -41,9 +41,12 @@ router.post('/getRemainingQuiz', (req, res, next) => {
     db.all('SELECT COUNT(*) AS count FROM QuizDone, MPGain WHERE theGain = mpGainID AND theStudent = ? AND date > ?', [req.session.user.theUser, limitTime], function (err, rows) {
         if (err) return next(err)
         else {
+            if(rows[2]){
+                return res.send({returnState: 0, nb: LIMIT - rows[2].nb})
+            }else{
+                return res.send({returnState: 1, message:"Error"})
+            }
 
-
-            return res.send({returnState: 0, nb: LIMIT - rows[2].nb})
 
         }
     })

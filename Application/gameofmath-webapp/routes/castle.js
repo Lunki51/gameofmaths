@@ -34,6 +34,7 @@ router.post('/getCastleInfo', (req, res, next) => {
                 return master_dao.findCurrentForCastle(castleID)
                     .then(master => {
 
+
                         return knight_dao.findCurrentOfMaster(master.masterID)
                             .then(knights => {
 
@@ -70,29 +71,25 @@ router.post('/getCastleIDs', (req, res, next) => {
     const classID = req.body.classID;
     if (classID == null) return res.send({returnState: 1, msg: 'CastleID invalid'})
 
-    student_dao.findUserByID(studentID)
-        .then(student => {
-            if (student == null) return res.send({returnState: 1, msg: 'StudentID invalid'})
-            else if (req.session.isStudent && req.session.user.theClass !== classID) {
+    if (req.session.isStudent && req.session.user.theClass !== classID) {
+        return res.send({
+            returnState: 1,
+            msg: 'StudentID is not in the student class'
+        })
+    } else {
+
+        castle_dao.findAllOfClass(classID)
+            .then(castles => {
                 return res.send({
-                    returnState: 1,
-                    msg: 'StudentID is not in the student class'
+                    returnState: 0,
+                    castleIDs: castles.reduce((acc, obj) => {
+                        acc.push(obj.castleID)
+                        return acc
+                    }, []).sort()
                 })
-            } else {
+            }).catch(err => next(err))
 
-                return castle_dao.findAllOfClass(classID)
-                    .then(castles => {
-                        return res.send({
-                                    returnState: 0,
-                                    castleIDs: castles.reduce((acc, obj) => {
-                                        acc.push(obj.castleID)
-                                        return acc
-                                    }, []).sort()
-                                })
-                    })
-
-            }
-        }).catch(err => next(err))
+    }
 })
 
 /**

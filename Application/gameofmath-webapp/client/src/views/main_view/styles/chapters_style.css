@@ -13,15 +13,11 @@
         display: grid;
     }
 
+
     .container-chapter{
 
-
-
         width: 80%;
-        height: 200px;
-
-
-
+        height: 70px;
 
         position: relative;
 
@@ -37,9 +33,6 @@
         font-size: 30px;
 
         color: var(--text_color);
-
-
-
 
     }
 

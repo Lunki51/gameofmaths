@@ -82,6 +82,8 @@ class ListComponent extends Component{
         this.state = {
             theObject:props.theObject,
         }
+
+        console.log(props.theObject)
     }
 
 
@@ -567,7 +569,7 @@ export class Quiz extends Component{
     render() {
 
         if(this.state.onChapter === true){
-            return <ChapterSelection onSelection={this.handleChapterChoice} close={this.props.handleClose}/>
+            return <ChapterSelection onSelection={this.handleChapterChoice}/>
         }else{
             return <QuizView quit={this.handleQuit} handleBackToChapter={this.handleBackToChapter} chapter={this.state.chapterSelected}/>
         }

@@ -44,6 +44,7 @@ class MainView extends Component {
             username: "",
             zoomed: false,
             details: null,
+            profile: null
         }
 
 
@@ -163,7 +164,10 @@ class MainView extends Component {
 
             if (res.data.returnState === 0)
                 this.setState({
-                    isLogged: false
+                    isLogged: false,
+                    zoomed: false,
+                    details: null,
+                    profile: null
                 })
         })
     }
@@ -191,25 +195,23 @@ class MainView extends Component {
 
     }
 
-    handleProfilDisplay = () => {
-        if (this.state.whatOnOverlay === "quiz") {
-            this.handleQuizDisplay();
-        }
-        if (this.state.whatOnOverlay === "profil") {
+    handleProfileDisplay = () => {
+        if(this.state.profile){
             this.setState({
-                overlayComponent: null,
-                whatOnOverlay: ""
+                profile:null
             })
-        } else {
+        }else{
             this.setState({
-                overlayComponent: <ProfilDetails/>,
-                whatOnOverlay: "profil"
+                profile: <ProfilDetails/>
             })
-
         }
     }
 
     handleCastleDetails = (castle) => {
+
+
+
+
         this.setState({details: <CastleDetails castle={castle} clear={this.handleClearDetails}/>, zoomed: true})
     }
 
@@ -235,10 +237,11 @@ class MainView extends Component {
                 return <>
 
                     <MobileHeader/>{/*appear only when mobile*/}
-                    <NavigationBar quiz={this.handleQuizDisplay} prof={this.handleProfilDisplay}
+                    <NavigationBar quiz={this.handleQuizDisplay} profile={this.handleProfileDisplay}
                                    logout={this.handleLogout}/>
                     <MapView details={this.handleCastleDetails} zoomed={this.state.zoomed}/>
                     {this.state.details}
+                    {this.state.profile}
                     {this.state.overlayComponent}
                 </>
 

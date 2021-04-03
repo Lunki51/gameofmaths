@@ -2,7 +2,8 @@ import React, { Component } from 'react';
 import '../styles/castle_style.css';
 import '../styles/global_style.css'
 import '../styles/global_variables.css';
-import {getCastleInfo} from "../../../model/castleModel";
+import {getCastleIDs, getCastleInfo} from "../../../model/castleModel";
+import {getStudentInfo} from "../../../model/studentModel";
 
 export class CastleDetails extends Component{
 
@@ -12,9 +13,27 @@ export class CastleDetails extends Component{
     componentDidMount() {
         this._isMounted=true
 
-        getCastleInfo(this.props.castle).then(res => {
-            console.log(res)
+
+
+        getStudentInfo().then(res => {
+
+            getCastleIDs(res.data.classID).then(res => {
+
+                getCastleInfo(res.data.castleIDs[this.props.castle]).then(res => {
+                    console.log(res)
+                })
+
+            })
+
+
         })
+
+
+
+
+
+
+
 
     }
 

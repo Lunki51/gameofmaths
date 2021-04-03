@@ -103,7 +103,7 @@ export function getState() {
 
 export function getNumQuestion(chapterID) {
 
-    return Axios.post('api/quiz/startQuiz', {chapterID})
+    return Axios.post('api/quiz/startQuiz', {chapter:chapterID})
 
 }
 
@@ -125,8 +125,12 @@ export function submitAnswer(type, questionID, questionNb, answers, answer) {
 
 }
 
+export function getRemainingQuiz() {
+    return Axios.post('/api/quiz/getRemainingQuiz')
+}
+
 export function getChapters(){
-    return Axios.post('api/quiz/getChapters')
+    return Axios.post('/api/quiz/getChapters')
 }
 
 export function quitQuiz(){

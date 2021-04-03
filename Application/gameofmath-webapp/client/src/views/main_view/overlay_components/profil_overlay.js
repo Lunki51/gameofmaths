@@ -6,16 +6,19 @@ import { OrbitControls } from '../../../../node_modules/three/examples/jsm/contr
 import '../styles/global_style.css'
 import auth, {getInfo, getType, getUsername, isAuth} from "../../../model/authentification";
 import '../styles/global_variables.css';
+import {getRemainingDailyQuestion} from "../../../model/studentModel";
+import {getRemainingQuiz} from "../../../model/quizModel";
 
 export class ProfilDetails extends Component{
 
     _isMounted=false
 
 
-    constructor(props: P, context: any) {
-        super(props, context);
+    constructor() {
+        super();
         this.state = {
             player: {firstname:"", lastname:"", className:"", classGrade:"", classID:0, mp:0},
+            remainingQuiz: 0,
             scene: new THREE.Scene(),
             renderer: new THREE.WebGLRenderer(),
             mixer: null,
@@ -106,6 +109,13 @@ export class ProfilDetails extends Component{
         this.state.renderer.setPixelRatio(window.devicePixelRatio);
         this.render3D(null)
          */
+
+
+        getRemainingQuiz().then(res => {
+
+            console.log(res)
+
+        })
     }
 
     componentWillUnmount() {
@@ -117,11 +127,12 @@ export class ProfilDetails extends Component{
     render() {
 
         //TODO Implement player description
-        return <div className="container-chapter-selection">
+        return <div className="container-profile-details">
 
-            <h1 className="profil-details-headline">Joueur : {this.state.player.firstname} {this.state.player.lastname}</h1>
-            <h1>Classe: {this.state.player.className}</h1>
-            <h1>Points de math : {this.state.player.mp}</h1>
+            <h1 className="profile-details-headline">Joueur : {this.state.player.firstname} {this.state.player.lastname}</h1>
+            <h1 className="profile-details">Classe: {this.state.player.className}</h1>
+            <h1 className="profile-details">Points de math : {this.state.player.mp}</h1>
+            <h1 className="profile-details">Quiz restant : {this.state.player.mp}</h1>
 
         </div>
 

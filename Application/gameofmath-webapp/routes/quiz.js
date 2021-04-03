@@ -20,7 +20,7 @@ router.post('/getChapters', (req, res, next) => {
     if (!req.session.isLogged) next(new Error('The client must be logged'))
 
     chapter_dao.findAll().then(rep => {
-        res.send({returnState: 0, chapters: rep.map(c => c.name)})
+        res.send({returnState: 0, chapters: rep})
     }).catch(err => {
         next(err)
     })
@@ -41,6 +41,7 @@ router.post('/getRemainingQuiz', (req, res, next) => {
     db.all('SELECT COUNT(*) AS count FROM QuizDone, MPGain WHERE theGain = mpGainID AND theStudent = ? AND date > ?', [req.session.user.theUser, limitTime], function (err, rows) {
         if (err) return next(err)
         else {
+
 
             return res.send({returnState: 0, nb: LIMIT - rows[2].nb})
 
@@ -71,7 +72,7 @@ router.post('/startQuiz', (req, res, next) => {
         else {
 
             // Get the quiz
-            chapter_dao.findByName(req.body.chapter).then(chapter => {
+            chapter_dao.findByID(req.body.chapter).then(chapter => {
                 if (chapter) {
 
                     quiz_dao.findAllOfTypeInChapter('CLASSIC', chapter.chapterID).then(quizs => {

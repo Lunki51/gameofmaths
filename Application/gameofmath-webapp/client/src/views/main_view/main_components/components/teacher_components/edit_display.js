@@ -447,8 +447,13 @@ class EditClassStep extends Component {
             currentClass: {name: "", grade: "", classID: 0},
             classesList: []
         }
+
+    }
+
+    componentDidMount(){
         this.handleUpdateList()
     }
+
 
     handleValidate = (event) => {
 
@@ -501,8 +506,9 @@ class EditClassStep extends Component {
     }
 
     handleOnChange = (event) => {
+        console.log("changing")
         this.state.classesList.forEach((theClass) => {
-            if (theClass.classID === event.target.value) {
+            if (theClass.classID == event.target.value) {
                 this.setState({
                     currentClass: {name: theClass.name, grade: theClass.grade, classID: theClass.classID}
                 })

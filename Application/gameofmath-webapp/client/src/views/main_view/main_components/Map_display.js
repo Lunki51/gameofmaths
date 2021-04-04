@@ -53,7 +53,8 @@ class MapView extends Component {
                 rotateY: 0,
                 camDistance: 100,
             },
-            player: null
+            player: null,
+            loading:<div className="background-loading"/>
         };
 
         getInfo().then(response => {
@@ -373,6 +374,8 @@ class MapView extends Component {
         }, undefined, error => {
             console.error(error)
         });
+
+        this.loadingFinish()
     }
 
     setupWater = () => {
@@ -480,6 +483,8 @@ class MapView extends Component {
         folderSky.add(skyUniforms.rayleigh, 'value', 0, 5, 0.01).onChange(this.updateSun).name('rayleigh')
         folderSky.add(skyUniforms.mieCoefficient, 'value', 0, 5, 0.01).onChange(this.updateSun).name('mieCoefficient')
         folderSky.add(skyUniforms.mieDirectionalG, 'value', 0, 5, 0.01).onChange(this.updateSun).name('mieDirectionalG')
+
+
     }
 
 
@@ -515,7 +520,16 @@ class MapView extends Component {
 
             this.reloadScene();
 
+
         }
+
+
+    }
+
+    loadingFinish =() => {
+        this.setState({
+            loading: null
+        })
     }
 
     componentWillUnmount() {
@@ -523,8 +537,11 @@ class MapView extends Component {
     }
 
     render() {
-        return <div className={"mapView"} onTouchMove={this.onTouchMove} onTouchStart={this.onTouchStart}
-                    ref={ref => (this.mount = ref)}/>
+        return <>
+
+            <div className={"mapView"} onTouchMove={this.onTouchMove} onTouchStart={this.onTouchStart} ref={ref => (this.mount = ref)}/>
+            {this.state.loading}
+        </>
 
     }
 

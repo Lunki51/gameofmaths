@@ -18,7 +18,7 @@ CREATE TABLE Notification(
     notifType TEXT NOT NULL,
     notifData TEXT NOT NULL,
     notifDate NUMERIC NOT NULL,
-    notifUser INTEGER NOT NULL,
+    notifUser INTEGER NOT NULL
 );
 
 -- Castle
@@ -26,13 +26,13 @@ CREATE TABLE Notification(
 CREATE TABLE DailyQuiz(
     dailyQuizID INTEGER PRIMARY KEY AUTOINCREMENT,
     dailyQuizDate NUMERIC NOT NULL,
-    dailyQuizQuiz INTEGER NOT NULL,
+    dailyQuizQuiz INTEGER NOT NULL
 );
 
 CREATE TABLE Castle(
     castleID INTEGER PRIMARY KEY AUTOINCREMENT,
     castleName TEXT NOT NULL,
-    castleClass INTEGER NOT NULL,
+    castleClass INTEGER NOT NULL
 );
 
 CREATE TABLE Master(
@@ -42,7 +42,7 @@ CREATE TABLE Master(
     masterCastle INTEGER NOT NULL,
     masterStudent INTEGER NOT NULL,
 
-    FOREIGN KEY(masterCastle) REFERENCES Castle(castleID),
+    FOREIGN KEY(masterCastle) REFERENCES Castle(castleID)
 );
 
 CREATE TABLE Knight(
@@ -52,7 +52,7 @@ CREATE TABLE Knight(
     knightMaster INTEGER NOT NULL,
     knightStudent INTEGER NOT NULL,
 
-    FOREIGN KEY(knightMaster) REFERENCES Master(masterID),
+    FOREIGN KEY(knightMaster) REFERENCES Master(masterID)
 );
 
 CREATE TABLE KnightRequest(
@@ -62,7 +62,7 @@ CREATE TABLE KnightRequest(
     knightRequestMaster INTEGER NOT NULL,
     knightRequestStudent INTEGER NOT NULL,
 
-    FOREIGN KEY(knightRequestMaster) REFERENCES Master(masterID),
+    FOREIGN KEY(knightRequestMaster) REFERENCES Master(masterID)
 );
 
 -- Attack

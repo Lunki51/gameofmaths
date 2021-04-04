@@ -1,9 +1,16 @@
-import {Component} from "react";
+import React, {Component} from "react";
 import {createClass, getAllClasses} from "../../../../../model/classModel";
 import {createStudent, getAllStudents, getAllTheStudents} from "../../../../../model/studentModel";
 import {StudentDisplay} from "./student_display";
 import {createChapter,getAllChapter} from "../../../../../model/chapterModel";
-import {addQuestion, createAnswer, createQuiz, deleteQuestion, getQuizList} from "../../../../../model/quizModel";
+import {
+    addQuestion,
+    createAnswer,
+    createQuiz,
+    deleteQuestion,
+    getQuizList,
+    setImage
+} from "../../../../../model/quizModel";
 
 export class AddingDisplay extends Component{
 
@@ -258,6 +265,7 @@ class AddStudentStep extends Component{
         }
 
         //no reload
+        this.props.previous(<AddSelectStep previous={this.props.previous} next={this.props.next}/>)
         event.preventDefault();
     }
 
@@ -321,6 +329,7 @@ class AddClassStep extends Component{
 
 
         //no reload
+        this.props.previous(<AddSelectStep previous={this.props.previous} next={this.props.next}/>)
         event.preventDefault();
     }
 
@@ -369,6 +378,7 @@ class AddChapterStep extends Component {
         }
 
         //no reload
+        this.props.previous(<AddSelectStep previous={this.props.previous} next={this.props.next}/>)
         event.preventDefault();
 
     }
@@ -517,12 +527,18 @@ class AddQuestionStep extends Component{
             addQuestion(this.state.currentChapter,this.state.currentQuiz,upperText,lowerText,type,level).then((response) => {
                 this.state.answerList.forEach(answer => {
                     createAnswer(this.state.currentQuiz, response.data.question.questionID, answer.answerText, answer.isValid).then(r  =>{
+                        if(this.state.selectedFile){
+                            setImage(response.data.question.questionID,this.state.selectedFile).then(response=>{
+                                }
+                            )
+                        }
                     })
                 })
             })
         }
 
         //no reload
+        this.props.previous(<AddSelectStep previous={this.props.previous} next={this.props.next}/>)
         event.preventDefault();
     }
 
@@ -681,6 +697,7 @@ class AddQuizStep extends Component{
         }
 
         //no reload
+        this.props.previous(<AddSelectStep previous={this.props.previous} next={this.props.next}/>)
         event.preventDefault();
     }
 

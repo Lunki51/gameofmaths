@@ -94,15 +94,16 @@ class EditSelectStep extends Component {
                 this.props.next(<EditChapterStep openPopup={this.props.openPopup} closePopup={this.props.closePopup}
                                                  next={this.props.next} previous={this.props.previous}/>)
                 break
+            case this.QUIZ_TEXT:
+                this.props.next(<EditQuizListStep openPopup={this.props.openPopup}
+                                                  closePopup={this.props.closePopup}
+                                                  next={this.props.next} previous={this.props.previous}/>)
             case this.QUESTION_TEXT:
                 this.props.next(<EditQuestionSelectStep openPopup={this.props.openPopup}
                                                         closePopup={this.props.closePopup}
                                                         next={this.props.next} previous={this.props.previous}/>)
                 break
-            case this.QUIZ_TEXT:
-                this.props.next(<EditQuizListStep openPopup={this.props.openPopup}
-                                                        closePopup={this.props.closePopup}
-                                                        next={this.props.next} previous={this.props.previous}/>)
+
 
                 break
             default:
@@ -146,8 +147,9 @@ class EditSelectStep extends Component {
                 <SelectionChoice id="student" onClick={this.handleSelectChoice} title={this.STUDENT_TEXT}/>
                 <SelectionChoice id="class" onClick={this.handleSelectChoice} title={this.CLASS_TEXT}/>
                 <SelectionChoice id="chapter" onClick={this.handleSelectChoice} title={this.CHAPTER_TEXT}/>
-                <SelectionChoice id="question" onClick={this.handleSelectChoice} title={this.QUESTION_TEXT}/>
                 <SelectionChoice id="quiz" onClick={this.handleSelectChoice} title={this.QUIZ_TEXT}/>
+                <SelectionChoice id="question" onClick={this.handleSelectChoice} title={this.QUESTION_TEXT}/>
+
 
             </div>
 
@@ -1123,8 +1125,6 @@ class EditQuestionDetailsStep extends Component {
 
                 <h1 className="teacher-question-creation-text">Création Question</h1>
 
-                <input className="teacher-student-creation-input" id="select-qNumber" placeholder="Numéro de question"
-                       type="text" defaultValue={this.props.question.qNumber}/>
                 <input className="teacher-student-creation-input" id="select-upperText" placeholder="Texte du haut"
                        type="text" defaultValue={this.props.question.upperText}/>
                        <div className="teacher-question-creation-answer">

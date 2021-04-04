@@ -18,7 +18,7 @@ export function getAllTheStudents(){
 
 }
 
-export function deleteTheStudents(studentId,classId){
+export async function deleteTheStudents(studentId,classId){
 
     return Axios.post('/api/classManagement/deleteStudent', {classId,studentId} )
 }

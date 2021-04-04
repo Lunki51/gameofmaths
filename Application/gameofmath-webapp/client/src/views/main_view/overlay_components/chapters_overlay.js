@@ -428,11 +428,11 @@ class QuizView extends Component {
                             </div>
             }
         }else {
-            return <div className="background">
+            return <>
                 <div className="container-quiz" >
                     <label className="error-text">{this.state.errorMsg}</label>
                 </div>
-            </div>
+            </>
         }
 
 

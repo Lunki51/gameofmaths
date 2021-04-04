@@ -1,16 +1,17 @@
 import React, {Component} from "react";
 import {deleteClass, getAllClasses} from "../../../../../model/classModel";
-import {getAllStudents,deleteTheStudents} from "../../../../../model/studentModel";
-import {getAllChapter, deleteChapter} from "../../../../../model/chapterModel";
-import {getQuizList, deleteQuiz, addQuestion, getQuestionList, deleteQuestion} from "../../../../../model/quizModel";
+import {deleteTheStudents, getAllStudents} from "../../../../../model/studentModel";
+import {deleteChapter, getAllChapter} from "../../../../../model/chapterModel";
+import {deleteQuestion, deleteQuiz, getQuestionList, getQuizList} from "../../../../../model/quizModel";
 
-export class DeleteDisplay extends Component{
+export class DeleteDisplay extends Component {
 
     constructor(props) {
         super(props);
 
         this.state = {
-            currentStepScreen: <DeleteSelectStep openWaring={props.waringOpen} openError={props.errorOpen} previous={this.handlePrevious} next={this.handleNext}/>
+            currentStepScreen: <DeleteSelectStep openWaring={props.waringOpen} openError={props.errorOpen}
+                                                 previous={this.handlePrevious} next={this.handleNext}/>
         }
 
     }
@@ -29,7 +30,6 @@ export class DeleteDisplay extends Component{
     }
 
 
-
     render() {
 
         return <div className="teacher-default-dashboard-container">
@@ -45,7 +45,7 @@ export class DeleteDisplay extends Component{
 }
 
 
-class DeleteSelectStep extends Component{
+class DeleteSelectStep extends Component {
 
     // static variables
     STUDENT_TEXT = "Un élève"
@@ -59,13 +59,10 @@ class DeleteSelectStep extends Component{
 
         this.state = {
             currentChoice: "",
-            currentChoiceDOM:null,
+            currentChoiceDOM: null,
 
         }
     }
-
-
-
 
 
     handleConfirmChoice = () => {
@@ -73,23 +70,28 @@ class DeleteSelectStep extends Component{
         switch (this.state.currentChoice) {
             case this.STUDENT_TEXT:
 
-                this.props.next(<DeleteStudentStep openPopup={this.props.openPopup} closePopup={this.props.closePopup} next={this.props.next} previous={this.props.previous}/>)
+                this.props.next(<DeleteStudentStep openPopup={this.props.openPopup} closePopup={this.props.closePopup}
+                                                   next={this.props.next} previous={this.props.previous}/>)
                 break
             case this.CLASS_TEXT:
 
-                this.props.next(<DeleteClassStep openPopup={this.props.openPopup} closePopup={this.props.closePopup}  next={this.props.next} previous={this.props.previous} />)
+                this.props.next(<DeleteClassStep openPopup={this.props.openPopup} closePopup={this.props.closePopup}
+                                                 next={this.props.next} previous={this.props.previous}/>)
                 break
             case this.CHAPTER_TEXT:
 
-                this.props.next(<DeleteChapterStep openPopup={this.props.openPopup} closePopup={this.props.closePopup}  next={this.props.next} previous={this.props.previous} />)
+                this.props.next(<DeleteChapterStep openPopup={this.props.openPopup} closePopup={this.props.closePopup}
+                                                   next={this.props.next} previous={this.props.previous}/>)
                 break
             case this.QUESTION_TEXT:
 
-                this.props.next(<DeleteQuestionStep openPopup={this.props.openPopup} closePopup={this.props.closePopup}  next={this.props.next} previous={this.props.previous} />)
+                this.props.next(<DeleteQuestionStep openPopup={this.props.openPopup} closePopup={this.props.closePopup}
+                                                    next={this.props.next} previous={this.props.previous}/>)
                 break
             case this.QUIZ_TEXT:
 
-                this.props.next(<DeleteQuizStep openPopup={this.props.openPopup} closePopup={this.props.closePopup}  next={this.props.next} previous={this.props.previous} />)
+                this.props.next(<DeleteQuizStep openPopup={this.props.openPopup} closePopup={this.props.closePopup}
+                                                next={this.props.next} previous={this.props.previous}/>)
                 break
             default:
 
@@ -100,29 +102,27 @@ class DeleteSelectStep extends Component{
 
     }
 
-    handleSelectChoice = (event, text,id) => {
+    handleSelectChoice = (event, text, id) => {
         let domObject = document.getElementById(id);
-        if(!this.state.currentChoiceDOM){
+        if (!this.state.currentChoiceDOM) {
 
             domObject.style.backgroundColor = "var(--secondary_color)"
 
             this.setState({
-                currentChoiceDOM :domObject,
+                currentChoiceDOM: domObject,
                 currentChoice: text
             })
-        }else{
+        } else {
             this.state.currentChoiceDOM.style.backgroundColor = "var(--primary_color)"
             domObject.style.backgroundColor = "var(--secondary_color)"
 
             this.setState({
-                currentChoiceDOM :domObject,
+                currentChoiceDOM: domObject,
                 currentChoice: text
             })
         }
 
     }
-
-
 
 
     render() {
@@ -131,15 +131,16 @@ class DeleteSelectStep extends Component{
             <h1 className="teacher-add-choice-title">Supprimer</h1>
 
             <div className="teacher-selection-option-list">
-                <SelectionChoice id="student" onClick={this.handleSelectChoice} title={this.STUDENT_TEXT}  />
-                <SelectionChoice id="class" onClick={this.handleSelectChoice} title={this.CLASS_TEXT} />
-                <SelectionChoice id="chapter" onClick={this.handleSelectChoice} title={this.CHAPTER_TEXT} />
-                <SelectionChoice id="question" onClick={this.handleSelectChoice} title={this.QUESTION_TEXT} />
-                <SelectionChoice id="quiz" onClick={this.handleSelectChoice} title={this.QUIZ_TEXT} />
+                <SelectionChoice id="student" onClick={this.handleSelectChoice} title={this.STUDENT_TEXT}/>
+                <SelectionChoice id="class" onClick={this.handleSelectChoice} title={this.CLASS_TEXT}/>
+                <SelectionChoice id="chapter" onClick={this.handleSelectChoice} title={this.CHAPTER_TEXT}/>
+                <SelectionChoice id="quiz" onClick={this.handleSelectChoice} title={this.QUIZ_TEXT}/>
+                <SelectionChoice id="question" onClick={this.handleSelectChoice} title={this.QUESTION_TEXT}/>
+
 
             </div>
 
-            <button onClick={this.handleConfirmChoice} className="teacher-next-btn" >Suivant</button>
+            <button onClick={this.handleConfirmChoice} className="teacher-next-btn">Suivant</button>
         </div>
     }
 
@@ -147,10 +148,10 @@ class DeleteSelectStep extends Component{
 }
 
 
-class SelectionChoice extends Component{
+class SelectionChoice extends Component {
 
 
-    handleClick = (event) =>{
+    handleClick = (event) => {
         this.props.onClick(event, this.props.title, this.props.id)
     }
 
@@ -176,7 +177,8 @@ export class DeleteStudentStep extends Component {
             studentList: [],
             currentClass: 0,
             classesList: [],
-            selectedList: []
+            selected: null,
+            domElem:null
         }
     }
 
@@ -213,32 +215,20 @@ export class DeleteStudentStep extends Component {
         let deleteList = ""
 
 
+        deleteTheStudents(this.state.selected.userID, parseInt(this.state.currentClass)).then(res => {
 
-        this.state.selectedList.forEach((theStudent) => {
+            if (res.data.returnState < 1) {
+                getAllStudents(this.state.currentClass).then(results => {
 
-            deleteTheStudents(theStudent.userID,parseInt(this.state.currentClass)).then(res => {
-
-                if(res.data.returnState <1 ){
-                    getAllStudents(this.state.currentClass).then(results => {
-
-                        this.setState({
-                            studentList: results.data.students,
-                            selectedList:[]
-                        })
-
-
+                    this.setState({
+                        studentList: results.data.students,
+                        selected:null
                     })
-                }else {
 
-                    }
 
-            })
+                })
+            }
         })
-
-
-
-
-
 
 
     }
@@ -276,28 +266,24 @@ export class DeleteStudentStep extends Component {
     }
 
 
-    handleSelect = (event,id, student) =>{
+    handleSelect = (event, id, student) => {
 
+        if(this.state.domElem) this.state.domElem.style.backgroundColor="var(--primary_color)"
         let container = document.getElementById(id);
 
 
-        if((container.style.backgroundColor === "var(--primary_color)" || !container.style.backgroundColor) && id === event.target.id){
+        if ((container.style.backgroundColor === "var(--primary_color)" || !container.style.backgroundColor) && id === event.target.id) {
             container.style.backgroundColor = "var(--secondary_color)"
-            this.state.selectedList.push(student)
-        }else{
+            this.setState({selected:student,domElem:container})
+        } else {
             container.style.backgroundColor = "var(--primary_color)"
-            this.setState({
-                selectedList: this.state.selectedList.filter(function(aStudent, index, arr){
-                    return aStudent !== student;
-                })
-                }
-            )
+            this.setState({selected:null,domElem:null})
         }
 
     }
 
     handlePrevious = () => {
-        this.props.previous(<DeleteSelectStep previous={this.props.previous} next={this.props.next} />)
+        this.props.previous(<DeleteSelectStep previous={this.props.previous} next={this.props.next}/>)
     }
 
     render() {
@@ -311,9 +297,10 @@ export class DeleteStudentStep extends Component {
                     })}
                 </select>
 
-                {(this.state.studentList.length > 0)?this.state.studentList.map( (theStudent, index) => {
-                    return <StudentRow id={"student:"+theStudent.userID+":"+index} onClick={this.handleSelect} value={theStudent} key={index}/>
-                }):<h1 className="teacher-student-list-none">Aucun Elève</h1>}
+                {(this.state.studentList.length > 0) ? this.state.studentList.map((theStudent, index) => {
+                    return <StudentRow id={"student:" + theStudent.userID + ":" + index} onClick={this.handleSelect}
+                                       value={theStudent} key={index}/>
+                }) : <h1 className="teacher-student-list-none">Aucun Elève</h1>}
 
                 <br/>
                 <br/>
@@ -322,9 +309,9 @@ export class DeleteStudentStep extends Component {
                 <br/>
 
             </div>
-            <button className="teacher-student-valid-delete-btn" onClick={this.handleValidate} >Supprimer</button>
+            <button className="teacher-student-valid-delete-btn" onClick={this.handleValidate}>Supprimer</button>
 
-            <button onClick={this.handlePrevious} className="teacher-previous-btn" >Précédent</button>
+            <button onClick={this.handlePrevious} className="teacher-previous-btn">Précédent</button>
         </div>
     }
 
@@ -334,7 +321,7 @@ class StudentRow extends Component {
 
 
     handleClick = (event) => {
-        this.props.onClick(event,this.props.id,this.props.value)
+        this.props.onClick(event, this.props.id, this.props.value)
     }
 
 
@@ -348,15 +335,15 @@ class StudentRow extends Component {
 
 ///////////////////////| DELETE CLASS |///////////////////////////
 
-class DeleteClassStep extends Component{
+class DeleteClassStep extends Component {
 
 
     constructor() {
         super();
 
         this.state = {
-            currentChoiceDOM:null,
-            currentClassID:-1,
+            currentChoiceDOM: null,
+            currentClassID: -1,
             classesList: []
         }
     }
@@ -366,11 +353,10 @@ class DeleteClassStep extends Component{
         getAllClasses().then((response) => {
 
             this.setState({
-                classesList:response.data.classes
+                classesList: response.data.classes
             })
 
         })
-
 
 
     }
@@ -380,22 +366,22 @@ class DeleteClassStep extends Component{
     }
 
 
-    handleSelectChoice = (event, classId,id) => {
+    handleSelectChoice = (event, classId, id) => {
         let domObject = document.getElementById(id);
-        if(!this.state.currentChoiceDOM){
+        if (!this.state.currentChoiceDOM) {
 
             domObject.style.backgroundColor = "var(--secondary_color)"
 
             this.setState({
-                currentChoiceDOM :domObject,
+                currentChoiceDOM: domObject,
                 currentClassID: classId
             })
-        }else{
+        } else {
             this.state.currentChoiceDOM.style.backgroundColor = "var(--primary_color)"
             domObject.style.backgroundColor = "var(--secondary_color)"
 
             this.setState({
-                currentChoiceDOM :domObject,
+                currentChoiceDOM: domObject,
                 currentClassID: classId
             })
         }
@@ -411,7 +397,7 @@ class DeleteClassStep extends Component{
     }
 
     handlePrevious = () => {
-        this.props.previous(<DeleteSelectStep previous={this.props.previous} next={this.props.next} />)
+        this.props.previous(<DeleteSelectStep previous={this.props.previous} next={this.props.next}/>)
     }
 
     render() {
@@ -420,8 +406,9 @@ class DeleteClassStep extends Component{
 
             <div className="teacher-class-list-delete">
 
-                {this.state.classesList.map( (theClass, index) => {
-                    return <ClassesRow id={"class"+theClass.name+index} value={theClass} onClick={this.handleSelectChoice} key={index} theClass={theClass}/>
+                {this.state.classesList.map((theClass, index) => {
+                    return <ClassesRow id={"class" + theClass.name + index} value={theClass}
+                                       onClick={this.handleSelectChoice} key={index} theClass={theClass}/>
                 })}
 
                 <br/>
@@ -432,20 +419,19 @@ class DeleteClassStep extends Component{
 
             </div>
 
-            <button className="teacher-class-valid-delete-btn" onClick={this.handleValidate} >Supprimer</button>
+            <button className="teacher-class-valid-delete-btn" onClick={this.handleValidate}>Supprimer</button>
 
 
-
-            <button onClick={this.handlePrevious} className="teacher-previous-btn" >Précédent</button>
+            <button onClick={this.handlePrevious} className="teacher-previous-btn">Précédent</button>
         </div>
     }
 
 }
 
-class ClassesRow extends Component{
+class ClassesRow extends Component {
 
     handleOpen = (event) => {
-        this.props.onClick(event,this.props.theClass.classID,this.props.id)
+        this.props.onClick(event, this.props.theClass.classID, this.props.id)
     }
 
 
@@ -459,15 +445,15 @@ class ClassesRow extends Component{
 
 ///////////////////////| DELETE CHAPTER |/////////////////////////
 
-class DeleteChapterStep extends Component{
+class DeleteChapterStep extends Component {
 
 
     constructor() {
         super();
 
         this.state = {
-            currentChoiceDOM:null,
-            currentChapterID:-1,
+            currentChoiceDOM: null,
+            currentChapterID: -1,
             chaptersList: []
         }
     }
@@ -477,7 +463,7 @@ class DeleteChapterStep extends Component{
         getAllChapter().then((response) => {
 
             this.setState({
-                chaptersList:response.data.chapters
+                chaptersList: response.data.chapters
             })
 
         })
@@ -489,22 +475,22 @@ class DeleteChapterStep extends Component{
     }
 
 
-    handleSelectChoice = (event, chapterId,id) => {
+    handleSelectChoice = (event, chapterId, id) => {
         let domObject = document.getElementById(id);
-        if(!this.state.currentChoiceDOM){
+        if (!this.state.currentChoiceDOM) {
 
             domObject.style.backgroundColor = "var(--secondary_color)"
 
             this.setState({
-                currentChoiceDOM :domObject,
+                currentChoiceDOM: domObject,
                 currentChapterID: chapterId
             })
-        }else{
+        } else {
             this.state.currentChoiceDOM.style.backgroundColor = "var(--primary_color)"
             domObject.style.backgroundColor = "var(--secondary_color)"
 
             this.setState({
-                currentChoiceDOM :domObject,
+                currentChoiceDOM: domObject,
                 currentChapterID: chapterId
             })
         }
@@ -520,7 +506,7 @@ class DeleteChapterStep extends Component{
     }
 
     handlePrevious = () => {
-        this.props.previous(<DeleteSelectStep previous={this.props.previous} next={this.props.next} />)
+        this.props.previous(<DeleteSelectStep previous={this.props.previous} next={this.props.next}/>)
     }
 
     render() {
@@ -529,8 +515,9 @@ class DeleteChapterStep extends Component{
 
             <div className="teacher-chapter-list-delete">
 
-                {this.state.chaptersList.map( (theChapter, index) => {
-                    return <ChaptersRow id={"chapter"+theChapter.name+index} value={theChapter} onClick={this.handleSelectChoice} key={index} theChapter={theChapter}/>
+                {this.state.chaptersList.map((theChapter, index) => {
+                    return <ChaptersRow id={"chapter" + theChapter.name + index} value={theChapter}
+                                        onClick={this.handleSelectChoice} key={index} theChapter={theChapter}/>
                 })}
 
                 <br/>
@@ -541,23 +528,21 @@ class DeleteChapterStep extends Component{
 
             </div>
 
-            <button className="teacher-chapter-valid-delete-btn" onClick={this.handleValidate} >Supprimer</button>
+            <button className="teacher-chapter-valid-delete-btn" onClick={this.handleValidate}>Supprimer</button>
 
 
-
-            <button onClick={this.handlePrevious} className="teacher-previous-btn" >Précédent</button>
+            <button onClick={this.handlePrevious} className="teacher-previous-btn">Précédent</button>
         </div>
     }
 
 }
 
 
-class ChaptersRow extends Component{
-
+class ChaptersRow extends Component {
 
 
     handleOpen = (event) => {
-        this.props.onClick(event,this.props.theChapter.chapterID,this.props.id)
+        this.props.onClick(event, this.props.theChapter.chapterID, this.props.id)
     }
 
 
@@ -598,14 +583,14 @@ export class DeleteQuestionStep extends Component {
                     quizList: result.data.quizzes
                 })
 
-                if(result.data.quizzes.length > 0) {
+                if (result.data.quizzes.length > 0) {
                     getQuestionList(result.data.quizzes[0].quizID).then(resul => {
 
                         this.setState({
                             questionList: resul.data.questions
                         })
                     })
-                }else{
+                } else {
                     this.setState({
                         questionList: []
                     })
@@ -615,22 +600,22 @@ export class DeleteQuestionStep extends Component {
 
     }
 
-    handleDisplayOverView = (theQuestion,id) => {
+    handleDisplayOverView = (theQuestion, id) => {
         let domObject = document.getElementById(id);
-        if(!this.state.currentChoiceDOM){
+        if (!this.state.currentChoiceDOM) {
 
             domObject.style.backgroundColor = "var(--secondary_color)"
 
             this.setState({
-                currentChoiceDOM :domObject,
+                currentChoiceDOM: domObject,
                 currentQuestion: theQuestion
             })
-        }else{
+        } else {
             this.state.currentChoiceDOM.style.backgroundColor = "var(--primary_color)"
             domObject.style.backgroundColor = "var(--secondary_color)"
 
             this.setState({
-                currentChoiceDOM :domObject,
+                currentChoiceDOM: domObject,
                 currentQuestion: theQuestion
             })
         }
@@ -638,7 +623,7 @@ export class DeleteQuestionStep extends Component {
     }
 
     handleValidate = (event) => {
-        deleteQuestion(this.state.currentQuestion.questionID,this.state.currentQuiz).then(res => {
+        deleteQuestion(this.state.currentQuestion.questionID, this.state.currentQuiz).then(res => {
             this.handleGetQuestion()
         })
 
@@ -668,14 +653,14 @@ export class DeleteQuestionStep extends Component {
                 this.setState({
                     quizList: result.data.quizzes
                 })
-                if(result.data.quizzes.length > 0) {
+                if (result.data.quizzes.length > 0) {
                     getQuestionList(result.data.quizzes[0].quizID).then(res => {
                         this.setState({
                             questionList: res.data.questions,
                             currentQuiz: result.data.quizzes[0].quizID
                         })
                     })
-                }else{
+                } else {
                     this.setState({
                         questionList: []
                     })
@@ -695,9 +680,9 @@ export class DeleteQuestionStep extends Component {
             })
         })
     }
-    
+
     handlePrevious = () => {
-        this.props.previous(<DeleteSelectStep previous={this.props.previous} next={this.props.next} />)
+        this.props.previous(<DeleteSelectStep previous={this.props.previous} next={this.props.next}/>)
     }
 
 
@@ -706,20 +691,23 @@ export class DeleteQuestionStep extends Component {
 
             <div className="teacher-chapter-list-delete">
 
-                <select onChange={this.handleUpdateChapterList} className="teacher-student-creation-input" id="selected-class">
+                <select onChange={this.handleUpdateChapterList} className="teacher-student-creation-input"
+                        id="selected-class">
                     {this.state.chapterList.map((theChapter, index) => {
                         return <option key={index} value={theChapter.chapterID}>{theChapter.name}</option>
                     })}
                 </select>
-                <select onChange={this.handleUpdateQuestionList} className="teacher-student-creation-input" id="selected-class">
+                <select onChange={this.handleUpdateQuestionList} className="teacher-student-creation-input"
+                        id="selected-class">
                     {this.state.quizList.map((theQuiz, index) => {
                         return <option key={index} value={theQuiz.quizID}>{theQuiz.quizName}</option>
                     })}
                 </select>
 
-                {(this.state.questionList.length > 0)?this.state.questionList.map( (theQuestion, index) => {
-                    return <QuestionRow onClick={this.handleDisplayOverView} value={theQuestion} key={index} id={"question"+theQuestion.name+index}/>
-                }):<h1 className="teacher-student-list-none">Aucune Question</h1>}
+                {(this.state.questionList.length > 0) ? this.state.questionList.map((theQuestion, index) => {
+                    return <QuestionRow onClick={this.handleDisplayOverView} value={theQuestion} key={index}
+                                        id={"question" + theQuestion.name + index}/>
+                }) : <h1 className="teacher-student-list-none">Aucune Question</h1>}
 
                 <br/>
                 <br/>
@@ -729,11 +717,10 @@ export class DeleteQuestionStep extends Component {
 
             </div>
 
-            <button className="teacher-class-valid-delete-btn" onClick={this.handleValidate} >Supprimer</button>
+            <button className="teacher-class-valid-delete-btn" onClick={this.handleValidate}>Supprimer</button>
 
 
-
-            <button onClick={this.handlePrevious} className="teacher-previous-btn" >Précédent</button>
+            <button onClick={this.handlePrevious} className="teacher-previous-btn">Précédent</button>
         </div>
     }
 
@@ -743,7 +730,7 @@ class QuestionRow extends Component {
 
 
     handleClick = () => {
-        this.props.onClick(this.props.value,this.props.id)
+        this.props.onClick(this.props.value, this.props.id)
     }
 
     render() {
@@ -812,22 +799,22 @@ export class DeleteQuizStep extends Component {
 
     }
 
-    handleDisplayOverView = (theQuiz,id) => {
+    handleDisplayOverView = (theQuiz, id) => {
         let domObject = document.getElementById(id);
-        if(!this.state.currentChoiceDOM){
+        if (!this.state.currentChoiceDOM) {
 
             domObject.style.backgroundColor = "var(--secondary_color)"
 
             this.setState({
-                currentChoiceDOM :domObject,
+                currentChoiceDOM: domObject,
                 currentQuiz: theQuiz
             })
-        }else{
+        } else {
             this.state.currentChoiceDOM.style.backgroundColor = "var(--primary_color)"
             domObject.style.backgroundColor = "var(--secondary_color)"
 
             this.setState({
-                currentChoiceDOM :domObject,
+                currentChoiceDOM: domObject,
                 currentQuiz: theQuiz
             })
         }
@@ -846,14 +833,14 @@ export class DeleteQuizStep extends Component {
 
     }
 
-    handleSelect = (event, quiz) =>{
+    handleSelect = (event, quiz) => {
         this.setState({
             currentQuiz: quiz
         })
     }
 
     handlePrevious = () => {
-        this.props.previous(<DeleteSelectStep previous={this.props.previous} next={this.props.next} />)
+        this.props.previous(<DeleteSelectStep previous={this.props.previous} next={this.props.next}/>)
     }
 
     render() {
@@ -867,9 +854,10 @@ export class DeleteQuizStep extends Component {
                     })}
                 </select>
 
-                {(this.state.quizList.length > 0)?this.state.quizList.map( (theQuiz, index) => {
-                    return <QuizRow onClick={this.handleDisplayOverView} value={theQuiz} key={index} id={"question"+index}/>
-                }):<h1 className="teacher-student-list-none">Aucun Quiz</h1>}
+                {(this.state.quizList.length > 0) ? this.state.quizList.map((theQuiz, index) => {
+                    return <QuizRow onClick={this.handleDisplayOverView} value={theQuiz} key={index}
+                                    id={"question" + index}/>
+                }) : <h1 className="teacher-student-list-none">Aucun Quiz</h1>}
 
                 <br/>
                 <br/>
@@ -878,9 +866,9 @@ export class DeleteQuizStep extends Component {
                 <br/>
 
             </div>
-            <button className="teacher-student-valid-delete-btn" onClick={this.handleValidate} >Supprimer</button>
+            <button className="teacher-student-valid-delete-btn" onClick={this.handleValidate}>Supprimer</button>
 
-            <button onClick={this.handlePrevious} className="teacher-previous-btn" >Précédent</button>
+            <button onClick={this.handlePrevious} className="teacher-previous-btn">Précédent</button>
         </div>
     }
 
@@ -890,13 +878,13 @@ class QuizRow extends Component {
 
 
     handleClick = (event) => {
-        this.props.onClick(this.props.value,this.props.id)
+        this.props.onClick(this.props.value, this.props.id)
     }
 
 
     render() {
         return <div onClick={this.handleClick} className="teacher-student-row" id={this.props.id}>
-            <h1 className="teacher-student-row-title" >{this.props.value.quizName} </h1>
+            <h1 className="teacher-student-row-title">{this.props.value.quizName} </h1>
         </div>
     }
 

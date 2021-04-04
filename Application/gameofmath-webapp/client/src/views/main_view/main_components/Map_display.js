@@ -54,7 +54,8 @@ class MapView extends Component {
                 camDistance: 100,
             },
             player: null,
-            loading:<div className="background-loading"/>
+            castlesObjects: [],
+            castleUp: 0
         };
 
         getInfo().then(response => {
@@ -98,11 +99,18 @@ class MapView extends Component {
         }
         this.state.water.material.uniforms['time'].value += 1.0 / 60.0;
 
-
         if (this.state.able) {
             this.state.renderer.render(this.state.HResScene, this.state.camera);
 
             let length = Date.now() - time;
+            if (this.state.castlesObjects.length === 8 && this.state.castleUp!==200) {
+
+                for (let i = 0; i < this.state.castlesObjects.length; i++) {
+                    this.state.castlesObjects[i].position.y+=0.1;
+                }
+                this.setState({castleUp: this.state.castleUp + 1})
+            }
+
             if (this.state.nbFrames > 10) {
                 if (this.state.avgFPS > 35) {
                     this.setState({able: false})
@@ -254,7 +262,7 @@ class MapView extends Component {
                 this.state.castles.push(vectorPos);
                 positionModel.children[0].material.roughness = 0.6
                 positionModel.children[0].material.metalness = 1
-                positionModel.position.set(position[0], position[1], position[2])
+                positionModel.position.set(position[0], position[1] - 20, position[2])
                 positionModel.scale.set(0.8, 0.8, 0.8)
                 positionModel.name = "Castle"
 
@@ -292,8 +300,9 @@ class MapView extends Component {
                             let mesh = new THREE.Mesh(fontGeometry, new THREE.MeshStandardMaterial({color: 0x5F5F5F}));
 
                             mesh.rotateX(-Math.PI / 2)
-                            mesh.position.set(position[0] , position[1] + 20, position[2]-20 )
+                            mesh.position.set(position[0], position[1] + 20, position[2] - 20)
                             this.state.HResScene.add(mesh)
+                            this.props.finishLoading();
                         }
                     })
                 })
@@ -305,7 +314,9 @@ class MapView extends Component {
                 if (date < 8 || date > 20) {
                     this.state.HResScene.add(PointLight)
                 }
-                this.state.HResScene.add(positionModel.clone());
+                let theCastle = positionModel.clone();
+                this.state.castlesObjects.push(theCastle);
+                this.state.HResScene.add(theCastle);
                 this.state.LResScene.add(positionModel.clone());
             }
 
@@ -374,8 +385,6 @@ class MapView extends Component {
         }, undefined, error => {
             console.error(error)
         });
-
-        this.loadingFinish()
     }
 
     setupWater = () => {
@@ -483,8 +492,6 @@ class MapView extends Component {
         folderSky.add(skyUniforms.rayleigh, 'value', 0, 5, 0.01).onChange(this.updateSun).name('rayleigh')
         folderSky.add(skyUniforms.mieCoefficient, 'value', 0, 5, 0.01).onChange(this.updateSun).name('mieCoefficient')
         folderSky.add(skyUniforms.mieDirectionalG, 'value', 0, 5, 0.01).onChange(this.updateSun).name('mieDirectionalG')
-
-
     }
 
 
@@ -520,17 +527,11 @@ class MapView extends Component {
 
             this.reloadScene();
 
-
         }
 
 
     }
 
-    loadingFinish =() => {
-        this.setState({
-            loading: null
-        })
-    }
 
     componentWillUnmount() {
         this._isMounted = false
@@ -539,8 +540,9 @@ class MapView extends Component {
     render() {
         return <>
 
-            <div className={"mapView"} onTouchMove={this.onTouchMove} onTouchStart={this.onTouchStart} ref={ref => (this.mount = ref)}/>
-            {this.state.loading}
+            <div className={"mapView"} onTouchMove={this.onTouchMove} onTouchStart={this.onTouchStart}
+                 ref={ref => (this.mount = ref)}/>
+
         </>
 
     }

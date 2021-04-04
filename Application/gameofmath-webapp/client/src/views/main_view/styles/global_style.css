@@ -116,6 +116,8 @@
 
     /*CHAPTER / QUIZ*/
 
+
+
     .container-chapter-selection{
 
         /*set position*/
@@ -134,9 +136,6 @@
         border: 2px solid var(--border_color);
 
         /*set children*/
-        display: grid;
-        align-content: center;
-        padding-top: 80px;
         overflow: auto;
 
 
@@ -167,6 +166,43 @@
         text-align:center;
 
 
+    }
+
+    .container-profile-details{
+
+        position: absolute;
+
+
+        bottom: calc(var(--naviguaton-bar-height));
+        background-color: var(--wood_style_color);
+
+        width: 100%;
+        height: 200px;
+
+        animation-name: profileEntry;
+        animation-duration: 500ms;
+
+        border: none;
+
+        border-top-left-radius: 20px;
+        border-top-right-radius: 20px;
+
+        overflow: hidden;
+
+
+    }
+
+    @keyframes profileEntry {
+
+        from{
+            height: 0;
+            opacity: 0;
+        }
+
+        to{
+            height: 200px;
+            opacity: 1;
+        }
     }
 
 
@@ -263,38 +299,67 @@
         }
     }
 
+    .container-profile-details{
+
+        position: absolute;
+
+        right: 20px;
+
+        top: calc(var(--naviguaton-bar-height) + 40px);
+        background-color: var(--wood_style_color);
+
+        width: 300px;
+        height: fit-content;
+
+        animation-name: profileEntry;
+        animation-duration: 500ms;
+
+        border: 1px solid var(--border_color);
+
+        border-radius: 20px;
+        overflow: hidden;
+
+
+    }
+
+    @keyframes profileEntry {
+
+        from{
+            height: 0;
+            opacity: 0;
+        }
+
+        to{
+            height: fit-content;
+            opacity: 1;
+        }
+    }
+
+    .profile-details-headline{
+
+    }
+
 
 
 
     /*container component*/
 
     .navbar_container{
-
         margin-top: 20px;
         position: absolute;
         height: 70px;
         left: 10px;
         right: 10px;
-
         border-radius: 10px;
-
         border:1px solid var(--border_color);
-
         background:var(--wood_style_color);
-
         text-decoration: none;
-
         display: inline-block;
-
         child-align: auto;
     }
 
 
-
-
-
     .navElem_right{
-
         position: relative;
         display: flex;
         flex-flow: row;
@@ -339,9 +404,6 @@
 
     }
 
-
-
-
     .navbar_link{
         font-family: "Game of Thrones";
         text-decoration: none;
@@ -355,11 +417,26 @@
         display: none;
     }
 
-
     .navbar_link:hover{
 
         color: var(--text_color_hover);
     }
+
+}
+
+.profile-details-headline{
+    color: var(--text_color);
+    font-family: sans-serif;
+    font-size: 25px;
+    margin: 10px;
+}
+
+.profile-details{
+
+    color: var(--text_color);
+    font-family: sans-serif;
+    font-size: 18px;
+    margin: 10px;
 
 }
 
@@ -598,3 +675,13 @@
     scrollbar-color: var(--text_color) transparent;
 }
 
+.background-loading{
+
+    background-image: url("../../images/Composition 1_1.gif");
+    background-size: cover;
+    background-attachment: fixed;
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    z-index:-1;
+}

@@ -422,27 +422,6 @@ router.post('/getQuiz', (req, res, next) => {
     }).catch(err => next(err))
 })
 
-/**
- * Get a quiz by name
- *
- * @param name quiz name
- * @return
- *  0: quiz: the quiz
- *  1: if the quiz name is incorrect
- */
-router.post('/getQuizByName', (req, res, next) => {
-    if (!req.session.isLogged || !req.session.isTeacher) return next(new Error('Client must be logged on a Teacher account'))
-
-    const name = req.body.name
-
-    if (name == null) return res.send({returnState: 1, msg: 'The name id is incorrect'})
-
-    quiz_dao.findByName(name).then(quiz => {
-        if (quiz == null) res.send({returnState: 1, msg: 'The name id is incorrect'})
-        else res.send({returnState: 0, quiz: quiz})
-    }).catch(err => next(err))
-})
-
 // #############################################################################################
 // #################################### QUESTION MANAGEMENT ####################################
 // #############################################################################################

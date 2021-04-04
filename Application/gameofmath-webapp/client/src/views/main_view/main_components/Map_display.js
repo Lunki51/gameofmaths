@@ -484,7 +484,6 @@ class MapView extends Component {
         }
     }
 
-
     componentWillUnmount() {
         this._isMounted = false
     }

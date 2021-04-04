@@ -404,9 +404,6 @@
 
     }
 
-
-
-
     .navbar_link{
         font-family: "Game of Thrones";
         text-decoration: none;
@@ -419,7 +416,6 @@
     .navbar_link_icon{
         display: none;
     }
-
 
     .navbar_link:hover{
 
@@ -679,3 +675,12 @@
     scrollbar-color: var(--text_color) transparent;
 }
 
+.background-loading{
+
+    background-image: url("../../images/Composition 1_1.gif");
+    background-size: cover;
+    background-attachment: fixed;
+    width: 100%;
+    height: 100%;
+    position: absolute;
+}

@@ -234,7 +234,7 @@ class MainView extends Component {
             if (this.state.who === "student") {
 
                 //user is a student
-                return <>
+                return <div className="background-loading">
 
                     <MobileHeader/>{/*appear only when mobile*/}
                     <NavigationBar quiz={this.handleQuizDisplay} profile={this.handleProfileDisplay}
@@ -243,7 +243,7 @@ class MainView extends Component {
                     {this.state.details}
                     {this.state.profile}
                     {this.state.overlayComponent}
-                </>
+                </div>
 
             } else {
 

@@ -7,7 +7,7 @@ CREATE TRIGGER addMP
     AFTER INSERT
     ON MPGain
 BEGIN
-    UPDATE Student SET mp = mp + NEW.amount;
+    UPDATE Student SET mp = mp + NEW.amount WHERE NEW.theStudent = theUser;
 END;
 
 CREATE TRIGGER changeMP
@@ -15,7 +15,7 @@ CREATE TRIGGER changeMP
     ON MPGain
     WHEN OLD.amount <> NEW.amount
 BEGIN
-    UPDATE Student SET mp = mp - OLD.amount + NEW.amount;
+    UPDATE Student SET mp = mp - OLD.amount + NEW.amount WHERE NEW.theStudent = theUser;
 END;
 
 CREATE TRIGGER quizDoneUpdate

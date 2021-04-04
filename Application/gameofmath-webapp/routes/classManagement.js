@@ -75,7 +75,7 @@ router.post('/create', (req, res, next) => {
 
         fs.writeFile('./files/maps/m' + id + '.json', JSON.stringify(renderApi.createMap(1000, 1000, 10000, castleNumber)), err => {
             if (err) next(err)
-            else res.send({returnState: 0, id: id, grade: grade, name: name, castleNumber:castleNumber})
+            else res.send({returnState: 0, id: id, grade: grade, name: name, castleNumber: castleNumber})
         })
     }).catch(err => next(err))
 })
@@ -200,12 +200,12 @@ router.post('/delete', (req, res, next) => {
                                 student_dao.findAllInClass(id, t).then(rows => {
 
                                     const ids = rows.map(k => k.theUser).join(',')
-                                    t.run('DELETE FROM Student WHERE theUser IN ('+ids+')', [], function (err) {
+                                    t.run('DELETE FROM Student WHERE theUser IN (' + ids + ')', [], function (err) {
                                         if (err) {
                                             t.rollback()
                                             next(err)
                                         } else {
-                                            t.run('DELETE FROM User WHERE userID IN ('+ids+')', [], function (err) {
+                                            t.run('DELETE FROM User WHERE userID IN (' + ids + ')', [], function (err) {
                                                 if (err) {
                                                     t.rollback()
                                                     next(err)
@@ -216,15 +216,10 @@ router.post('/delete', (req, res, next) => {
                                                             next(err)
                                                         } else {
                                                             fs.unlink('./files/maps/m' + id + '.json', err => {
-                                                                if (err) {
-                                                                    t.rollback()
-                                                                    next(err)
-                                                                } else {
-                                                                    t.commit(err => {
-                                                                        if (err) next(err);
-                                                                        else res.send({returnState: 0});
-                                                                    });
-                                                                }
+                                                                t.commit(err => {
+                                                                    if (err) next(err);
+                                                                    else res.send({returnState: 0});
+                                                                });
                                                             })
                                                         }
                                                     })

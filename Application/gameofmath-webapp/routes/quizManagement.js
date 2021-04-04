@@ -98,7 +98,7 @@ router.post('/deleteChapter', (req, res, next) => {
         quiz_dao.findAllInChapter(id, t).then(rows => {
             const quizzes = rows.map(o => o.quizID).join(',')
 
-            t.run('DELETE FROM Answer WHERE theQuestion IN (SELECT theQuestion FROM QuizQuestion WHERE theQuiz IN (' + quizzes + '))', [], function (err) {
+            t.run('DELETE FROM Answer WHERE theQuestion IN (SELECT questionID FROM Question WHERE theChapter = ? UNION SELECT theQuestion FROM QuizQuestion WHERE theQuiz IN (' + quizzes + '))', [id], function (err) {
                 if (err) {
                     t.rollback()
                     next(err)
@@ -116,7 +116,7 @@ router.post('/deleteChapter', (req, res, next) => {
                                 } else {
                                     const ids = rows.map(o => o.theQuestion).join(',')
 
-                                    t.run('DELETE FROM Question WHERE questionID IN (' + ids + ')', [], async function (err) {
+                                    t.run('DELETE FROM Question WHERE theChapter = ? OR questionID IN (' + ids + ')', [id], async function (err) {
                                         if (err) {
                                             t.rollback()
                                             next(err)

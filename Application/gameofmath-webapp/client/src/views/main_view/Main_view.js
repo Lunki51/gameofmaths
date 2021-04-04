@@ -44,7 +44,8 @@ class MainView extends Component {
             username: "",
             zoomed: false,
             details: null,
-            profile: null
+            profile: null,
+            loading:<div className="background-loading"/>
         }
 
 
@@ -225,6 +226,11 @@ class MainView extends Component {
         this._isMounted = false
     }
 
+    loadingFinish =() => {
+        this.setState({
+            loading: null
+        })
+    }
 
     render() {
 
@@ -238,10 +244,11 @@ class MainView extends Component {
                     <MobileHeader/>{/*appear only when mobile*/}
                     <NavigationBar quiz={this.handleQuizDisplay} profile={this.handleProfileDisplay}
                                    logout={this.handleLogout}/>
-                    <MapView details={this.handleCastleDetails} zoomed={this.state.zoomed}/>
+                    <MapView finishLoading={this.loadingFinish} details={this.handleCastleDetails} zoomed={this.state.zoomed}/>
                     {this.state.details}
                     {this.state.profile}
                     {this.state.overlayComponent}
+                    {this.state.loading}
                 </>
 
             } else {

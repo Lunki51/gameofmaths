@@ -9,6 +9,7 @@ import {AddingDisplay} from "./components/teacher_components/adding_display";
 import {DeleteDisplay} from "./components/teacher_components/delete_display";
 import {EditDisplay} from "./components/teacher_components/edit_display";
 import {QuestionDisplay} from "./components/teacher_components/question_display";
+import {SettingsDisplay} from "./components/teacher_components/settings_display";
 
 
 export class TeacherDisplay20 extends Component{
@@ -56,6 +57,10 @@ export class TeacherDisplay20 extends Component{
         this.setState({currentDisplay: <EditDisplay errorOpen={this.props.displayError} waringOpen={this.props.displayWarning} redirect={this.handleRedirectTo} />})
     }
 
+    handleGotoSettings = () =>{
+        this.setState({currentDisplay: <SettingsDisplay errorOpen={this.props.displayError} waringOpen={this.props.displayWarning} redirect={this.handleRedirectTo} />})
+    }
+
 
 
     handleRedirectTo = (goalElement) =>{
@@ -99,7 +104,7 @@ export class TeacherDisplay20 extends Component{
                 <NavElement typeClass="teacher-nav-element-stack-top" iconURL="https://img.icons8.com/ios/55/ffffff/edit--v1.png" title="Éditer" onClick={this.handleGotoEdit}/>
                 <NavElement typeClass="teacher-nav-element-stack-top" iconURL="https://img.icons8.com/ios/55/ffffff/search--v1.png" title="Rechercher" onClick={this.handleOpenSearch}/>
 
-                <NavElement typeClass="teacher-nav-element-stack-bottom" iconURL="https://img.icons8.com/fluent-systems-regular/55/ffffff/settings.png" title="Paramètres"/>
+                <NavElement typeClass="teacher-nav-element-stack-bottom" iconURL="https://img.icons8.com/fluent-systems-regular/55/ffffff/settings.png" title="Paramètres" onClick={this.handleGotoSettings}/>
                 <NavElement typeClass="teacher-nav-element-stack-bottom" iconURL="https://img.icons8.com/fluent-systems-regular/55/ffffff/logout-rounded-left.png" title="Déconnexion" onClick={this.props.logout}/>
 
 

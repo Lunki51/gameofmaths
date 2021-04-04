@@ -54,7 +54,7 @@ class MapView extends Component {
                 camDistance: 100,
             },
             player: null,
-            loading:<div className="background-loading"/>
+
         };
 
         getInfo().then(response => {
@@ -108,7 +108,7 @@ class MapView extends Component {
                     this.setState({able: false})
                 }
             } else {
-                if (this.state.avgFPS == 0) {
+                if (this.state.avgFPS === 0) {
                     this.setState({avgFPS: length})
                 } else {
                     this.setState({avgFPS: (this.state.avgFPS + length) / 2})
@@ -374,8 +374,6 @@ class MapView extends Component {
         }, undefined, error => {
             console.error(error)
         });
-
-        this.loadingFinish()
     }
 
     setupWater = () => {
@@ -454,6 +452,7 @@ class MapView extends Component {
         })
 
         this.updateSun();
+
     }
 
     updateSun = () => {
@@ -526,21 +525,19 @@ class MapView extends Component {
 
     }
 
-    loadingFinish =() => {
-        this.setState({
-            loading: null
-        })
-    }
+
 
     componentWillUnmount() {
         this._isMounted = false
     }
 
+    //this.props.finishLoading()
+
     render() {
         return <>
 
             <div className={"mapView"} onTouchMove={this.onTouchMove} onTouchStart={this.onTouchStart} ref={ref => (this.mount = ref)}/>
-            {this.state.loading}
+
         </>
 
     }

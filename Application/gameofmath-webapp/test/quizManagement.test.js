@@ -511,25 +511,6 @@ describe('Test the getQuiz path', () => {
     });
 });
 
-describe('Test the getQuizByName path', () => {
-    test('A teacher should be able to get a quiz by name', async (done) => {
-        const rep = await postC(res, '/api/quizManagement/getQuizByName').send({
-            name: 'q3'
-        }).catch(done);
-        expect(rep.body).toEqual({
-            returnState: 0,
-            quiz: {
-                quizID: 3,
-                asAnOrder: '1',
-                theChapter: 1,
-                quizName: 'q3',
-                quizType: 'CLASSIC'
-            }
-        })
-        done();
-    });
-});
-
 // #############################################################################################
 // #################################### QUESTION MANAGEMENT ####################################
 // #############################################################################################

@@ -93,8 +93,6 @@ router.post('/create', (req, res, next) => {
 router.post('/rename', (req, res, next) => {
     if (!req.session.isLogged || !req.session.isTeacher) return next(new Error('Client must be logged on a Teacher account'))
 
-
-    console.log(req)
     const id = req.body.id
     const newName = req.body.newName
 
@@ -199,7 +197,6 @@ router.post('/delete', (req, res, next) => {
                                 t.rollback()
                                 next(err)
                             } else {
-                                console.log(6)
                                 student_dao.findAllInClass(id, t).then(rows => {
 
                                     const ids = rows.map(k => k.theUser).join(',')

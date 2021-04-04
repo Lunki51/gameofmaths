@@ -116,7 +116,7 @@ class MapView extends Component {
                     this.setState({able: false})
                 }
             } else {
-                if (this.state.avgFPS == 0) {
+                if (this.state.avgFPS === 0) {
                     this.setState({avgFPS: length})
                 } else {
                     this.setState({avgFPS: (this.state.avgFPS + length) / 2})
@@ -262,7 +262,7 @@ class MapView extends Component {
                 this.state.castles.push(vectorPos);
                 positionModel.children[0].material.roughness = 0.6
                 positionModel.children[0].material.metalness = 1
-                positionModel.position.set(position[0], position[1] - 20, position[2])
+                positionModel.position.set(position[0], position[1], position[2])
                 positionModel.scale.set(0.8, 0.8, 0.8)
                 positionModel.name = "Castle"
 
@@ -315,6 +315,7 @@ class MapView extends Component {
                     this.state.HResScene.add(PointLight)
                 }
                 let theCastle = positionModel.clone();
+                theCastle.position.y-=20;
                 this.state.castlesObjects.push(theCastle);
                 this.state.HResScene.add(theCastle);
                 this.state.LResScene.add(positionModel.clone());
@@ -452,7 +453,7 @@ class MapView extends Component {
 
         let date = new Date(Date.now()).getHours();
         date = date - 8 <= 0 ? 24 - date : date - 8
-        if (date == 0) date = 24;
+        if (date === 0) date = 24;
 
         this.setState({
             sunParameters: {

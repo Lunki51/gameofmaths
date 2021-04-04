@@ -125,7 +125,7 @@ INSERT INTO QUIZQUESTION VALUES(3,1,3);
 -- Quiz 2 Chap 1
 INSERT INTO QUIZ VALUES(2,'false',1, 'Calcule de volume', 'CLASSIC');
 
-INSERT INTO QUESTION VALUES(4,'Quel est le périmètre d''cube de 3cm de coté', '','','QCU',1,1);
+INSERT INTO QUESTION VALUES(4,'Quel est l''air d''cube de 3cm de coté', '','','QCU',1,1);
 INSERT INTO ANSWER VALUES(NULL,'3 cm3','false',4);
 INSERT INTO ANSWER VALUES(NULL,'9 cm3','false',4);
 INSERT INTO ANSWER VALUES(NULL,'27 cm3','true',4);

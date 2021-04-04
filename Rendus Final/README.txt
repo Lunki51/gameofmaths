@@ -1,0 +1,1 @@
+Les sources de l'application sont disponibles sous le répertoire Application à la racine du dépôt.

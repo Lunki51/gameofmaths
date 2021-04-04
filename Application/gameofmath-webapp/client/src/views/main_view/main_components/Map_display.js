@@ -54,8 +54,6 @@ class MapView extends Component {
                 camDistance: 100,
             },
             player: null,
-            castlesObjects: [],
-            castleUp: 0
         };
 
         getInfo().then(response => {
@@ -103,14 +101,6 @@ class MapView extends Component {
             this.state.renderer.render(this.state.HResScene, this.state.camera);
 
             let length = Date.now() - time;
-            if (this.state.castlesObjects.length === 8 && this.state.castleUp!==200) {
-
-                for (let i = 0; i < this.state.castlesObjects.length; i++) {
-                    this.state.castlesObjects[i].position.y+=0.1;
-                }
-                this.setState({castleUp: this.state.castleUp + 1})
-            }
-
             if (this.state.nbFrames > 10) {
                 if (this.state.avgFPS > 35) {
                     this.setState({able: false})
@@ -314,10 +304,7 @@ class MapView extends Component {
                 if (date < 8 || date > 20) {
                     this.state.HResScene.add(PointLight)
                 }
-                let theCastle = positionModel.clone();
-                theCastle.position.y-=20;
-                this.state.castlesObjects.push(theCastle);
-                this.state.HResScene.add(theCastle);
+                this.state.HResScene.add(positionModel.clone());
                 this.state.LResScene.add(positionModel.clone());
             }
 

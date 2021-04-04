@@ -194,20 +194,20 @@ INSERT INTO ANSWER VALUES(NULL,'x = 40','false',14);
 -- ##########################################################
 -- ######################### CASTLE #########################
 -- ##########################################################
-INSERT INTO Castle VALUES(1, 'Archimède', 1);
-INSERT INTO Castle VALUES(2, 'Isaac Newton', 1);
-INSERT INTO Castle VALUES(3, 'Carl F. Gauss', 1);
-INSERT INTO Castle VALUES(4, 'Leonhard Euler', 1);
-INSERT INTO Castle VALUES(5, 'Euclide d''Alexandrie', 1);
-INSERT INTO Castle VALUES(6, 'Bernhard Riemann', 1);
-INSERT INTO Castle VALUES(7, 'Henri Poincaré', 1);
+INSERT INTO Castle VALUES(1, 'Archimede', 1);
+INSERT INTO Castle VALUES(2, 'Newton', 1);
+INSERT INTO Castle VALUES(3, 'Gauss', 1);
+INSERT INTO Castle VALUES(4, 'Euler', 1);
+INSERT INTO Castle VALUES(5, 'Euclide', 1);
+INSERT INTO Castle VALUES(6, 'Riemann', 1);
+INSERT INTO Castle VALUES(7, 'Poincare', 1);
 
-INSERT INTO Castle VALUES(8, 'David Hilbert', 2);
-INSERT INTO Castle VALUES(9, 'Joseph-Louis Lagrange', 2);
-INSERT INTO Castle VALUES(10, 'Pierre de Fermat', 2);
-INSERT INTO Castle VALUES(11, 'Niels Abel', 2);
-INSERT INTO Castle VALUES(12, 'Alexander Grothendieck', 2);
-INSERT INTO Castle VALUES(13, 'Evariste Galois', 2);
+INSERT INTO Castle VALUES(8, 'Hilbert', 2);
+INSERT INTO Castle VALUES(9, 'Lagrange', 2);
+INSERT INTO Castle VALUES(10, 'Fermat', 2);
+INSERT INTO Castle VALUES(11, 'Abel', 2);
+INSERT INTO Castle VALUES(12, 'Grothendieck', 2);
+INSERT INTO Castle VALUES(13, 'Galois', 2);
 INSERT INTO Castle VALUES(14, 'Ramanujan', 2);
 
 -- ##########################################################

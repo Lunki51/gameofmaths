@@ -22,10 +22,11 @@ function GraphicsManager(){
      * @param sizeX the X size of the map
      * @param sizeY the Y size of the map
      * @param nbPoints the number of points in the map (define the precision but make the creation an rendering longer)
+     * @param castleNumber the number of castle
      * @returns {number} the indices of the map to retrieve it later
      */
-    this.createMap = function(sizeX,sizeY,nbPoints){
-        return new gameMap(sizeX,sizeY,nbPoints,8)
+    this.createMap = function(sizeX,sizeY,nbPoints, castleNumber = 7){
+        return new gameMap(sizeX,sizeY,nbPoints,7)
      }
 
 }

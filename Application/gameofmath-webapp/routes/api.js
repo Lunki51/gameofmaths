@@ -31,11 +31,13 @@ renderApi.setupRouter(function(req,res){
             if (fs.existsSync(path)) {
 
                 res.send(fs.readFileSync(path))
+            }else{
+                res.send(renderApi.createMap(1000,1000,10000))
             }
         }
 
     }
-    res.send(renderApi.createMap(1000,1000,10000))
+
 })
 
 

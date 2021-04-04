@@ -34,6 +34,7 @@ router.post('/getCastleInfo', (req, res, next) => {
                 return master_dao.findCurrentForCastle(castleID)
                     .then(master => {
 
+
                         return knight_dao.findCurrentOfMaster(master.masterID)
                             .then(knights => {
 

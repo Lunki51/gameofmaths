@@ -7,8 +7,8 @@ const quizDone_dao = require('gameofmath-db').quizDone_dao
 const mpGain_dao = require('gameofmath-db').mpGain_dao
 const db = require('gameofmath-db').db
 
-const LIMIT = 50
-const LIMIT_DAY = 50
+const LIMIT = 2
+const LIMIT_DAY = 1
 
 /**
  * Get all the chapter in the DB.

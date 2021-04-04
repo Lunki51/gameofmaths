@@ -55,7 +55,7 @@ router.post('/getClass', (req, res, next) => {
  * @param grade the grade of the class
  * @param name the name of the class
  * @return
- *  0: id: id of the new class, grade: the grade of the class, name: the name of the class
+ *  0: id: id of the new class, grade: the grade of the class, name: the name of the class, castleNumber: the number of castle
  *  1: if the grade or the name is incorrect
  */
 router.post('/create', (req, res, next) => {
@@ -71,9 +71,11 @@ router.post('/create', (req, res, next) => {
         grade: grade,
         name: name
     }).then(id => {
-        fs.writeFile('./files/maps/m' + id + '.json', JSON.stringify(renderApi.createMap(200, 200, 10000)), err => {
+        const castleNumber = 7
+
+        fs.writeFile('./files/maps/m' + id + '.json', JSON.stringify(renderApi.createMap(1000, 1000, 10000, castleNumber)), err => {
             if (err) next(err)
-            else res.send({returnState: 0, id: id, grade: grade, name: name})
+            else res.send({returnState: 0, id: id, grade: grade, name: name, castleNumber:castleNumber})
         })
     }).catch(err => next(err))
 })
@@ -145,7 +147,7 @@ router.post('/setGrade', (req, res, next) => {
  *
  * @param id the id of the class
  * @return
- *  0:
+ *  0: castleNumber: the number of castle
  *  1: if the the class id is incorrect
  */
 router.post('/regenerateMap', (req, res, next) => {
@@ -157,10 +159,11 @@ router.post('/regenerateMap', (req, res, next) => {
     class_dao.findByID(id).then(c => {
         if (c == null) res.send({returnState: 1, msg: 'The class id is incorrect'})
         else {
-            const m = JSON.stringify(renderApi.createMap(1000, 1000, 10000))
+            const castleNumber = 7
+            const m = JSON.stringify(renderApi.createMap(1000, 1000, 10000, castleNumber))
             fs.writeFile('./files/maps/m' + id + '.json', m, err => {
                 if (err) next(err)
-                else res.send({returnState: 0})
+                else res.send({returnState: 0, castleNumber: castleNumber})
             })
         }
     })

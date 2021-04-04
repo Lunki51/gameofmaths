@@ -9,6 +9,7 @@ const PoissonDiskSampling = require('poisson-disk-sampling');
  * @param sizeX the x size of the map
  * @param sizeY the y size of the map
  * @param nbPoints the number of points in the map
+ * @param castleNumber the number of castle
  */
 let GameMap = function (sizeX, sizeY, nbPoints,castleNumber) {
     this.heightPerlin = new Perlin(sizeX, sizeY);

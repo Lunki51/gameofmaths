@@ -5,12 +5,10 @@ import {
     regeneratePassword, updateStudentFirstName, updateStudentlastName,
     updateStudentlogin
 } from "../../../../../model/studentModel";
-import {deleteChapter, getAllChapter, updateChapterName} from "../../../../../model/chapterModel";
+import { getAllChapter, updateChapterName} from "../../../../../model/chapterModel";
 import {
-    addQuestion,
     createAnswer, deleteAnswersOfQuestion, deleteImage,
-    deleteQuestion, deleteQuiz, getAnswersList,
-    getQuestion,
+     getAnswersList,
     getQuestionList,
     getQuizList, setImage, setQuizName, setQuizOrdered, updateQuestion
 } from "../../../../../model/quizModel";
@@ -83,28 +81,26 @@ class EditSelectStep extends Component {
             case this.STUDENT_TEXT:
 
                 this.props.next(<EditStudentStep openPopup={this.props.openPopup} closePopup={this.props.closePopup}
-                                                 next={this.props.next} previous={this.props.previous}/>)
+                                                 next={this.props.next} previous={this.props.previous} openError={this.props.openError}/>)
                 break
             case this.CLASS_TEXT:
 
                 this.props.next(<EditClassStep openPopup={this.props.openPopup} closePopup={this.props.closePopup}
-                                               next={this.props.next} previous={this.props.previous}/>)
+                                               next={this.props.next} previous={this.props.previous} openError={this.props.openError}/>)
                 break
             case this.CHAPTER_TEXT:
                 this.props.next(<EditChapterStep openPopup={this.props.openPopup} closePopup={this.props.closePopup}
-                                                 next={this.props.next} previous={this.props.previous}/>)
+                                                 next={this.props.next} previous={this.props.previous} openError={this.props.openError}/>)
                 break
             case this.QUIZ_TEXT:
                 this.props.next(<EditQuizListStep openPopup={this.props.openPopup}
                                                   closePopup={this.props.closePopup}
-                                                  next={this.props.next} previous={this.props.previous}/>)
+                                                  next={this.props.next} previous={this.props.previous} openError={this.props.openError}/>)
+                break
             case this.QUESTION_TEXT:
                 this.props.next(<EditQuestionSelectStep openPopup={this.props.openPopup}
                                                         closePopup={this.props.closePopup}
-                                                        next={this.props.next} previous={this.props.previous}/>)
-                break
-
-
+                                                        next={this.props.next} previous={this.props.previous} openError={this.props.openError}/>)
                 break
             default:
 
@@ -200,23 +196,25 @@ export class EditStudentStep extends Component {
                 classesList: res.data.classes
             })
 
-            getAllStudents(res.data.classes[0].classID).then(res2 => {
+            if(res.data.classes.length>0){
+                getAllStudents(res.data.classes[0].classID).then(res2 => {
 
-                if (this.props.formCreate) {
-                    this.setState({
-                        studentList: res2.data.students,
-                        currentClass: this.props.formCreate.theClass,
-                        currentStudent: this.props.formCreate.theStudent
-                    })
-                } else {
-                    this.setState({
-                        studentList: res2.data.students,
-                        currentClass: res.data.classes[0].classID,
-                    })
-                }
+                    if (this.props.formCreate) {
+                        this.setState({
+                            studentList: res2.data.students,
+                            currentClass: this.props.formCreate.theClass,
+                            currentStudent: this.props.formCreate.theStudent
+                        })
+                    } else {
+                        this.setState({
+                            studentList: res2.data.students,
+                            currentClass: res.data.classes[0].classID,
+                        })
+                    }
 
 
-            })
+                })
+            }
         })
 
     }
@@ -247,7 +245,7 @@ export class EditStudentStep extends Component {
     }
 
     handlePrevious = () => {
-        this.props.previous(<EditSelectStep previous={this.props.previous} next={this.props.next}/>)
+        this.props.previous(<EditSelectStep previous={this.props.previous} next={this.props.next} openError={this.props.openError}/>)
     }
 
     render() {
@@ -379,17 +377,9 @@ class StudentEditOverview extends Component {
 
 
         if (valid) {
-            if (this.props.theStudent.login !== this.state.login) updateStudentlogin(selectedClass, (event) ? event.target.value : this.state.currentClass, login).then((response) => {
-
-
-            })
-            if (this.props.theStudent.lastname !== this.state.lastname) updateStudentlastName(selectedClass, (event) ? event.target.value : this.state.currentClass, name).then((response) => {
-
-
-            })
-            if (this.props.theStudent.firstname !== this.state.firstname) updateStudentFirstName(selectedClass, (event) ? event.target.value : this.state.currentClass, firstname).then((response) => {
-
-            })
+            if (this.props.theStudent.login !== this.state.login) updateStudentlogin(selectedClass, (event) ? event.target.value : this.state.currentClass, login)
+            if (this.props.theStudent.lastname !== this.state.lastname) updateStudentlastName(selectedClass, (event) ? event.target.value : this.state.currentClass, name)
+            if (this.props.theStudent.firstname !== this.state.firstname) updateStudentFirstName(selectedClass, (event) ? event.target.value : this.state.currentClass, firstname)
         }
 
 
@@ -476,22 +466,22 @@ class EditClassStep extends Component {
         if (valid) {
             let responses = updateTheClass(this.state.currentClass.classID, name, grade)
             responses.name.then((res) => {
-                if (res.data.returnState != 0) alert("Erreur")
+                if (res.data.returnState !== 0) alert("Erreur")
             })
             responses.grade.then((res) => {
-                if (res.data.returnState != 0) alert("Erreur")
+                if (res.data.returnState !== 0) alert("Erreur")
             })
         }
 
         //no reload
         event.preventDefault();
-        this.props.previous(<EditSelectStep previous={this.props.previous} next={this.props.next}/>)
+        this.props.previous(<EditSelectStep previous={this.props.previous} next={this.props.next} openError={this.props.openError}/>)
         //OR
         //alert("Modifié avec succès")
     }
 
     handlePrevious = () => {
-        this.props.previous(<EditSelectStep previous={this.props.previous} next={this.props.next}/>)
+        this.props.previous(<EditSelectStep previous={this.props.previous} next={this.props.next} openError={this.props.openError}/>)
     }
 
     handleRegenerate = (event) => {
@@ -507,7 +497,7 @@ class EditClassStep extends Component {
 
     handleOnChange = (event) => {
         this.state.classesList.forEach((theClass) => {
-            if (theClass.classID == event.target.value) {
+            if (theClass.classID === event.target.value) {
                 this.setState({
                     currentClass: {name: theClass.name, grade: theClass.grade, classID: theClass.classID}
                 })
@@ -520,10 +510,12 @@ class EditClassStep extends Component {
     handleUpdateList = () => {
 
         getAllClasses().then(res => {
-            this.setState({
-                classesList: res.data.classes,
-                currentClass: res.data.classes[0]
-            })
+            if(res.data.classes.length>0){
+                this.setState({
+                    classesList: res.data.classes,
+                    currentClass: res.data.classes[0]
+                })
+            }
         })
 
     }
@@ -568,7 +560,7 @@ class EditClassStep extends Component {
 
                 <input onChange={this.handleOnChangeName} className="teacher-student-creation-input" id="select-name"
                        placeholder="Nom" type="text"
-                       value={this.state.currentClass.name}/>
+                           value={this.state.currentClass.name}/>
                 <input onChange={this.handleOnChangeGrade} className="teacher-student-creation-input" id="select-grade"
                        placeholder="Niveau" type="text"
                        value={this.state.currentClass.grade}/>
@@ -641,7 +633,7 @@ class EditChapterStep extends Component {
         }
     }
 
-    handleValidate = (event) => {
+    handleValidate = () => {
         if (this.state.edit) {
             let valid = true;
             let name = document.getElementById("edit-name").value
@@ -664,7 +656,7 @@ class EditChapterStep extends Component {
     }
 
     handlePrevious = () => {
-        this.props.previous(<EditSelectStep previous={this.props.previous} next={this.props.next}/>)
+        this.props.previous(<EditSelectStep previous={this.props.previous} next={this.props.next} openError={this.props.openError}/>)
     }
 
     render() {
@@ -714,7 +706,7 @@ class ChaptersRow extends Component {
         if (!this.props.current) {
             this.setState({domElem: <h1 className="teacher-chapter-row-title">{this.props.theChapter.name}</h1>})
         } else {
-            this.setState({domElem: <input id="edit-name" defaultValue={this.props.theChapter.name}></input>})
+            this.setState({domElem: <input id="edit-name" defaultValue={this.props.theChapter.name}/>})
         }
 
     }
@@ -723,7 +715,7 @@ class ChaptersRow extends Component {
         if (!nextProps.current) {
             this.setState({domElem: <h1 className="teacher-chapter-row-title">{this.props.theChapter.name}</h1>})
         } else {
-            this.setState({domElem: <input id="edit-name" defaultValue={this.props.theChapter.name}></input>})
+            this.setState({domElem: <input id="edit-name" defaultValue={this.props.theChapter.name}/>})
         }
     }
 
@@ -766,24 +758,26 @@ export class EditQuestionSelectStep extends Component {
                 chapterList: res.data.chapters,
             })
 
-            getQuizList(res.data.chapters[0].chapterID).then(result => {
-                this.setState({
-                    quizList: result.data.quizzes
-                })
-
-                if (result.data.quizzes.length > 0) {
-                    getQuestionList(result.data.quizzes[0].quizID).then(resul => {
-
-                        this.setState({
-                            questionList: resul.data.questions
-                        })
-                    })
-                } else {
+            if(res.data.chapters.length>0){
+                getQuizList(res.data.chapters[0].chapterID).then(result => {
                     this.setState({
-                        questionList: []
+                        quizList: result.data.quizzes
                     })
-                }
-            })
+
+                    if (result.data.quizzes.length > 0) {
+                        getQuestionList(result.data.quizzes[0].quizID).then(resul => {
+
+                            this.setState({
+                                questionList: resul.data.questions
+                            })
+                        })
+                    } else {
+                        this.setState({
+                            questionList: []
+                        })
+                    }
+                })
+            }
         })
 
     }
@@ -809,7 +803,7 @@ export class EditQuestionSelectStep extends Component {
         }
     }
 
-    handleValidate = (event) => {
+    handleValidate = () => {
         if (this.state.currentQuestion) {
             this.props.next(<EditQuestionDetailsStep openPopup={this.props.openPopup} closePopup={this.props.closePopup}
                                                      next={this.props.next} previous={this.props.previous}
@@ -870,7 +864,7 @@ export class EditQuestionSelectStep extends Component {
     }
 
     handlePrevious = () => {
-        this.props.previous(<EditSelectStep previous={this.props.previous} next={this.props.next}/>)
+        this.props.previous(<EditSelectStep previous={this.props.previous} next={this.props.next} openError={this.props.openError}/>)
     }
 
 
@@ -1030,7 +1024,7 @@ class EditQuestionDetailsStep extends Component {
     handleDeleteAnswer = (event, theAnswer) => {
 
         this.setState({
-            answerList: this.state.answerList.filter(function (aAnswer, index, arr) {
+            answerList: this.state.answerList.filter(function (aAnswer) {
                 return aAnswer !== theAnswer;
             })
         })
@@ -1042,9 +1036,7 @@ class EditQuestionDetailsStep extends Component {
         let valid = true;
         let upperText = document.getElementById("select-upperText").value
         let lowerText = document.getElementById("select-lowerText").value
-        let image = document.getElementById("select-image").value
         let level = document.getElementById("select-level").value
-        let qNumber = document.getElementById("select-qNumber").value
 
         let type = 'OPEN'
 
@@ -1067,13 +1059,10 @@ class EditQuestionDetailsStep extends Component {
                 updateQuestion(this.props.question.questionID,upperText,lowerText,type,level).then(response=>{
                     if(response.data.returnState!==0)console.log("Error")
                     if(this.state.selectedFile){
-                        setImage(this.props.question.questionID,this.state.selectedFile).then(response=>{
-                            }
-                        )
+                        setImage(this.props.question.questionID,this.state.selectedFile)
                     }
                     this.state.answerList.forEach(answer => {
-                        createAnswer(this.state.currentQuiz, this.props.question.questionID, answer.text, answer.isValid).then(r => {
-                        })
+                        createAnswer(this.state.currentQuiz, this.props.question.questionID, answer.text, answer.isValid)
                     })
                 })
             })
@@ -1082,7 +1071,7 @@ class EditQuestionDetailsStep extends Component {
         }
 
         //no reload
-        this.props.previous(<EditSelectStep previous={this.props.previous} next={this.props.next}/>)
+        this.props.previous(<EditSelectStep previous={this.props.previous} next={this.props.next} openError={this.props.openError}/>)
         event.preventDefault();
     }
 
@@ -1097,8 +1086,7 @@ class EditQuestionDetailsStep extends Component {
     }
 
     handleDeleteFile =()=>{
-        deleteImage(this.props.question.questionID).then(res => {
-        });
+        deleteImage(this.props.question.questionID)
     }
 
     render() {
@@ -1110,7 +1098,7 @@ class EditQuestionDetailsStep extends Component {
                     <option className="teacher-student-creation-option" value="empty">Choix du Chapitre</option>
                     {this.state.chaptersList.map((theChapter, index) => {
                         return <option key={index} value={theChapter.chapterID}
-                                       selected={theChapter.chapterID == this.props.question.theChapter}>{theChapter.name}</option>
+                                       selected={theChapter.chapterID === this.props.question.theChapter}>{theChapter.name}</option>
                     })}
                 </select>
                 <select onChange={this.handleUpdateQuizList} className="teacher-student-creation-input"
@@ -1119,7 +1107,7 @@ class EditQuestionDetailsStep extends Component {
                     <option className="teacher-student-creation-option" value="noQuiz">Aucun Quiz</option>
                     {this.state.quizList.map((theQuiz, index) => {
                         return <option key={index} value={theQuiz.quizID}
-                                       selected={theQuiz.quizID == this.props.question.theQuiz}>{theQuiz.quizName} </option>
+                                       selected={theQuiz.quizID === this.props.question.theQuiz}>{theQuiz.quizName} </option>
                     })}
                 </select>
 
@@ -1233,7 +1221,7 @@ export class EditQuizListStep extends Component {
 
     }
 
-    handleValidate = (event) => {
+    handleValidate = () => {
         if(this.state.currentQuiz){
             this.props.next(<EditQuizDetailsStep previous={this.props.previous} next={this.props.next} quiz={this.state.currentQuiz}/>)
         }
@@ -1280,7 +1268,7 @@ export class EditQuizListStep extends Component {
     }
 
     handlePrevious = () => {
-        this.props.previous(<EditSelectStep previous={this.props.previous} next={this.props.next} />)
+        this.props.previous(<EditSelectStep previous={this.props.previous} next={this.props.next} openError={this.props.openError}/>)
     }
 
     render() {
@@ -1316,7 +1304,7 @@ export class EditQuizListStep extends Component {
 class QuizRow extends Component {
 
 
-    handleClick = (event) => {
+    handleClick = () => {
         this.props.onClick(this.props.value,this.props.id)
     }
 
@@ -1409,7 +1397,7 @@ class EditQuizDetailsStep extends Component{
             })
         }
 
-        this.props.previous(<EditSelectStep previous={this.props.previous} next={this.props.next}/>)
+        this.props.previous(<EditSelectStep previous={this.props.previous} next={this.props.next} openError={this.props.openError}/>)
 
         //no reload
         event.preventDefault();
@@ -1442,7 +1430,7 @@ class EditQuizDetailsStep extends Component{
                 <select onChange={this.handleUpdateList} className="teacher-student-creation-input" id="selected-class">
                     <option className="teacher-student-creation-option" value="empty">Choix du Chapitre</option>
                     {this.state.chaptersList.map((theChapter, index) => {
-                        return <option key={index} value={theChapter.chapterID} selected={theChapter.chapterID==this.state.currentChapter}>{theChapter.name}</option>
+                        return <option key={index} value={theChapter.chapterID} selected={theChapter.chapterID===this.state.currentChapter}>{theChapter.name}</option>
                     })}
                 </select>
                 <div className="teacher-question-creation-quiz-order" id="toggle-switch" onClick={this.handleSwitch}>

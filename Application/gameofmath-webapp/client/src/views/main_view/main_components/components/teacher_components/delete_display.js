@@ -71,27 +71,27 @@ class DeleteSelectStep extends Component {
             case this.STUDENT_TEXT:
 
                 this.props.next(<DeleteStudentStep openPopup={this.props.openPopup} closePopup={this.props.closePopup}
-                                                   next={this.props.next} previous={this.props.previous}/>)
+                                                   next={this.props.next} previous={this.props.previous} openError={this.props.openError}/>)
                 break
             case this.CLASS_TEXT:
 
                 this.props.next(<DeleteClassStep openPopup={this.props.openPopup} closePopup={this.props.closePopup}
-                                                 next={this.props.next} previous={this.props.previous}/>)
+                                                 next={this.props.next} previous={this.props.previous} openError={this.props.openError}/>)
                 break
             case this.CHAPTER_TEXT:
 
                 this.props.next(<DeleteChapterStep openPopup={this.props.openPopup} closePopup={this.props.closePopup}
-                                                   next={this.props.next} previous={this.props.previous}/>)
+                                                   next={this.props.next} previous={this.props.previous} openError={this.props.openError}/>)
                 break
             case this.QUESTION_TEXT:
 
                 this.props.next(<DeleteQuestionStep openPopup={this.props.openPopup} closePopup={this.props.closePopup}
-                                                    next={this.props.next} previous={this.props.previous}/>)
+                                                    next={this.props.next} previous={this.props.previous} openError={this.props.openError}/>)
                 break
             case this.QUIZ_TEXT:
 
                 this.props.next(<DeleteQuizStep openPopup={this.props.openPopup} closePopup={this.props.closePopup}
-                                                next={this.props.next} previous={this.props.previous}/>)
+                                                next={this.props.next} previous={this.props.previous} openError={this.props.openError}/>)
                 break
             default:
 
@@ -190,29 +190,30 @@ export class DeleteStudentStep extends Component {
                 classesList: res.data.classes
             })
 
-            getAllStudents(res.data.classes[0].classID).then(res => {
+            if(res.data.classes.length>0){
+                getAllStudents(res.data.classes[0].classID).then(res => {
 
-                if (this.props.formCreate) {
-                    this.setState({
-                        studentList: res.data.students,
-                        currentClass: this.props.formCreate.theClass.classID,
-                        currentStudent: this.props.formCreate.theStudent
-                    })
-                } else {
-                    this.setState({
-                        studentList: res.data.students
-                    })
-                }
+                    if (this.props.formCreate) {
+                        this.setState({
+                            studentList: res.data.students,
+                            currentClass: this.props.formCreate.theClass.classID,
+                            currentStudent: this.props.formCreate.theStudent
+                        })
+                    } else {
+                        this.setState({
+                            studentList: res.data.students
+                        })
+                    }
 
 
-            })
+                })
+            }
+
         })
 
     }
 
-    handleValidate = (event) => {
-
-        let deleteList = ""
+    handleValidate = () => {
 
         if(this.state.selected){
             deleteTheStudents(this.state.selected.userID, parseInt(this.state.currentClass)).then(res => {
@@ -229,7 +230,7 @@ export class DeleteStudentStep extends Component {
                     })
                 }
             })
-            this.props.previous(<DeleteSelectStep next={this.props.next} previous={this.props.previous}/>)
+            this.props.previous(<DeleteSelectStep next={this.props.next} previous={this.props.previous} openError={this.props.openError}/>)
         }
 
 
@@ -285,7 +286,7 @@ export class DeleteStudentStep extends Component {
     }
 
     handlePrevious = () => {
-        this.props.previous(<DeleteSelectStep previous={this.props.previous} next={this.props.next}/>)
+        this.props.previous(<DeleteSelectStep previous={this.props.previous} next={this.props.next} openError={this.props.openError}/>)
     }
 
     render() {
@@ -390,16 +391,16 @@ class DeleteClassStep extends Component {
 
     }
 
-    handleValidate = (event) => {
+    handleValidate = () => {
         console.log(this.state.currentClassID)
-        deleteClass(this.state.currentClassID).then(res => {
+        deleteClass(this.state.currentClassID).then(() => {
             this.handleGetClasses()
         })
-        this.props.previous(<DeleteSelectStep next={this.props.next} previous={this.props.previous}/>)
+        this.props.previous(<DeleteSelectStep next={this.props.next} previous={this.props.previous} openError={this.props.openError}/>)
     }
 
     handlePrevious = () => {
-        this.props.previous(<DeleteSelectStep previous={this.props.previous} next={this.props.next}/>)
+        this.props.previous(<DeleteSelectStep previous={this.props.previous} next={this.props.next} openError={this.props.openError}/>)
     }
 
     render() {
@@ -499,16 +500,16 @@ class DeleteChapterStep extends Component {
 
     }
 
-    handleValidate = (event) => {
+    handleValidate = () => {
 
-        deleteChapter(this.state.currentChapterID).then(res => {
+        deleteChapter(this.state.currentChapterID).then(() => {
             this.handleGetChapters()
         })
-        this.props.previous(<DeleteSelectStep next={this.props.next} previous={this.props.previous}/>)
+        this.props.previous(<DeleteSelectStep next={this.props.next} previous={this.props.previous} openError={this.props.openError}/>)
     }
 
     handlePrevious = () => {
-        this.props.previous(<DeleteSelectStep previous={this.props.previous} next={this.props.next}/>)
+        this.props.previous(<DeleteSelectStep previous={this.props.previous} next={this.props.next} openError={this.props.openError}/>)
     }
 
     render() {
@@ -580,24 +581,27 @@ export class DeleteQuestionStep extends Component {
                 chapterList: res.data.chapters,
             })
 
-            getQuizList(res.data.chapters[0].chapterID).then(result => {
-                this.setState({
-                    quizList: result.data.quizzes
-                })
-
-                if (result.data.quizzes.length > 0) {
-                    getQuestionList(result.data.quizzes[0].quizID).then(resul => {
-
-                        this.setState({
-                            questionList: resul.data.questions
-                        })
-                    })
-                } else {
+            if(res.data.chapters.length>0){
+                getQuizList(res.data.chapters[0].chapterID).then(result => {
                     this.setState({
-                        questionList: []
+                        quizList: result.data.quizzes
                     })
-                }
-            })
+
+                    if (result.data.quizzes.length > 0) {
+                        getQuestionList(result.data.quizzes[0].quizID).then(resul => {
+
+                            this.setState({
+                                questionList: resul.data.questions
+                            })
+                        })
+                    } else {
+                        this.setState({
+                            questionList: []
+                        })
+                    }
+                })
+            }
+
         })
 
     }
@@ -624,11 +628,11 @@ export class DeleteQuestionStep extends Component {
 
     }
 
-    handleValidate = (event) => {
-        deleteQuestion(this.state.currentQuestion.questionID, this.state.currentQuiz).then(res => {
+    handleValidate = () => {
+        deleteQuestion(this.state.currentQuestion.questionID, this.state.currentQuiz).then(() => {
             this.handleGetQuestion()
         })
-        this.props.previous(<DeleteSelectStep next={this.props.next} previous={this.props.previous}/>)
+        this.props.previous(<DeleteSelectStep next={this.props.next} previous={this.props.previous} openError={this.props.openError}/>)
     }
 
     handleGetQuestion = () => {
@@ -684,7 +688,7 @@ export class DeleteQuestionStep extends Component {
     }
 
     handlePrevious = () => {
-        this.props.previous(<DeleteSelectStep previous={this.props.previous} next={this.props.next}/>)
+        this.props.previous(<DeleteSelectStep previous={this.props.previous} next={this.props.next} openError={this.props.openError}/>)
     }
 
 
@@ -766,29 +770,31 @@ export class DeleteQuizStep extends Component {
             this.setState({
                 chapterList: res.data.chapters
             })
+            if(res.data.chapters.length>0){
+                getQuizList(res.data.chapters[0].chapterID).then(res => {
+                    if (this.props.formCreate) {
+                        this.setState({
+                            quizList: res.data.quizzes,
+                            currentChapter: this.props.formCreate.theChapter.chapterID,
+                            currentQuiz: this.props.formCreate.theQuiz
+                        })
+                    } else {
+                        this.setState({
+                            quizList: res.data.quizzes
+                        })
+                    }
 
-            getQuizList(res.data.chapters[0].chapterID).then(res => {
-                if (this.props.formCreate) {
-                    this.setState({
-                        quizList: res.data.quizzes,
-                        currentChapter: this.props.formCreate.theChapter.chapterID,
-                        currentQuiz: this.props.formCreate.theQuiz
-                    })
-                } else {
-                    this.setState({
-                        quizList: res.data.quizzes
-                    })
-                }
 
+                })
+            }
 
-            })
         })
 
     }
 
-    handleValidate = (event) => {
+    handleValidate = () => {
 
-        deleteQuiz(this.state.currentQuiz.quizID).then(res => {
+        deleteQuiz(this.state.currentQuiz.quizID).then(() => {
 
             getQuizList(this.state.currentQuiz).then(res => {
                 this.setState({
@@ -798,7 +804,7 @@ export class DeleteQuizStep extends Component {
             })
 
         })
-        this.props.previous(<DeleteSelectStep next={this.props.next} previous={this.props.previous}/>)
+        this.props.previous(<DeleteSelectStep next={this.props.next} previous={this.props.previous} openError={this.props.openError}/>)
     }
 
     handleDisplayOverView = (theQuiz, id) => {
@@ -842,7 +848,7 @@ export class DeleteQuizStep extends Component {
     }
 
     handlePrevious = () => {
-        this.props.previous(<DeleteSelectStep previous={this.props.previous} next={this.props.next}/>)
+        this.props.previous(<DeleteSelectStep previous={this.props.previous} next={this.props.next} openError={this.props.openError}/>)
     }
 
     render() {
@@ -879,7 +885,7 @@ export class DeleteQuizStep extends Component {
 class QuizRow extends Component {
 
 
-    handleClick = (event) => {
+    handleClick = () => {
         this.props.onClick(this.props.value, this.props.id)
     }
 

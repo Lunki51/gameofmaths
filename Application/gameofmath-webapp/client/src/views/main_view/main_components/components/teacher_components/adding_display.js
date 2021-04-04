@@ -1,13 +1,11 @@
 import React, {Component} from "react";
 import {createClass, getAllClasses} from "../../../../../model/classModel";
-import {createStudent, getAllStudents, getAllTheStudents} from "../../../../../model/studentModel";
-import {StudentDisplay} from "./student_display";
+import {createStudent} from "../../../../../model/studentModel";
 import {createChapter,getAllChapter} from "../../../../../model/chapterModel";
 import {
     addQuestion,
     createAnswer,
     createQuiz,
-    deleteQuestion,
     getQuizList,
     setImage
 } from "../../../../../model/quizModel";
@@ -321,9 +319,7 @@ class AddClassStep extends Component{
 
 
         if(valid){
-           createClass(name, grade).then((res) => {
-
-           })
+           createClass(name, grade)
         }
 
 
@@ -371,10 +367,7 @@ class AddChapterStep extends Component {
 
         }
         if (valid) {
-            createChapter(name).then((res) => {
-
-
-            })
+            createChapter(name)
         }
 
         //no reload
@@ -428,13 +421,15 @@ class AddQuestionStep extends Component{
             this.setState({
                 chaptersList: res.data.chapters,
             })
+            if(res.data.chapters.length>0){
+                getQuizList(res.data.chapters[0].chapterID).then(result => {
+                    this.setState({
+                        quizList: result.data.quizzes
+                    })
 
-            getQuizList(res.data.chapters[0].chapterID).then(result => {
-                this.setState({
-                    quizList: result.data.quizzes
                 })
+            }
 
-            })
         })
 
     }
@@ -493,7 +488,7 @@ class AddQuestionStep extends Component{
     handleDeleteAnswer = (event,theAnswer) => {
 
         this.setState({
-            answerList: this.state.answerList.filter(function(aAnswer, index, arr){
+            answerList: this.state.answerList.filter(function(aAnswer){
                 return aAnswer !== theAnswer;
             })
         })
@@ -505,7 +500,6 @@ class AddQuestionStep extends Component{
         let valid = true;
         let upperText = document.getElementById("select-upperText").value
         let lowerText = document.getElementById("select-lowerText").value
-        let image = document.getElementById("select-image").value
         let level = document.getElementById("select-level").value
 
         let type = 'OPEN'
@@ -526,11 +520,9 @@ class AddQuestionStep extends Component{
         if(valid){
             addQuestion(this.state.currentChapter,this.state.currentQuiz,upperText,lowerText,type,level).then((response) => {
                 this.state.answerList.forEach(answer => {
-                    createAnswer(this.state.currentQuiz, response.data.question.questionID, answer.answerText, answer.isValid).then(r  =>{
+                    createAnswer(this.state.currentQuiz, response.data.question.questionID, answer.answerText, answer.isValid).then(()  =>{
                         if(this.state.selectedFile){
-                            setImage(response.data.question.questionID,this.state.selectedFile).then(response=>{
-                                }
-                            )
+                            setImage(response.data.question.questionID,this.state.selectedFile)
                         }
                     })
                 })
@@ -692,8 +684,7 @@ class AddQuizStep extends Component{
         }
 
         if(valid){
-            createQuiz(name,this.state.currentChapter,isOrder).then((res) => {
-            })
+            createQuiz(name,this.state.currentChapter,isOrder)
         }
 
         //no reload

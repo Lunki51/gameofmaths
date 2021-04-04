@@ -19,8 +19,6 @@ CREATE TABLE Notification(
     notifData TEXT NOT NULL,
     notifDate NUMERIC NOT NULL,
     notifUser INTEGER NOT NULL,
-
-    FOREIGN KEY(notifUser) REFERENCES User(userID)
 );
 
 -- Castle
@@ -29,16 +27,12 @@ CREATE TABLE DailyQuiz(
     dailyQuizID INTEGER PRIMARY KEY AUTOINCREMENT,
     dailyQuizDate NUMERIC NOT NULL,
     dailyQuizQuiz INTEGER NOT NULL,
-
-    FOREIGN KEY(dailyQuizQuiz) REFERENCES Quiz(quizID)
 );
 
 CREATE TABLE Castle(
     castleID INTEGER PRIMARY KEY AUTOINCREMENT,
     castleName TEXT NOT NULL,
     castleClass INTEGER NOT NULL,
-
-    FOREIGN KEY(castleClass) REFERENCES Class(classID)
 );
 
 CREATE TABLE Master(
@@ -49,7 +43,6 @@ CREATE TABLE Master(
     masterStudent INTEGER NOT NULL,
 
     FOREIGN KEY(masterCastle) REFERENCES Castle(castleID),
-    FOREIGN KEY(masterStudent) REFERENCES Student(theUser)
 );
 
 CREATE TABLE Knight(
@@ -60,7 +53,6 @@ CREATE TABLE Knight(
     knightStudent INTEGER NOT NULL,
 
     FOREIGN KEY(knightMaster) REFERENCES Master(masterID),
-    FOREIGN KEY(knightStudent) REFERENCES Student(theUser)
 );
 
 CREATE TABLE KnightRequest(
@@ -71,7 +63,6 @@ CREATE TABLE KnightRequest(
     knightRequestStudent INTEGER NOT NULL,
 
     FOREIGN KEY(knightRequestMaster) REFERENCES Master(masterID),
-    FOREIGN KEY(knightRequestStudent) REFERENCES Student(theUser)
 );
 
 -- Attack
@@ -84,8 +75,6 @@ CREATE TABLE Attack(
     attackOrigin INTEGER NOT NULL,
     attackTarget INTEGER NOT NULL,
 
-    FOREIGN KEY(attackQuiz) REFERENCES Quiz(quizID),
-    FOREIGN KEY(attackOrigin) REFERENCES Student(theUser),
     FOREIGN KEY(attackTarget) REFERENCES Master(masterID)
 );
 
@@ -95,6 +84,5 @@ CREATE TABLE Soldier(
     soldierStudent INTEGER NOT NULL,
 
     FOREIGN KEY(soldierAttack) REFERENCES Attack(attackID),
-    FOREIGN KEY(soldierStudent) REFERENCES Student(theUser),
     PRIMARY KEY (soldierAttack, soldierStudent)
 );

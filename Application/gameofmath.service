@@ -1,0 +1,10 @@
+[Unit]
+Description=Game of Math
+
+[Service]
+ExecStart=/usr/bin/npm start --prefix /var/www/gameofmath/Application/gameofmath-webapp/
+Restart=on-failure
+User=root
+
+[Install]
+WantedBy=multi-user.target

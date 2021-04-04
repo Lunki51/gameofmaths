@@ -379,16 +379,14 @@ class StudentEditOverview extends Component {
         if (valid) {
             if (this.props.theStudent.login !== this.state.login) updateStudentlogin(selectedClass, (event) ? event.target.value : this.state.currentClass, login).then((response) => {
 
-                console.log(response)
 
             })
             if (this.props.theStudent.lastname !== this.state.lastname) updateStudentlastName(selectedClass, (event) ? event.target.value : this.state.currentClass, name).then((response) => {
 
-                console.log(response)
 
             })
             if (this.props.theStudent.firstname !== this.state.firstname) updateStudentFirstName(selectedClass, (event) ? event.target.value : this.state.currentClass, firstname).then((response) => {
-                console.log(response)
+
             })
         }
 
@@ -506,7 +504,6 @@ class EditClassStep extends Component {
     }
 
     handleOnChange = (event) => {
-        console.log("changing")
         this.state.classesList.forEach((theClass) => {
             if (theClass.classID == event.target.value) {
                 this.setState({
@@ -609,7 +606,6 @@ class EditChapterStep extends Component {
                 chaptersList: response.data.chapters
             })
             this.setState({edit: false})
-            console.log(response.data.chapters)
 
         })
 
@@ -722,7 +718,6 @@ class ChaptersRow extends Component {
     }
 
     componentWillReceiveProps(nextProps: Readonly<P>, nextContext: any) {
-        console.log(nextProps)
         if (!nextProps.current) {
             this.setState({domElem: <h1 className="teacher-chapter-row-title">{this.props.theChapter.name}</h1>})
         } else {
@@ -793,7 +788,6 @@ export class EditQuestionSelectStep extends Component {
 
     handleDisplayOverView = (theQuestion, id) => {
         let domObject = document.getElementById(id);
-        console.log(domObject)
         if (!this.state.currentChoiceDOM) {
 
             domObject.style.backgroundColor = "var(--secondary_color)"
@@ -824,7 +818,6 @@ export class EditQuestionSelectStep extends Component {
     handleGetQuestion = () => {
 
         getQuestionList(this.state.currentQuiz).then((response) => {
-            console.log(response)
             this.setState({
                 questionList: response.data.questions
             })
@@ -868,7 +861,6 @@ export class EditQuestionSelectStep extends Component {
             currentQuiz: event.target.value
         })
         getQuestionList(event.target.value).then(res => {
-            console.log(res.data.questions)
             this.setState({
                 questionList: res.data.questions,
             })
@@ -958,7 +950,6 @@ class EditQuestionDetailsStep extends Component {
 
     componentDidMount() {
 
-        console.log(this.props.question)
         this.setState({
             currentChapter: this.props.question.theChapter,
             currentQuiz: this.props.question.theQuiz,
@@ -975,8 +966,6 @@ class EditQuestionDetailsStep extends Component {
                     quizList: result.data.quizzes
                 })
                 getAnswersList(this.props.question.theQuiz, this.props.question.questionID).then(result => {
-                    console.log(result.data)
-                    console.log(result.data.questions)
                     this.setState({
                         answerList: result.data.answers
                     })
@@ -1012,7 +1001,6 @@ class EditQuestionDetailsStep extends Component {
     handleSwitch = () => {
 
         let isValid = document.getElementById("toggle-switch")
-        console.log(isValid)
         if (isValid && isValid.style.backgroundColor === "var(--secondary_color)") {
             isValid.style.backgroundColor = "var(--primary_color)"
             this.setState({
@@ -1024,8 +1012,6 @@ class EditQuestionDetailsStep extends Component {
                 isValid: false
             })
         }
-
-        console.log(this.state.isValid)
     }
 
     handleAddAnswer = () => {
@@ -1037,7 +1023,6 @@ class EditQuestionDetailsStep extends Component {
             answerList: tab
         })
 
-        console.log(this.state.answerList)
     }
 
     handleDeleteAnswer = (event, theAnswer) => {
@@ -1069,7 +1054,6 @@ class EditQuestionDetailsStep extends Component {
                     nbValidAnswer++
                 }
             })
-            console.log(nbValidAnswer)
             if (nbValidAnswer > 1) {
                 type = 'QCM'
             }
@@ -1082,14 +1066,11 @@ class EditQuestionDetailsStep extends Component {
                     if(response.data.returnState!==0)console.log("Error")
                     if(this.state.selectedFile){
                         setImage(this.props.question.questionID,this.state.selectedFile).then(response=>{
-                            console.log(response)
                             }
                         )
                     }
                     this.state.answerList.forEach(answer => {
-                        console.log(answer.text)
                         createAnswer(this.state.currentQuiz, this.props.question.questionID, answer.text, answer.isValid).then(r => {
-                            console.log(r)
                         })
                     })
                 })
@@ -1104,7 +1085,6 @@ class EditQuestionDetailsStep extends Component {
     }
 
     handleFileSelected = (event) => {
-        console.log(event.target.files[0]);
         this.setState({
             selectedFile: event.target.files[0]
         })
@@ -1116,7 +1096,6 @@ class EditQuestionDetailsStep extends Component {
 
     handleDeleteFile =()=>{
         deleteImage(this.props.question.questionID).then(res => {
-            console.log(res);
         });
     }
 
@@ -1201,7 +1180,6 @@ class AnswersRow extends Component {
     }
 
     componentDidMount() {
-        console.log(this.props.theAnswer)
     }
 
     render() {
@@ -1263,7 +1241,6 @@ export class EditQuizListStep extends Component {
 
     handleDisplayOverView = (theQuiz,id) => {
         let domObject = document.getElementById(id);
-        console.log(domObject)
         if(!this.state.currentChoiceDOM){
 
             domObject.style.backgroundColor = "var(--secondary_color)"
@@ -1318,7 +1295,6 @@ export class EditQuizListStep extends Component {
                 </select>
 
                 {(this.state.quizList.length > 0)?this.state.quizList.map( (theQuiz, index) => {
-                    console.log(theQuiz)
                     return <QuizRow onClick={this.handleDisplayOverView} value={theQuiz} key={index} id={"question"+index}/>
                 }):<h1 className="teacher-student-list-none">Aucun Quiz</h1>}
 
@@ -1457,7 +1433,6 @@ class EditQuizDetailsStep extends Component{
     }
 
     render() {
-        console.log(this.props.quiz)
         return <div className="teacher-add-student-step">
 
             <form className="teacher-student-creation-container" onSubmit={this.handleValidate}>

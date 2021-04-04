@@ -58,7 +58,6 @@ class MapView extends Component {
 
         getInfo().then(response => {
             this.setState({player: response.data})
-            console.log(this.state.player)
         })
     }
 

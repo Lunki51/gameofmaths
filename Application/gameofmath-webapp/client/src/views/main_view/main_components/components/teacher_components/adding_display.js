@@ -249,7 +249,6 @@ class AddStudentStep extends Component{
                     name.value = "";
                     firstname.value = "";
 
-                    console.log(response)
                     //  this.props.redirect(<StudentDisplay formCreate={{studentID:response.data.student.userID, classID:response.data.student.theClass}}/>);
                 } else {
                     alert(response.data.msg)
@@ -316,8 +315,6 @@ class AddClassStep extends Component{
         if(valid){
            createClass(name, grade).then((res) => {
 
-               console.log(res)
-
            })
         }
 
@@ -367,7 +364,6 @@ class AddChapterStep extends Component {
         if (valid) {
             createChapter(name).then((res) => {
 
-                console.log(res)
 
             })
         }
@@ -482,7 +478,6 @@ class AddQuestionStep extends Component{
             answerList: tab
         })
 
-        console.log(this.state.answerList)
     }
 
     handleDeleteAnswer = (event,theAnswer) => {
@@ -502,7 +497,6 @@ class AddQuestionStep extends Component{
         let lowerText = document.getElementById("select-lowerText").value
         let image = document.getElementById("select-image").value
         let level = document.getElementById("select-level").value
-        let qNumber = document.getElementById("select-qNumber").value
 
         let type = 'OPEN'
 
@@ -514,22 +508,18 @@ class AddQuestionStep extends Component{
                     nbValidAnswer++
                 }
             })
-            console.log(nbValidAnswer)
             if(nbValidAnswer > 1){
                 type = 'QCM'
             }
         }
 
         if(valid){
-            addQuestion(this.state.currentChapter,qNumber,this.state.currentQuiz,upperText,lowerText,type,level).then((response) => {
-                console.log(response)
+            addQuestion(this.state.currentChapter,this.state.currentQuiz,upperText,lowerText,type,level).then((response) => {
                 this.state.answerList.forEach(answer => {
-                    createAnswer(this.state.currentQuiz, response, answer.answerText, answer.isValid).then(r  =>{
-                        console.log(r)
+                    createAnswer(this.state.currentQuiz, response.data.question.questionID, answer.answerText, answer.isValid).then(r  =>{
                     })
                 })
             })
-
         }
 
         //no reload
@@ -537,7 +527,6 @@ class AddQuestionStep extends Component{
     }
 
     handleFileSelected = (event) => {
-        console.log(event.target.files[0]);
         this.setState({
             selectedFile: event.target.files[0]
         })
@@ -567,7 +556,6 @@ class AddQuestionStep extends Component{
 
                 <h1 className="teacher-question-creation-text">Création Question</h1>
 
-                <input className="teacher-student-creation-input" id="select-qNumber" placeholder="Numéro de question" type="text"/>
                 <input className="teacher-student-creation-input" id="select-upperText" placeholder="Texte du haut" type="text"/>
                 <input onChange={this.handleFileSelected} className="teacher-student-creation-input" id="select-image" placeholder="Image" type="file"/>
                 <input className="teacher-student-creation-input" id="select-lowerText" placeholder="Texte du bas" type="text"/>
@@ -687,10 +675,8 @@ class AddQuizStep extends Component{
             alert("Chapitre - obligatoire!")
         }
 
-        console.log(name,this.state.currentChapter,isOrder)
         if(valid){
             createQuiz(name,this.state.currentChapter,isOrder).then((res) => {
-                console.log(res)
             })
         }
 

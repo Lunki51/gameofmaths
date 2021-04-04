@@ -119,7 +119,6 @@ class NavigationBar extends Component{
 
         getStudentInfo().then(res => {
 
-            console.log(res)
 
             this.setState({
                 user:res.data,

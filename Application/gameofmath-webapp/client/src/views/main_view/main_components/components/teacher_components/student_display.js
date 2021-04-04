@@ -126,7 +126,7 @@ export class StudentDisplay extends Component{
 
             <div className="teacher-class-overview">
 
-                {(this.state.currentStudent)? <StudentOverview theStudent={this.state.currentStudent}/> : <h1 className="teacher-no-class">Aucun élève selectionné</h1>}
+                {(this.state.currentStudent)? <StudentOverview theStudent={this.state.currentStudent} theClass={this.props.fromSearch}/> : <h1 className="teacher-no-class">Aucun élève selectionné</h1>}
 
             </div>
 
@@ -158,10 +158,10 @@ class StudentOverview extends Component{
 
     render() {
         return<>
-            <h1 className="teacher-class-overview-title">Nom: {this.props.theStudent.username} Prénom: {this.props.theStudent.lastname} </h1>
+            <h1 className="teacher-class-overview-title">Nom: {this.props.theStudent.firstname} Prénom: {this.props.theStudent.lastname} </h1>
 
             <div className="teacher-class-overview-grade-container">
-                <h1 className="teacher-class-overview-grade-text">Niveau: {this.props.theStudent.grade}</h1>
+                <h1 className="teacher-class-overview-grade-text">PM : {this.props.theStudent.mp}</h1>
             </div>
 
         </>

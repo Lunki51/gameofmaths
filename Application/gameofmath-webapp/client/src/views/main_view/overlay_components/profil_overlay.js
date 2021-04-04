@@ -22,7 +22,6 @@ export class ProfilDetails extends Component{
         }
         getInfo().then(response =>{
             this.setState({player : response.data})
-            console.log(this.state.player)
         })
     }
 
@@ -31,7 +30,7 @@ export class ProfilDetails extends Component{
         this._isMounted=true
         // getRemainingQuiz().then(res => {
         //
-        //     console.log(res)
+        //
         //
         // })
     }

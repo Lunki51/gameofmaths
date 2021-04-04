@@ -20,7 +20,6 @@ export class CastleDetails extends Component{
             getCastleIDs(res.data.classID).then(res => {
 
                 getCastleInfo(res.data.castleIDs[this.props.castle]).then(res => {
-                    console.log(res)
                 })
 
             })

@@ -83,7 +83,6 @@ class ListComponent extends Component{
             theObject:props.theObject,
         }
 
-        console.log(props.theObject)
     }
 
 

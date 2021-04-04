@@ -65,7 +65,6 @@ export class TeacherDisplay20 extends Component{
 
     handleRedirectTo = (goalElement) =>{
 
-        console.log(goalElement)
 
         this.setState({
                 currentDisplay: goalElement

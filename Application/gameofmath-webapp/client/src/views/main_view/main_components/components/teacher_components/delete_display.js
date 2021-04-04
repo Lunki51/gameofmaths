@@ -280,7 +280,6 @@ export class DeleteStudentStep extends Component {
 
         let container = document.getElementById(id);
 
-        console.log(event.target)
 
         if((container.style.backgroundColor === "var(--primary_color)" || !container.style.backgroundColor) && id === event.target.id){
             container.style.backgroundColor = "var(--secondary_color)"
@@ -406,7 +405,6 @@ class DeleteClassStep extends Component{
     handleValidate = (event) => {
 
         deleteClass(this.state.currentClassID).then(res => {
-            console.log(res)
             this.handleGetClasses()
         })
 
@@ -478,7 +476,6 @@ class DeleteChapterStep extends Component{
 
         getAllChapter().then((response) => {
 
-            console.log(response)
             this.setState({
                 chaptersList:response.data.chapters
             })
@@ -517,7 +514,6 @@ class DeleteChapterStep extends Component{
     handleValidate = (event) => {
 
         deleteChapter(this.state.currentChapterID).then(res => {
-            console.log(res)
             this.handleGetChapters()
         })
 
@@ -621,7 +617,6 @@ export class DeleteQuestionStep extends Component {
 
     handleDisplayOverView = (theQuestion,id) => {
         let domObject = document.getElementById(id);
-        console.log(domObject)
         if(!this.state.currentChoiceDOM){
 
             domObject.style.backgroundColor = "var(--secondary_color)"
@@ -643,9 +638,7 @@ export class DeleteQuestionStep extends Component {
     }
 
     handleValidate = (event) => {
-        console.log(this.state.currentQuestion.questionID,this.state.currentQuiz)
         deleteQuestion(this.state.currentQuestion.questionID,this.state.currentQuiz).then(res => {
-            console.log(res)
             this.handleGetQuestion()
         })
 
@@ -654,7 +647,6 @@ export class DeleteQuestionStep extends Component {
     handleGetQuestion = () => {
 
         getQuestionList(this.state.currentQuiz).then((response) => {
-            console.log(response)
             this.setState({
                 questionList: response.data.questions
             })
@@ -698,7 +690,6 @@ export class DeleteQuestionStep extends Component {
             currentQuiz: event.target.value
         })
         getQuestionList(event.target.value).then(res => {
-            console.log(res.data.questions)
             this.setState({
                 questionList: res.data.questions,
             })
@@ -823,7 +814,6 @@ export class DeleteQuizStep extends Component {
 
     handleDisplayOverView = (theQuiz,id) => {
         let domObject = document.getElementById(id);
-        console.log(domObject)
         if(!this.state.currentChoiceDOM){
 
             domObject.style.backgroundColor = "var(--secondary_color)"
@@ -878,7 +868,6 @@ export class DeleteQuizStep extends Component {
                 </select>
 
                 {(this.state.quizList.length > 0)?this.state.quizList.map( (theQuiz, index) => {
-                    console.log(theQuiz)
                     return <QuizRow onClick={this.handleDisplayOverView} value={theQuiz} key={index} id={"question"+index}/>
                 }):<h1 className="teacher-student-list-none">Aucun Quiz</h1>}
 

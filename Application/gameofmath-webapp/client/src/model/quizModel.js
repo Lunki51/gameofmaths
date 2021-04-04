@@ -14,7 +14,9 @@ export function getAnswersList(quizId,questionId) {
 
 export function updateQuestion(id,upperText,lowerText,type,level) {
 
-    return Axios.post('/api/quizManagement/updateQuestion', {id,upperText,lowerText,type,level})
+    return Axios.post('/api/quizManagement/updateQuestion', {id:id,upperText:upperText,lowerText:lowerText,type:type,level:level}).then(res=>{
+        return res
+    })
 
 }
 
@@ -29,16 +31,14 @@ export function deleteQuestion(questionID,quizID){
     return Axios.post('/api/quizManagement/deleteQuestion', {questionId,quizId})
 }
 
-export function addQuestion(chapterID,newQNumber,quizID,upperText,lowerText,type,level){
+export function addQuestion(chapterID,quizID,upperText,lowerText,type,level){
 
     let chapterId = parseInt(chapterID)
     let quizId = parseInt(quizID)
 
     return Axios.post('/api/quizManagement/createQuestion', {chapterId:chapterId, quizId:quizId}).then(res => {
         if(res.data.returnState!==0)console.error("ERROR")
-        this.updateQuestion(res.data.question,upperText,lowerText,type,level).then(response=>{
-            return response;
-        })
+        return updateQuestion(res.data.question.questionID,upperText,lowerText,type,level)
     })
 
 }
@@ -54,9 +54,9 @@ export function createAnswer(quizID,questionID,text,isValid){
         if(res.data.returnState === 0){
             let answerId = res.data.answer.answerID
             if(text !== null){
-                Axios.post('/api/quizManagement/setText', {id:answerId, quizId:quizId,questionId:questionId, text: text} ).then(response=>{
+                return Axios.post('/api/quizManagement/setText', {id:answerId, quizId:quizId,questionId:questionId, text: text} ).then(response=>{
                     if(isValid !== null){
-                        Axios.post('/api/quizManagement/setIsValid', {id:answerId, quizId:quizId,questionId:questionId, isValid: isValid} ).then(response=>{
+                        return Axios.post('/api/quizManagement/setIsValid', {id:answerId, quizId:quizId,questionId:questionId, isValid: isValid} ).then(response=>{
                             return res.data.returnState
                             }
                         )

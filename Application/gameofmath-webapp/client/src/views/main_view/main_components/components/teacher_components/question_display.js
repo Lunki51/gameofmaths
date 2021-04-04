@@ -118,8 +118,6 @@ export class QuestionDisplay extends Component {
     componentWillReceiveProps(nextProps, nextContext) {
 
 
-        console.log(nextProps)
-
         getAllChapter().then(res => {
 
             this.setState({
